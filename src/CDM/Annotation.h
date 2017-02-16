@@ -28,9 +28,10 @@
 #define ELLOGON_CDM_Annotation
 
 #ifndef SWIG
-#include <string>      /* For std::string    */
-#include <vector>      /* For std::vector    */
-#include <memory>      /* For smart pointers */
+#include <string>      /* For std::string         */
+#include <vector>      /* For std::vector         */
+#include <memory>      /* For smart pointers      */
+#include <regex>       /* For regular expressions */
 #endif /* SWIG */
 
 #ifdef __cplusplus
@@ -48,6 +49,9 @@ namespace ELEP {
 
     class Annotation {
       public:
+        typedef typename std::vector<Attribute>::iterator attribute_iterator;
+        typedef typename std::vector<Attribute>::const_iterator const_attribute_iterator;
+
         static const Id no;
 
         Annotation();
@@ -74,8 +78,37 @@ namespace ELEP {
 #endif /* TCL_VERSION */
         const Id               id()         const;
         const std::string&     type()       const;
+        void                   type(const char* type);
+#ifndef SWIG
+        void                   type(const std::string& type);
+#endif /* SWIG */
         const SpanSet&         spans()      const;
+        void                   spans(const SpanSet& spans);
+#ifndef SWIG
+        void                   spans(SpanSet&& spans);
+#endif /* SWIG */
         const AttributeSet&    attributes() const;
+        void                   attributes(const AttributeSet& attributes);
+#ifndef SWIG
+        void                   attributes(AttributeSet&& attributes);
+#endif /* SWIG */
+
+        bool                   exists(const char *name) const {return _attributes.exists(name);};
+        bool                   exists(const std::string &name) const {return _attributes.exists(name);};
+#ifndef SWIG
+        attribute_iterator       find(const char *name) {return _attributes.find(name);};
+        attribute_iterator       find(const std::string &name) {return _attributes.find(name);};
+#endif
+        const_attribute_iterator find(const char *name) const {return _attributes.find(name);};
+        const_attribute_iterator find(const std::string &name) const {return _attributes.find(name);};
+
+        bool                   containsAttributeMatchingValue(const char *name, const char *pattern) const;
+        bool                   containsAttributeMatchingValue(const std::string& name, const std::string& pattern) const;
+        bool                   containsAttributeMatchingValue(const char *name, const std::regex& pattern) const;
+        bool                   containsAttributeMatchingValue(const std::string& name, const std::regex& pattern) const;
+        bool                   contains(const Position p) const {return _spans.contains(p);};
+        bool                   matchesRange(const Position start, const Position end) const {return _spans.matchesRange(start, end);};
+
         bool                   valid()      const;
         const std::string      toString()   const;
         bool operator< (const Annotation& Annotation) const;
@@ -90,8 +123,19 @@ namespace ELEP {
 
     class AnnotationSet {
       public:
+        typedef typename std::vector<Annotation>::value_type value_type;
         typedef typename std::vector<Annotation>::size_type size_type;
+        typedef typename std::vector<Annotation>::iterator iterator;
         typedef typename std::vector<Annotation>::const_iterator const_iterator;
+        typedef typename std::vector<Annotation>::reverse_iterator reverse_iterator;
+        typedef typename std::vector<Annotation>::const_reverse_iterator const_reverse_iterator;
+#ifndef SWIG
+        typedef typename std::vector<Annotation>::reference reference;
+        typedef typename std::vector<Annotation>::const_reference const_reference;
+#else  /* SWIG */
+        typedef       typename Annotation& reference;
+        typedef const typename Annotation& const_reference;
+#endif /* SWIG */
 
         AnnotationSet();
         AnnotationSet(const Annotation &annotation);
@@ -120,15 +164,74 @@ namespace ELEP {
         bool              valid() const;
         const std::string toString() const;
 
-        void           push_back(const Annotation& val);
+        /* The following methods simulate std::vector. */
+        template <class InputIterator>
+        void              assign (InputIterator first, InputIterator last) {set.assign(first, last);};
+        void              assign(size_type n, const value_type& val) {set.assign(n, val);};
 #ifndef SWIG
-        void           push_back(Annotation&& val);
+        reference         at(size_type n) {return set.at(n);};
 #endif /* SWIG */
-        size_type      size()  const;
-        bool           empty() const;
-        const_iterator begin() const;
-        const_iterator end()   const;
-        void           clear();
+        const_reference   at(size_type n) const {return set.at(n);};
+        reference         back() {return set.back();};
+#ifndef SWIG
+        const_reference   back() const {return set.back();};
+#endif /* SWIG */
+        iterator          begin() noexcept {return set.begin();};
+#ifndef SWIG
+        const_iterator    begin() const noexcept {return set.begin();};
+#endif /* SWIG */
+        size_type         capacity() const noexcept {return set.capacity();};
+        const_iterator    cbegin() const noexcept {return set.cbegin();};
+        const_iterator    cend() const noexcept {return set.cend();};
+        void              clear() noexcept {set.clear();};
+        const_reverse_iterator crbegin() const noexcept {return set.crbegin();};
+        const_reverse_iterator crend() const noexcept {return set.crend();};
+#ifndef SWIG
+        // value_type*       data() noexcept {return set.data();};
+        // const value_type* data() const noexcept {return set.data();};
+#endif /* SWIG */
+        bool              empty() const noexcept {return set.empty();};
+        iterator          end() noexcept {return set.end();};
+#ifndef SWIG
+        const_iterator    end() const noexcept {return set.end();};
+#endif /* SWIG */
+        iterator          erase(const_iterator position) {return set.erase(position);};
+        iterator          erase(const_iterator first, const_iterator last) {return set.erase(first, last);};
+        reference         front() {return set.front();};
+#ifndef SWIG
+        const_reference   front() const {return set.front();};
+#endif /* SWIG */
+        iterator          insert(const_iterator position, const value_type& val) {return set.insert(position, val);};
+#ifndef SWIG
+        template <class InputIterator>
+        iterator          insert(const_iterator position, InputIterator first, InputIterator last) {return set.insert(position, first, last);};
+        iterator          insert(const_iterator position, value_type&& val) {return set.insert(position, val);};
+        iterator          insert(const_iterator position, std::initializer_list<value_type> il) {return set.insert(position, il);};
+#endif /* SWIG */
+        size_type         max_size() const noexcept {return set.max_size();};
+#ifndef SWIG
+        reference         operator[] (size_type n) {return set[n];};
+#endif /* SWIG */
+        const_reference   operator[] (size_type n) const {return set[n];};
+        void              pop_back() {set.pop_back();};
+        void              push_back(const value_type& val) {set.push_back(val);};
+#ifndef SWIG
+        void              push_back(value_type&& val) {set.push_back(val);};
+#endif /* SWIG */
+        reverse_iterator  rbegin() noexcept {return set.rbegin();};
+#ifndef SWIG
+        const_reverse_iterator rbegin() const noexcept {return set.rbegin();};
+#endif /* SWIG */
+        reverse_iterator  rend() noexcept {return set.rend();};
+#ifndef SWIG
+        const_reverse_iterator rend() const noexcept {return set.rend();};
+#endif /* SWIG */
+        void              reserve(size_type n) {set.reserve(n);};
+        void              resize (size_type n) {set.resize(n);};
+        void              resize (size_type n, const value_type& val) {set.resize(n, val);};
+        void              shrink_to_fit() {set.shrink_to_fit();};
+        size_type         size() const noexcept {return set.size();};
+
         AnnotationSet& operator=(AnnotationSet other) {swap::annotationset(*this, other); return *this;}
       private:
         std::vector<Annotation> set;
@@ -139,15 +242,16 @@ namespace ELEP {
 }; /* namespace ELEP */
 #endif /* __cplusplus */
 
+int                 CDM_AnnotationContainsAttributeMatchingValue(const CDM_Annotation Ann, const char *AttributeName, const char *ValuePattern);
+int                 CDM_AnnotationContainsPosition(const CDM_Annotation Ann, const CDM_Position Position);
+int                 CDM_AnnotationMatchesRange(const CDM_Annotation Ann, const CDM_Position start, const CDM_Position end);
+
 CDM_Annotation      CDM_CreateAnnotation(const char *type, const CDM_SpanSet spans, const CDM_AttributeSet attributes);
 CDM_Annotation      CDM_CreateAnnotation(const char *type, const CDM_Position start, const CDM_Position end, const CDM_AttributeSet attributes);
 
 #if 0
-int                 CDM_AnnotationContainsAttributeMatchingValue(CDM_Annotation Ann, char *AttributeName, char *ValuePattern);
 int                 CDM_AnnotationContainsAttributeMatchingValues(CDM_Annotation Ann, char *AttributeName, Tcl_Obj *ValuePatternsObj = NULL);
-int                 CDM_AnnotationContainsPosition(const CDM_Annotation Ann, const long Position);
 int                 CDM_AnnotationContainsPositions(const CDM_Annotation Ann, const unsigned int items, const long *Positions);
-int                 CDM_AnnotationMatchesRange(const CDM_Annotation Ann, const long start, const long end);
 int                 CDM_CompareAnnotations(CDM_Annotation Ann1, CDM_Annotation Ann2);
 CDM_Annotation      CDM_DisplaceAnnotation(CDM_Annotation Ann, long offset, long displacement);
 CDM_ByteSequenceSet CDM_GetAnnotatedTextRanges(CDM_ByteSequence Text, CDM_Annotation Annotation);

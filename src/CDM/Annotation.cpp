@@ -28,6 +28,7 @@
 #include <iostream>
 #include <sstream>
 #include <climits>     /* For ULONG_MAX   */
+#include <regex>
 
 using namespace ELEP::CDM;
 
@@ -120,16 +121,72 @@ const std::string& ELEP::CDM::Annotation::type() const {
   return *_type;
 };
 
+void ELEP::CDM::Annotation::type(const char* type) {
+  _type = Cache::get_string(type);
+};
+
+void ELEP::CDM::Annotation::type(const std::string& type) {
+  _type = Cache::get_string(type);
+};
+
 const SpanSet& ELEP::CDM::Annotation::spans() const {
   return _spans;
+};
+
+void ELEP::CDM::Annotation::spans(const SpanSet& spans) {
+  _spans = spans;
+};
+
+void ELEP::CDM::Annotation::spans(SpanSet&& spans) {
+  _spans = spans;
 };
 
 const AttributeSet& ELEP::CDM::Annotation::attributes() const {
   return _attributes;
 };
 
+void ELEP::CDM::Annotation::attributes(const AttributeSet& Attributes) {
+  _attributes = Attributes;
+};
+
+void ELEP::CDM::Annotation::attributes(AttributeSet&& Attributes) {
+  _attributes = Attributes;
+};
+
 bool ELEP::CDM::Annotation::valid() const {
   return true;
+};
+
+bool ELEP::CDM::Annotation::containsAttributeMatchingValue(const char *name,
+           const char *pattern) const {
+  auto attr = find(name);
+  if (attr == _attributes.end()) return false;
+  if (!pattern) return true;
+  std::regex re(pattern);
+  return std::regex_match(attr->value(), re);
+};
+
+bool ELEP::CDM::Annotation::containsAttributeMatchingValue(
+           const std::string& name, const std::string& pattern) const {
+  auto attr = find(name);
+  if (attr == _attributes.end()) return false;
+  if (!pattern.size()) return true;
+  std::regex re(pattern);
+  return std::regex_match(attr->value(), re);
+};
+
+bool ELEP::CDM::Annotation::containsAttributeMatchingValue(const char *name,
+           const std::regex& pattern) const {
+  auto attr = find(name);
+  if (attr == _attributes.end()) return false;
+  return std::regex_match(attr->value(), pattern);
+};
+
+bool ELEP::CDM::Annotation::containsAttributeMatchingValue(
+           const std::string& name, const std::regex& pattern) const {
+  auto attr = find(name);
+  if (attr == _attributes.end()) return false;
+  return std::regex_match(attr->value(), pattern);
 };
 
 const std::string ELEP::CDM::Annotation::toString() const {
@@ -288,35 +345,6 @@ const std::string ELEP::CDM::AnnotationSet::toString() const {
   return ss.str();
 };
 
-void ELEP::CDM::AnnotationSet::push_back(const Annotation& val) {
-  set.push_back(val);
-};
-
-void ELEP::CDM::AnnotationSet::push_back(Annotation&& val) {
-  set.push_back(val);
-};
-
-ELEP::CDM::AnnotationSet::size_type ELEP::CDM::AnnotationSet::size() const {
-  return set.size();
-};
-
-bool ELEP::CDM::AnnotationSet::empty() const {
-  return set.empty();
-};
-
-ELEP::CDM::AnnotationSet::const_iterator ELEP::CDM::AnnotationSet::begin() const {
-  return set.begin();
-};
-
-ELEP::CDM::AnnotationSet::const_iterator ELEP::CDM::AnnotationSet::end() const {
-  return set.end();
-};
-
-void ELEP::CDM::AnnotationSet::clear() {
-  set.clear();
-};
-
-
 CDM_Annotation CDM_CreateAnnotation(const char *type, const CDM_SpanSet spans,
                                     const CDM_AttributeSet attributes) {
   ELEP::CDM::Annotation *p = nullptr;
@@ -346,81 +374,26 @@ CDM_Annotation CDM_CreateAnnotation(const char *type,
   return p;
 };
 
-#if 0
-const char *CDM_GetName(const CDM_Annotation Annotation) {
-  const ELEP::CDM::Annotation *p =
-        reinterpret_cast<const ELEP::CDM::Annotation*>(Annotation);
-  if (p) return p->name().c_str();
-  return NULL;
+int CDM_AnnotationContainsAttributeMatchingValue(const CDM_Annotation Ann,
+        const char *AttributeName, const char *ValuePattern) {
+  const ELEP::CDM::Annotation *a =
+        reinterpret_cast<const ELEP::CDM::Annotation*>(Ann);
+  if (a) return a->containsAttributeMatchingValue(AttributeName, ValuePattern);
+  return false;
 };
 
-CDM_AnnotationValue CDM_GetValue(const CDM_Annotation Annotation) {
-  const ELEP::CDM::Annotation *p =
-        reinterpret_cast<const ELEP::CDM::Annotation*>(Annotation);
-  if (p) return new ELEP::CDM::AnnotationValue(p->value().c_str(), p->type());
-  return NULL;
+int CDM_AnnotationContainsPosition(const CDM_Annotation Ann,
+        const CDM_Position Position) {
+  const ELEP::CDM::Annotation *a =
+        reinterpret_cast<const ELEP::CDM::Annotation*>(Ann);
+  if (a) return a->contains(Position);
+  return false;
 };
 
-CDM_AnnotationType CDM_GetValueType(const CDM_Annotation Annotation) {
-  const ELEP::CDM::Annotation *p =
-        reinterpret_cast<const ELEP::CDM::Annotation*>(Annotation);
-  if (p) return (CDM_AnnotationType) p->type();
-  return CDM_NONE;
+int CDM_AnnotationMatchesRange(const CDM_Annotation Ann,
+         const CDM_Position start, const CDM_Position end) {
+  const ELEP::CDM::Annotation *a =
+        reinterpret_cast<const ELEP::CDM::Annotation*>(Ann);
+  if (a) return a->matchesRange(start, end);
+  return false;
 };
-
-const char *CDM_GetValueValue(const CDM_Annotation Annotation) {
-  const ELEP::CDM::Annotation *p =
-        reinterpret_cast<const ELEP::CDM::Annotation*>(Annotation);
-  if (p) return p->value().c_str();
-  return NULL;
-};
-const char *CDM_GetValueString(const CDM_Annotation Annotation) {
-  return CDM_GetValueValue(Annotation);
-};
-
-CDM_AnnotationSet CDM_CreateAnnotationSet() {
-  return new ELEP::CDM::AnnotationSet();
-};
-
-CDM_AnnotationSet CDM_CreateAnnotationSet(const char *name, const char *value,
-                             const CDM_AnnotationType type) {
-  AnnotationType t;
-  switch (type) {
-    case CDM_NONE:              t = AnnotationType::NONE;              break;
-    case CDM_STRING:            t = AnnotationType::STRING;            break;
-    case CDM_STRING_SET:        t = AnnotationType::STRING_SET;        break;
-    case CDM_SPAN:              t = AnnotationType::SPAN;              break;
-    case CDM_SPAN_SET:          t = AnnotationType::SPAN_SET;          break;
-    case CDM_ANNOTATION_ID:     t = AnnotationType::ANNOTATION_ID;     break;
-    case CDM_ANNOTATION_ID_SET: t = AnnotationType::ANNOTATION_ID_SET; break;
-    case CDM_IMAGE:             t = AnnotationType::IMAGE;             break;
-    case CDM_BASE64_IMAGE:      t = AnnotationType::BASE64_IMAGE;      break;
-    default: {return NULL;}
-  }
-  return new ELEP::CDM::AnnotationSet(name, value, t);
-};
-
-CDM_Status CDM_AddAnnotation(CDM_AnnotationSet set,
-                            const CDM_Annotation Annotation) {
-  ELEP::CDM::AnnotationSet *p =
-        reinterpret_cast<ELEP::CDM::AnnotationSet*>(set);
-  if (!p) return CDM_ERROR;
-  ELEP::CDM::Annotation *a =
-        reinterpret_cast<ELEP::CDM::Annotation*>(Annotation);
-  if (!a) return CDM_ERROR;
-  p->push_back(*a);
-  return CDM_OK;
-};
-
-CDM_Status CDM_AddAnnotation(CDM_AnnotationSet set, const char *name,
-                            const CDM_AnnotationValue value) {
-  ELEP::CDM::AnnotationSet *p =
-        reinterpret_cast<ELEP::CDM::AnnotationSet*>(set);
-  if (!p) return CDM_ERROR;
-  ELEP::CDM::AnnotationValue *v =
-        reinterpret_cast<ELEP::CDM::AnnotationValue*>(value);
-  if (!v) return CDM_ERROR;
-  p->push_back(Annotation(name, *v));
-  return CDM_OK;
-};
-#endif

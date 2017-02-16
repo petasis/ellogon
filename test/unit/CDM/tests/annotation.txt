@@ -7,6 +7,9 @@ puts [time {set a [tip_CreateAnnotation token 0 10 {}]} 10000]; set a
 puts [time {set a [tip_CreateAnnotation token {} {}]} 10000]; set a
 {} token {} {}
 
+puts [time {set a [tip_CreateAnnotation token {} {{type CDM_STRING test}}]} 10000]; set a
+{} token {} {{type {CDM_STRING {test}}}}
+
 set a [CDM::Annotation -args token]; $a type
 token
 

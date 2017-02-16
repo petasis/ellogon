@@ -165,6 +165,10 @@ Status ELEP::CDM::Span::offsets(Position &s, Position &e) const {
   return Status::OK;
 };
 
+bool ELEP::CDM::Span::matchesRange(const Position s, const Position e) const {
+  return s == _start && e == _end;
+};
+
 ELEP::CDM::SpanSet::SpanSet() : set(), _min {ULONG_MAX}, _max {0} {
 };
 
@@ -212,6 +216,12 @@ const Position& ELEP::CDM::SpanSet::min() const {
 
 const Position& ELEP::CDM::SpanSet::max() const {
   return _max;
+};
+
+bool ELEP::CDM::SpanSet::matchesRange(const Position s, const Position e) const {
+  return std::any_of(set.cbegin(), set.cend(), [=](const Span& span) {
+     return span.matchesRange(s, e);
+  });
 };
 
 bool ELEP::CDM::SpanSet::valid() const {
