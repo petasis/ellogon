@@ -1,0 +1,16 @@
+CMAKE_MINIMUM_REQUIRED ( VERSION 2.6 )
+
+if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+  MESSAGE( "Detecting architecture: 64 bits compiler detected" )
+  SET( EX_PLATFORM 64 )
+  SET( EX_PLATFORM_NAME "x86_64" )
+else( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+  MESSAGE( "Detecting architecture: 32 bits compiler detected" )
+  SET( EX_PLATFORM 32 )
+  SET( EX_PLATFORM_NAME "ix86" )
+endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+
+SET( EX_BINARY_DIRECTORY
+     ${CMAKE_SYSTEM_NAME}/${CMAKE_BUILD_TYPE}/${EX_PLATFORM_NAME} )
+MESSAGE( "Binary directory: " ${EX_BINARY_DIRECTORY} )
+ADD_SUBDIRECTORY ( ../../src ${EX_BINARY_DIRECTORY} )

@@ -1,0 +1,45 @@
+cd [file dirname [info script]]
+source -encoding utf-8 common.tcl
+## Load the test suite...
+package require tcltest
+::tcltest::configure {*}$argv
+
+namespace eval ::attribute {
+  namespace eval test {
+    namespace import ::tcltest::*
+
+    variable SETUP {
+      #common setup code
+    }
+
+    variable CLEANUP {
+      #common cleanup code
+    }
+
+    proc process {cmd} {
+      eval $cmd
+    };# process
+
+    set fd [open tests/attribute.txt]
+    fconfigure $fd -encoding utf-8
+    set data [split [string trim [read $fd]] \n]
+    close $fd
+
+    set index 0
+    foreach {cmd result _} $data {
+      # puts $cmd; flush stdout
+      test attribute-[incr index] {} \
+        -setup   $SETUP \
+        -cleanup $CLEANUP \
+        -result  $result \
+        -body    [list process $cmd]
+    }
+
+  };# namespace test
+};# namespace attribute
+
+namespace delete ::attribute
+::tcltest::cleanupTests
+return
+
+# vim: syntax=tcl

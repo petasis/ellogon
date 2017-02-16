@@ -1,0 +1,108 @@
+time {set set [tip_AddAttribute {} [tip_CreateAttribute type [tip_CreateAttributeValue CDM_STRING test]]]} 10000; set set
+{type {CDM_STRING {test}}}
+
+set a [CDM::Attribute -args type test]; set r [$a toString]; $a -delete; set r
+type {CDM_STRING {test}}
+
+set a [CDM::AttributeSet -args type test]; set r [$a toString]; $a -delete; set r
+{type {CDM_STRING {test}}}
+
+tip_CreateAttributeValue CDM_STRING test
+CDM_STRING {test}
+
+tip_CreateAttribute type [tip_CreateAttributeValue CDM_STRING test]
+type {CDM_STRING {test}}
+
+tip_GetName [tip_CreateAttribute type [tip_CreateAttributeValue CDM_STRING test]]
+type
+
+tip_GetValue [tip_CreateAttribute type [tip_CreateAttributeValue CDM_STRING test]]
+CDM_STRING {test}
+
+tip_GetValueType [tip_CreateAttribute type [tip_CreateAttributeValue CDM_STRING test]]
+CDM_STRING
+
+tip_GetValueValue [tip_CreateAttribute type [tip_CreateAttributeValue CDM_STRING test]]
+test
+
+catch {tip_CreateAttribute type test} e; string trim [set e]
+cannot convert input to "ELEP::CDM::AttributeValue":
+
+tip_CreateAttributeSet
+
+
+llength [tip_CreateAttributeSet]
+0
+
+catch {tip_CreateAttributeSet type test} e; string trim [set e]
+cannot convert input to "ELEP::CDM::AttributeValue":
+
+tip_CreateAttributeValue CDM_STRING 8test12\]\}
+CDM_STRING {8test12]\}}
+
+llength [tip_CreateAttributeValue CDM_STRING 8test12\]\}]
+2
+
+tip_CreateAttributeValue CDM_STRING {}
+CDM_STRING {}
+
+tip_CreateAttribute type {}
+type {CDM_NONE {}}
+
+tip_CreateAttribute {} {}
+{} {CDM_NONE {}}
+
+tip_GetName {}
+
+
+catch {tip_GetValue {}} e; string trim $e
+invalid argument: call returned NULL
+
+time {set t [tip_GetName {type CDM_STRING test}]} 10000; set t
+type
+
+tip_GetName {type {CDM_STRING test}}
+type
+
+catch {tip_GetValue {type CDM_STRING22 test}}
+1
+
+tip_GetValue {type CDM_STRING test}
+CDM_STRING {test}
+
+tip_GetValueType {type CDM_STRING test}
+CDM_STRING
+
+tip_GetValueValue {type CDM_STRING test}
+test
+
+tip_GetValueString {type CDM_STRING test}
+test
+
+tip_GetValueValue {}
+
+
+catch {tip_GetValueValue invalid} e; string trim $e
+cannot convert input to "ELEP::CDM::Attribute":
+
+tip_CreateAttributeSet
+
+
+tip_CreateAttributeSet {}
+
+
+tip_CreateAttributeSet type {CDM_STRING test}
+{type {CDM_STRING {test}}}
+
+catch {tip_CreateAttributeSet type {}} e; string trim $e
+invalid argument: call returned NULL
+
+tip_AddAttribute {} {type CDM_STRING test}
+{type {CDM_STRING {test}}}
+
+tip_AddAttribute {{type {CDM_STRING {test}}}} {type CDM_STRING test2}
+{type {CDM_STRING {test2}}}
+
+tip_AddAttribute {} {type {CDM_STRING test}}
+{type {CDM_STRING {test}}}
+

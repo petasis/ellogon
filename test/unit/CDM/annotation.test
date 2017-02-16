@@ -1,0 +1,45 @@
+cd [file dirname [info script]]
+source -encoding utf-8 common.tcl
+## Load the test suite...
+package require tcltest
+::tcltest::configure {*}$argv
+
+namespace eval ::annotation {
+  namespace eval test {
+    namespace import ::tcltest::*
+
+    variable SETUP {
+      #common setup code
+    }
+
+    variable CLEANUP {
+      #common cleanup code
+    }
+
+    proc process {cmd} {
+      eval $cmd
+    };# process
+
+    set fd [open tests/annotation.txt]
+    fconfigure $fd -encoding utf-8
+    set data [split [string trim [read $fd]] \n]
+    close $fd
+
+    set index 0
+    foreach {cmd result _} $data {
+        puts $cmd; flush stdout
+      test annotation-[incr index] {} \
+        -setup   $SETUP \
+        -cleanup $CLEANUP \
+        -result  $result \
+        -body    [list process $cmd]
+    }
+
+  };# namespace test
+};# namespace annotation
+
+namespace delete ::annotation
+::tcltest::cleanupTests
+return
+
+# vim: syntax=tcl

@@ -1,0 +1,69 @@
+time {set spans [tip_AddSpan {} 10 20]} 10000; set spans
+{10 20}
+
+set s [CDM::Span -args 1 2]; set r [$s start]; $s -delete; set r
+1
+
+set s [CDM::Span -args 1 2]; set r [$s end]; $s -delete; set r
+2
+
+set s [CDM::Span]; set r [$s end]; $s -delete; set r
+18446744073709551615
+
+puts [time {set s [CDM::Span -args 0 0]; $s -delete} 10000]; set r {}
+
+
+set s [tip_CreateSpan 0 10]; tip_GetStart $s
+0
+
+set s [tip_CreateSpan 0 10]; tip_GetEnd $s
+10
+
+set s [tip_CreateSpan 0 10]; llength $s
+2
+
+set s [tip_CreateSpan 0 10]; tip_GetSpanOffsets $s start end; list $start $end
+0 10
+
+set s [tip_CreateSpan 0 10]; lrange [split [::tcl::unsupported::representation $s]] 0 3
+value is a CDM_Span
+
+set s [CDM::SpanSet -args 10 20]; $s toString
+{10 20}
+
+set s [CDM::SpanSet -args 10 20]; $s firstSpanOffsets start end; list $start $end
+10 20
+
+set s [CDM::SpanSet -args 10 20]; $s size
+1
+
+set s [tip_CreateSpanSet 0 10]; lrange [split [::tcl::unsupported::representation $s]] 0 3
+value is a CDM_SpanSet
+
+set s [tip_CreateSpanSet 0 10]; llength $s
+1
+
+set s [tip_CreateSpanSet 0 10]; lindex $s 0
+0 10
+
+set s [tip_CreateSpanSet 0 10]; tip_GetFirstSpanOffsets $s start end; list $start $end
+0 10
+
+tip_GetStart [list 0 10]
+0
+
+tip_GetEnd [list 0 10]
+10
+
+tip_GetFirstSpanOffsets [list [list 0 10]] start end; list $start $end
+0 10
+
+set s [tip_AddSpan {} 10 20]; tip_GetFirstSpanOffsets $s start end; list $start $end
+10 20
+
+catch {tip_CreateSpan 10 0} e; set e
+start exceeds end
+
+set s [tip_AddSpan {{40 50}} {0 10}]; set s [tip_AddSpan $s {100 200}]; list [tip_SpanSetOffsetMin $s] [tip_SpanSetOffsetMax $s]
+0 200
+

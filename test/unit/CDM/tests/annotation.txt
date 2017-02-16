@@ -1,0 +1,18 @@
+puts [time {set a [tip_CreateAnnotation token {{0 10}} {}]} 10000]; set a
+{} token {{0 10}} {}
+
+puts [time {set a [tip_CreateAnnotation token 0 10 {}]} 10000]; set a
+{} token {{0 10}} {}
+
+puts [time {set a [tip_CreateAnnotation token {} {}]} 10000]; set a
+{} token {} {}
+
+set a [CDM::Annotation -args token]; $a type
+token
+
+set a [CDM::Annotation -args token]; [$a spans] toString
+
+
+set a [CDM::Annotation -args token [CDM::SpanSet -args 0 10]]; [$a spans] toString
+{0 10}
+
