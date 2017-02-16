@@ -70,16 +70,25 @@ ADD_CUSTOM_COMMAND ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/CDM_wrap_tcl.cxx"
       Attribute.h Attribute.cpp
       Annotation.h Annotation.cpp
       swig/CDM_Tcl.i swig/CDM_Tcl.cpp
-      COMMAND ${SWIG_EXECUTABLE} -Wall -c++ -tcl8 -O -module CDM -prefix CDM
+    COMMAND ${SWIG_EXECUTABLE} -Wall -c++ -tcl8 -O -module CDM -prefix CDM
       -namespace -pkgversion 3.0 -includeall -ignoremissing
       -o ${CMAKE_CURRENT_BINARY_DIR}/CDM_wrap_tcl.cxx
       -outdir ${CMAKE_CURRENT_BINARY_DIR} swig/CDM_Tcl.i
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 SET_SOURCE_FILES_PROPERTIES ( ${CMAKE_CURRENT_BINARY_DIR}/CDM_wrap_tcl.cxx
                               PROPERTIES GENERATED true )
-ADD_LIBRARY ( CDM3TCL SHARED
+ADD_LIBRARY ( tclCDM3 SHARED
    "${CMAKE_CURRENT_BINARY_DIR}/CDM_wrap_tcl.cxx" ${CDM_LIBRARY_SOURCES}
 )
-TARGET_COMPILE_DEFINITIONS(CDM3TCL PUBLIC
+TARGET_COMPILE_DEFINITIONS(tclCDM3 PUBLIC
    -DSWIG_TCL_STUBS_VERSION=TCL_VERSION -DSWIGTCL )
-TARGET_LINK_LIBRARIES(CDM3TCL ${TCL_STUB_LIBRARY})
+TARGET_LINK_LIBRARIES(tclCDM3 ${TCL_STUB_LIBRARY})
+
+## ===========================================================================
+##  Tests
+## ===========================================================================
+
+## ===========================================================================
+##  Install
+## ===========================================================================
+EX_INSTALL( Ellogon-CDM CDM3 CDM3S tclCDM3 )
