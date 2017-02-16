@@ -1,5 +1,5 @@
-# ellogon
-The Ellogon language engineering platform
+# The Ellogon language engineering platform
+Version 3.0, the next release of Ellogon!
 
 This repository contains version 3.0 of the Ellogon language engineering platform, which is under development. Version 2.0 of Ellogon can be found at:
 
