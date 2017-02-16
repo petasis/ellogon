@@ -20,7 +20,7 @@
 }
 
 %{
-#include "CDM_Tcl.cpp"
+#include "swig/CDM_Tcl.cpp"
 %}
 
 %init %{
