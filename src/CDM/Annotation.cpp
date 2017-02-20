@@ -159,34 +159,22 @@ bool ELEP::CDM::Annotation::valid() const {
 
 bool ELEP::CDM::Annotation::containsAttributeMatchingValue(const char *name,
            const char *pattern) const {
-  auto attr = find(name);
-  if (attr == _attributes.end()) return false;
-  if (!pattern) return true;
-  std::regex re(pattern);
-  return std::regex_match(attr->value(), re);
+  return _attributes.containsAttributeMatchingValue(name, pattern);
 };
 
 bool ELEP::CDM::Annotation::containsAttributeMatchingValue(
            const std::string& name, const std::string& pattern) const {
-  auto attr = find(name);
-  if (attr == _attributes.end()) return false;
-  if (!pattern.size()) return true;
-  std::regex re(pattern);
-  return std::regex_match(attr->value(), re);
+  return _attributes.containsAttributeMatchingValue(name, pattern);
 };
 
 bool ELEP::CDM::Annotation::containsAttributeMatchingValue(const char *name,
            const std::regex& pattern) const {
-  auto attr = find(name);
-  if (attr == _attributes.end()) return false;
-  return std::regex_match(attr->value(), pattern);
+  return _attributes.containsAttributeMatchingValue(name, pattern);
 };
 
 bool ELEP::CDM::Annotation::containsAttributeMatchingValue(
            const std::string& name, const std::regex& pattern) const {
-  auto attr = find(name);
-  if (attr == _attributes.end()) return false;
-  return std::regex_match(attr->value(), pattern);
+  return _attributes.containsAttributeMatchingValue(name, pattern);
 };
 
 const std::string ELEP::CDM::Annotation::toString() const {
@@ -199,6 +187,8 @@ const std::string ELEP::CDM::Annotation::toString() const {
 };
 
 bool ELEP::CDM::Annotation::operator< (const Annotation& Annotation) const {
+  // Examine spans: the one that preceeds, wins...
+  if (_spans.operator<(Annotation._spans)) return true;
   return false;
 };
 
@@ -396,4 +386,54 @@ int CDM_AnnotationMatchesRange(const CDM_Annotation Ann,
         reinterpret_cast<const ELEP::CDM::Annotation*>(Ann);
   if (a) return a->matchesRange(start, end);
   return false;
+};
+
+int CDM_CompareAnnotations(const CDM_Annotation Ann1,
+                           const CDM_Annotation Ann2) {
+  const ELEP::CDM::Annotation *a1 =
+        reinterpret_cast<const ELEP::CDM::Annotation*>(Ann1);
+  const ELEP::CDM::Annotation *a2 =
+        reinterpret_cast<const ELEP::CDM::Annotation*>(Ann2);
+  if (!a1) return  1;
+  if (!a2) return -1;
+  if (*a1 < *a2) return -1;
+  if (*a2 < *a1) return  1;
+  // The spans are equal...
+  return 0;
+};
+
+const CDM_SpanSet CDM_GetSpans(const CDM_Annotation Ann) {
+  const ELEP::CDM::Annotation *a =
+        reinterpret_cast<const ELEP::CDM::Annotation*>(Ann);
+  if (a) return (const CDM_SpanSet) &(a->spans());
+  return nullptr;
+};
+
+const CDM_Attribute CDM_GetAttribute(const CDM_Annotation Annotation,
+                                     const char *Name) {
+  const ELEP::CDM::Annotation *a =
+        reinterpret_cast<const ELEP::CDM::Annotation*>(Annotation);
+  if (a) {
+    auto it = a->find(Name);
+    if (it != a->attributes().end()) return (const CDM_Attribute) &(*it);
+  }
+  return nullptr;
+};
+
+const CDM_AttributeSet CDM_GetAttributes(const CDM_Annotation Annotation) {
+  const ELEP::CDM::Annotation *a =
+        reinterpret_cast<const ELEP::CDM::Annotation*>(Annotation);
+  if (a) return (const CDM_AttributeSet) &(a->attributes());
+  return nullptr;
+};
+
+CDM_Status CDM_PutAttribute(CDM_Annotation Ann, const CDM_Attribute Attr) {
+  ELEP::CDM::Annotation *a =
+        reinterpret_cast<ELEP::CDM::Annotation*>(Ann);
+  if (!a) return CDM_ERROR;
+  const ELEP::CDM::Attribute *at =
+        reinterpret_cast<const ELEP::CDM::Attribute*>(Attr);
+  if (!at) return CDM_ERROR;
+  a->putAttribute(*at);
+  return CDM_OK;
 };

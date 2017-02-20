@@ -29,6 +29,7 @@
 #include <sstream>
 #include <stdexcept>   /* For std::invalid_argument */
 #include <algorithm>   /* For std::find             */
+#include <regex>       /* For regular expressions   */
 
 using namespace ELEP::CDM;
 
@@ -71,6 +72,18 @@ const AttributeType& ELEP::CDM::AttributeValue::type() const {
 const std::string& ELEP::CDM::AttributeValue::value() const {
   if (!_v_string) throw std::invalid_argument("undefined value");
   return *_v_string;
+};
+
+bool ELEP::CDM::AttributeValue::valueMatches(const char *pattern) const {
+  return std::regex_match(value(), std::regex(pattern));
+};
+
+bool ELEP::CDM::AttributeValue::valueMatches(const std::string& pattern) const {
+  return std::regex_match(value(), std::regex(pattern));
+};
+
+bool ELEP::CDM::AttributeValue::valueMatches(const std::regex& pattern) const {
+  return std::regex_match(value(), pattern);
 };
 
 bool ELEP::CDM::AttributeValue::valid() const {
@@ -219,6 +232,18 @@ const std::string& ELEP::CDM::Attribute::value() const {
   return *_v_string;
 };
 
+bool ELEP::CDM::Attribute::valueMatches(const char *pattern) const {
+  return std::regex_match(value(), std::regex(pattern));
+};
+
+bool ELEP::CDM::Attribute::valueMatches(const std::string& pattern) const {
+  return std::regex_match(value(), std::regex(pattern));
+};
+
+bool ELEP::CDM::Attribute::valueMatches(const std::regex& pattern) const {
+  return std::regex_match(value(), pattern);
+};
+
 bool ELEP::CDM::Attribute::valid() const {
   return _name && _name->size() && _type != AttributeType::NONE && _v_string;
 };
@@ -351,6 +376,36 @@ ELEP::CDM::AttributeSet::AttributeSet(Tcl_Interp *interp, Tcl_Obj *obj) {
   }
 };
 #endif /* TCL_VERSION */
+
+bool ELEP::CDM::AttributeSet::containsAttributeMatchingValue(const char *name,
+           const char *pattern) const {
+  auto attr = find(name);
+  if (attr == set.end()) return false;
+  if (!pattern) return true;
+  return std::regex_match(attr->value(), std::regex(pattern));
+};
+
+bool ELEP::CDM::AttributeSet::containsAttributeMatchingValue(
+           const std::string& name, const std::string& pattern) const {
+  auto attr = find(name);
+  if (attr == set.end()) return false;
+  if (!pattern.size()) return true;
+  return std::regex_match(attr->value(), std::regex(pattern));
+};
+
+bool ELEP::CDM::AttributeSet::containsAttributeMatchingValue(const char *name,
+           const std::regex& pattern) const {
+  auto attr = find(name);
+  if (attr == set.end()) return false;
+  return std::regex_match(attr->value(), pattern);
+};
+
+bool ELEP::CDM::AttributeSet::containsAttributeMatchingValue(
+           const std::string& name, const std::regex& pattern) const {
+  auto attr = find(name);
+  if (attr == set.end()) return false;
+  return std::regex_match(attr->value(), pattern);
+};
 
 bool ELEP::CDM::AttributeSet::valid() const {
   if (set.empty()) return false;

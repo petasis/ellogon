@@ -28,9 +28,10 @@
 #define ELLOGON_CDM_Attribute
 
 #ifndef SWIG
-#include <string>      /* For std::string    */
-#include <vector>      /* For std::vector    */
-#include <memory>      /* For smart pointers */
+#include <string>      /* For std::string         */
+#include <vector>      /* For std::vector         */
+#include <memory>      /* For smart pointers      */
+#include <regex>       /* For regular expressions */
 #include <initializer_list>
 #endif /* SWIG */
 
@@ -68,8 +69,14 @@ namespace ELEP {
 #endif /* TCL_VERSION */
         const AttributeType&   type()  const;
         const std::string&     value() const;
+        bool                   valueMatches(const char *pattern) const;
+#ifndef SWIG
+        bool                   valueMatches(const std::string& pattern) const;
+        bool                   valueMatches(const std::regex& pattern) const;
+#endif /* SWIG */
         bool                   valid() const;
         const std::string      toString() const;
+
         bool operator< (const AttributeValue& AttributeValue) const;
         AttributeValue& operator=(AttributeValue other) {swap::attributevalue(*this, other); return *this;}
       private:
@@ -101,6 +108,11 @@ namespace ELEP {
         const std::string&     name()  const;
         const AttributeType&   type()  const;
         const std::string&     value() const;
+        bool                   valueMatches(const char *pattern) const;
+#ifndef SWIG
+        bool                   valueMatches(const std::string& pattern) const;
+        bool                   valueMatches(const std::regex& pattern) const;
+#endif /* SWIG */
         bool                   valid() const;
         const std::string      toString() const;
         bool operator< (const Attribute& Attribute) const;
@@ -157,7 +169,13 @@ namespace ELEP {
         const std::string toString() const;
 #ifndef SWIG
         void              ensure_unique();
-#endif
+#endif /* SWIG */
+        bool              containsAttributeMatchingValue(const char *name, const char *pattern) const;
+#ifndef SWIG
+        bool              containsAttributeMatchingValue(const std::string& name, const std::string& pattern) const;
+        bool              containsAttributeMatchingValue(const char *name, const std::regex& pattern) const;
+        bool              containsAttributeMatchingValue(const std::string& name, const std::regex& pattern) const;
+#endif /* SWIG */
 
         /* The following methods simulate std::vector. */
         template <class InputIterator>

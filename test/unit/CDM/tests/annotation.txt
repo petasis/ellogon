@@ -19,3 +19,26 @@ set a [CDM::Annotation -args token]; [$a spans] toString
 set a [CDM::Annotation -args token [CDM::SpanSet -args 0 10]]; [$a spans] toString
 {0 10}
 
+tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {StringValue}}} {Attr2 CDM_STRING_SET {0 1 2 3 end}}]
+{} token {{0 12}} {{Attr1 {CDM_STRING {StringValue}}} {Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}
+
+tip_CreateAnnotation token [list {0 12}] {}
+{} token {{0 12}} {}
+
+set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {StringValue}}} {Attr2 CDM_STRING_SET {0 1 2 3 end}}]]; tip_GetSpans $a
+{0 12}
+
+set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {StringValue}}} {Attr2 CDM_STRING_SET {0 1 2 3 end}}]]; tip_GetAttribute $a Attr1
+Attr1 {CDM_STRING {StringValue}}
+
+set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {StringValue}}} {Attr2 CDM_STRING_SET {0 1 2 3 end}}]]; tip_GetAttributes $a
+{Attr1 {CDM_STRING {StringValue}}} {Attr2 {CDM_STRING_SET {0 1 2 3 end}}}
+
+set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {StringValue}}} {Attr2 CDM_STRING_SET {0 1 2 3 end}}]]; tip_PutAttribute $a {Attr1 {CDM_STRING {StringValue}}}
+{} token {{0 12}} {{Attr1 {CDM_STRING {StringValue}}} {Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}
+
+set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {StringValue}}} {Attr2 CDM_STRING_SET {0 1 2 3 end}}]]; tip_PutAttribute $a {Attr3 {CDM_STRING {StringValue}}}
+{} token {{0 12}} {{Attr1 {CDM_STRING {StringValue}}} {Attr2 {CDM_STRING_SET {0 1 2 3 end}}} {Attr3 {CDM_STRING {StringValue}}}}
+
+set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {StringValue}}} {Attr2 CDM_STRING_SET {0 1 2 3 end}}]]; tip_PutAttribute $a {Attr1 {CDM_STRING {New StringValue}}}
+{} token {{0 12}} {{Attr1 {CDM_STRING {New StringValue}}} {Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}

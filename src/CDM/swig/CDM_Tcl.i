@@ -45,6 +45,23 @@
          &CDM_Span_ObjType>(interp, $input);
   } catch (std::exception &e) {SWIG_fail;}%}
 
+%typemap(out) const CDM_Span
+%{// Typemap(out) const CDM_Span
+  if (!$1) {
+    // We got a NULL pointer. Generate an error message:
+    Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::Span, &CDM_Span_ObjType>
+         (reinterpret_cast<ELEP::CDM::Span*>($1)));
+    SWIG_fail;
+  }
+  // This is a const reference, to a member of another object.
+  // Which may be deleted (as it is bound to a caller variable).
+  // So, return a copy.
+  Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::Span, &CDM_Span_ObjType>
+         (new ELEP::CDM::Span(*reinterpret_cast<ELEP::CDM::Span*>($1))));
+  $1 = NULL;%}
+
 %typemap(out) CDM_Span
 %{// Typemap(out) CDM_Span
   Tcl_SetObjResult(interp,
@@ -67,6 +84,23 @@
          &CDM_SpanSet_ObjType>(interp, $input) == TCL_ERROR) SWIG_fail;
   $1 = $input->internalRep.twoPtrValue.ptr1;%}
 */
+
+%typemap(out) const CDM_SpanSet
+%{// Typemap(out) const CDM_SpanSet
+  if (!$1) {
+    // We got a NULL pointer. Generate an error message:
+    Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::SpanSet, &CDM_SpanSet_ObjType>
+         (reinterpret_cast<ELEP::CDM::SpanSet*>($1)));
+    SWIG_fail;
+  }
+  // This is a const reference, to a member of another object.
+  // Which may be deleted (as it is bound to a caller variable).
+  // So, return a copy.
+  Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::SpanSet, &CDM_SpanSet_ObjType>
+         (new ELEP::CDM::SpanSet(*reinterpret_cast<ELEP::CDM::SpanSet*>($1))));
+  $1 = NULL;%}
 
 %typemap(argout) const CDM_SpanSet
 %{// Typemap(argout) const CDM_SpanSet%}
@@ -118,6 +152,23 @@
          &CDM_AttributeValue_ObjType>(interp, $input);
   } catch (std::exception &e) {SWIG_fail;}%}
 
+%typemap(out) const CDM_AttributeValue
+%{// Typemap(out) const CDM_AttributeValue
+  if (!$1) {
+    // We got a NULL pointer. Generate an error message:
+    Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::AttributeValue, &CDM_AttributeValue_ObjType>
+         (reinterpret_cast<ELEP::CDM::AttributeValue*>($1)));
+    SWIG_fail;
+  }
+  // This is a const reference, to a member of another object.
+  // Which may be deleted (as it is bound to a caller variable).
+  // So, return a copy.
+  Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::AttributeValue, &CDM_AttributeValue_ObjType>
+         (new ELEP::CDM::AttributeValue(*reinterpret_cast<ELEP::CDM::AttributeValue*>($1))));
+  $1 = NULL;%}
+
 %typemap(out) CDM_AttributeValue
 %{// Typemap(out) CDM_AttributeValue
   Tcl_SetObjResult(interp,
@@ -135,6 +186,23 @@
          &CDM_Attribute_ObjType>(interp, $input);
   } catch (std::exception &e) {SWIG_fail;}%}
 
+%typemap(out) const CDM_Attribute
+%{// Typemap(out) const CDM_Attribute
+  if (!$1) {
+    // We got a NULL pointer. Generate an error message:
+    Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::Attribute, &CDM_Attribute_ObjType>
+         (reinterpret_cast<ELEP::CDM::Attribute*>($1)));
+    SWIG_fail;
+  }
+  // This is a const reference, to a member of another object.
+  // Which may be deleted (as it is bound to a caller variable).
+  // So, return a copy.
+  Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::Attribute, &CDM_Attribute_ObjType>
+         (new ELEP::CDM::Attribute(*reinterpret_cast<ELEP::CDM::Attribute*>($1))));
+  $1 = NULL;%}
+
 %typemap(out) CDM_Attribute
 %{// Typemap(out) CDM_Attribute
   Tcl_SetObjResult(interp,
@@ -151,6 +219,23 @@
     $1 = CDM_EnsureConstObjectOrNULL<ELEP::CDM::AttributeSet,
          &CDM_AttributeSet_ObjType>(interp, $input);
   } catch (std::exception &e) {SWIG_fail;}%}
+
+%typemap(out) const CDM_AttributeSet
+%{// Typemap(out) const CDM_AttributeSet
+  if (!$1) {
+    // We got a NULL pointer. Generate an error message:
+    Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::AttributeSet, &CDM_AttributeSet_ObjType>
+         (reinterpret_cast<ELEP::CDM::AttributeSet*>($1)));
+    SWIG_fail;
+  }
+  // This is a const reference, to a member of another object.
+  // Which may be deleted (as it is bound to a caller variable).
+  // So, return a copy.
+  Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::AttributeSet, &CDM_AttributeSet_ObjType>
+         (new ELEP::CDM::AttributeSet(*reinterpret_cast<ELEP::CDM::AttributeSet*>($1))));
+  $1 = NULL;%}
 
 %typemap(argout) const CDM_AttributeSet
 %{// Typemap(argout) const CDM_AttributeSet%}
@@ -193,7 +278,7 @@
   if (!$1) SWIG_fail; $1 = NULL;%}
 
 /*
- * CDM_Annotation
+ * const CDM_Annotation
  */
 %typemap(in) const CDM_Annotation
 %{// Typemap(in) const CDM_Annotation
@@ -202,12 +287,62 @@
          &CDM_Annotation_ObjType>(interp, $input);
   } catch (std::exception &e) {SWIG_fail;}%}
 
+%typemap(out) const CDM_Annotation
+%{// Typemap(out) const CDM_Annotation
+  if (!$1) {
+    // We got a NULL pointer. Generate an error message:
+    Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::Annotation, &CDM_Annotation_ObjType>
+         (reinterpret_cast<ELEP::CDM::Annotation*>($1)));
+    SWIG_fail;
+  }
+  // This is a const reference, to a member of another object.
+  // Which may be deleted (as it is bound to a caller variable).
+  // So, return a copy.
+  Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::Annotation, &CDM_Annotation_ObjType>
+         (new ELEP::CDM::Annotation(*reinterpret_cast<ELEP::CDM::Annotation*>($1))));
+  $1 = NULL;%}
+
+%typemap(argout) const CDM_Annotation
+%{// Typemap(argout) const CDM_Annotation%}
+
+%typemap(freearg) const CDM_Annotation
+%{// Typemap(freearg) const CDM_Annotation%}
+
+/*
+ * CDM_Annotation
+ */
+%typemap(in) CDM_Annotation (int status)
+%{// Typemap(in) CDM_Annotation: input=$input, symname=$symname $argnum
+  try {
+    status = CDM_EnsureObject<ELEP::CDM::Annotation,
+                &CDM_Annotation_ObjType>(interp, $input);
+  } catch (std::exception &e) {SWIG_fail;}
+  if (status == TCL_ERROR) SWIG_fail;
+  // We need to modify the object, so create a copy...
+  $1 = new ELEP::CDM::Annotation(*reinterpret_cast<ELEP::CDM::Annotation*>(
+     $input->internalRep.twoPtrValue.ptr1));
+%}
+
+%typemap(freearg) CDM_Annotation {
+  if ($1) delete (reinterpret_cast<ELEP::CDM::Annotation*>($1));
+  $1 = NULL;
+}
+
+%typemap(argout) CDM_Annotation
+%{// Typemap(argout) CDM_Annotation: result=$result, input=$input, sysname=$symname
+  Tcl_SetObjResult(interp,
+      CDM_NewObject<ELEP::CDM::Annotation, &CDM_Annotation_ObjType>
+         (reinterpret_cast<ELEP::CDM::Annotation*>($1)));
+  if (!$1) SWIG_fail; $1 = NULL;%}
+
 %typemap(out) CDM_Annotation
 %{// Typemap(out) CDM_Annotation
   Tcl_SetObjResult(interp,
       CDM_NewObject<ELEP::CDM::Annotation, &CDM_Annotation_ObjType>
          (reinterpret_cast<ELEP::CDM::Annotation*>($1)));
-  if (!$1) SWIG_fail;%}
+  if (!$1) SWIG_fail; $1 = NULL;%}
 
 /*
  * const CDM_AnnotationSet
@@ -218,6 +353,23 @@
     $1 = CDM_EnsureConstObjectOrNULL<ELEP::CDM::AnnotationSet,
          &CDM_AnnotationSet_ObjType>(interp, $input);
   } catch (std::exception &e) {SWIG_fail;}%}
+
+%typemap(out) const CDM_AnnotationSet
+%{// Typemap(out) const CDM_AnnotationSet
+  if (!$1) {
+    // We got a NULL pointer. Generate an error message:
+    Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::AnnotationSet, &CDM_AnnotationSet_ObjType>
+         (reinterpret_cast<ELEP::CDM::AnnotationSet*>($1)));
+    SWIG_fail;
+  }
+  // This is a const reference, to a member of another object.
+  // Which may be deleted (as it is bound to a caller variable).
+  // So, return a copy.
+  Tcl_SetObjResult(interp,
+        CDM_NewObject<ELEP::CDM::AnnotationSet, &CDM_AnnotationSet_ObjType>
+         (new ELEP::CDM::AnnotationSet(*reinterpret_cast<ELEP::CDM::AnnotationSet*>($1))));
+  $1 = NULL;%}
 
 %typemap(argout) const CDM_AnnotationSet
 %{// Typemap(argout) const CDM_AnnotationSet%}

@@ -263,6 +263,15 @@ void ELEP::CDM::SpanSet::update_boundaries(const_iterator it) {
   update_boundaries(*it);
 };
 
+bool ELEP::CDM::SpanSet::operator< (const SpanSet& span) const {
+  if (_min < span._min ||
+       (_min == span._min && _max < span._max)) {
+    return true;
+  }
+  if (_min == span._min && _max == span._max) return size() < span.size();
+  return false;
+};
+
 CDM_Span CDM_CreateSpan(const CDM_Position start, const CDM_Position end) {
   return new ELEP::CDM::Span(start, end);
 };
@@ -311,7 +320,7 @@ CDM_Status CDM_GetFirstSpanOffsets(const CDM_SpanSet spans, CDM_Position *start,
 CDM_Status CDM_AddSpan(CDM_SpanSet spans, const CDM_Span span) {
   ELEP::CDM::SpanSet *p = reinterpret_cast<ELEP::CDM::SpanSet*>(spans);
   if (!p) return CDM_ERROR;
-  ELEP::CDM::Span *s = reinterpret_cast<ELEP::CDM::Span*>(span);
+  const ELEP::CDM::Span *s = reinterpret_cast<const ELEP::CDM::Span*>(span);
   if (!s) return CDM_ERROR;
   p->push_back(*s);
   return CDM_OK;

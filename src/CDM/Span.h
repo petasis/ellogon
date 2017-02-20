@@ -190,6 +190,7 @@ namespace ELEP {
         void              shrink_to_fit() {set.shrink_to_fit();};
         size_type         size() const noexcept {return set.size();};
 
+        bool operator< (const SpanSet& other) const;
         SpanSet& operator=(SpanSet other) {swap::spanset(*this, other); return *this;}
       private:
         Position _min, _max;

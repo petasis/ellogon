@@ -108,6 +108,8 @@ namespace ELEP {
         bool                   containsAttributeMatchingValue(const std::string& name, const std::regex& pattern) const;
         bool                   contains(const Position p) const {return _spans.contains(p);};
         bool                   matchesRange(const Position start, const Position end) const {return _spans.matchesRange(start, end);};
+        void                   putAttribute(const Attribute& attribute) {_attributes.push_back(attribute);};
+        void                   addSpan(const Span& span) {_spans.push_back(span);};
 
         bool                   valid()      const;
         const std::string      toString()   const;
@@ -242,30 +244,31 @@ namespace ELEP {
 }; /* namespace ELEP */
 #endif /* __cplusplus */
 
-int                 CDM_AnnotationContainsAttributeMatchingValue(const CDM_Annotation Ann, const char *AttributeName, const char *ValuePattern);
-int                 CDM_AnnotationContainsPosition(const CDM_Annotation Ann, const CDM_Position Position);
-int                 CDM_AnnotationMatchesRange(const CDM_Annotation Ann, const CDM_Position start, const CDM_Position end);
+int                       CDM_AnnotationContainsAttributeMatchingValue(const CDM_Annotation Ann, const char *AttributeName, const char *ValuePattern);
+int                       CDM_AnnotationContainsPosition(const CDM_Annotation Ann, const CDM_Position Position);
+int                       CDM_AnnotationMatchesRange(const CDM_Annotation Ann, const CDM_Position start, const CDM_Position end);
+int                       CDM_CompareAnnotations(const CDM_Annotation Ann1, const CDM_Annotation Ann2);
 
-CDM_Annotation      CDM_CreateAnnotation(const char *type, const CDM_SpanSet spans, const CDM_AttributeSet attributes);
-CDM_Annotation      CDM_CreateAnnotation(const char *type, const CDM_Position start, const CDM_Position end, const CDM_AttributeSet attributes);
+CDM_Annotation            CDM_CreateAnnotation(const char *type, const CDM_SpanSet spans, const CDM_AttributeSet attributes);
+CDM_Annotation            CDM_CreateAnnotation(const char *type, const CDM_Position start, const CDM_Position end, const CDM_AttributeSet attributes);
+
+const CDM_Attribute       CDM_GetAttribute(const CDM_Annotation Annotation, const char *Name);
+const CDM_AttributeSet    CDM_GetAttributes(const CDM_Annotation Annotation);
+const CDM_SpanSet         CDM_GetSpans(const CDM_Annotation Ann);
+CDM_Status                CDM_PutAttribute(CDM_Annotation Ann, const CDM_Attribute Attr);
 
 #if 0
 int                 CDM_AnnotationContainsAttributeMatchingValues(CDM_Annotation Ann, char *AttributeName, Tcl_Obj *ValuePatternsObj = NULL);
 int                 CDM_AnnotationContainsPositions(const CDM_Annotation Ann, const unsigned int items, const long *Positions);
-int                 CDM_CompareAnnotations(CDM_Annotation Ann1, CDM_Annotation Ann2);
 CDM_Annotation      CDM_DisplaceAnnotation(CDM_Annotation Ann, long offset, long displacement);
 CDM_ByteSequenceSet CDM_GetAnnotatedTextRanges(CDM_ByteSequence Text, CDM_Annotation Annotation);
-CDM_Attribute       CDM_GetAttribute(CDM_Annotation Annotation, const char *Name);
-CDM_AttributeSet    CDM_GetAttributes(CDM_Annotation Annotation);
 CDM_AttributeValue  CDM_GetAttributeValue(CDM_Annotation Annotation, const char *Name, CDM_AttributeValue def = NULL);
 CDM_ByteSequenceSet CDM_GetFirstAnnotatedTextRange(CDM_ByteSequence Text, CDM_Annotation Annotation);
 CDM_Span            CDM_GetFirstSpan(CDM_Annotation Ann);
 CDM_Status          CDM_GetFirstSpanOffsets(CDM_Annotation Annotation, long *start, long *end);
-CDM_SpanSet         CDM_GetSpans(CDM_Annotation Ann);
 const std::string  &CDM_GetType(CDM_Annotation Ann);
 CDM_ByteSequence    CDM_GetTypeObj(CDM_Annotation Ann);
 CDM_Id              CDM_GetId(CDM_Annotation Ann);
-CDM_Annotation      CDM_PutAttribute(CDM_Annotation Ann, CDM_Attribute Attr);
 CDM_Annotation      CDM_RemoveAttribute(CDM_Annotation Ann, char *Name);
 CDM_Annotation      CDM_ReconstructAnnotation(CDM_Annotation Annotation);
 CDM_Annotation      CDM_AddAnnotationSpan(CDM_Annotation Annotation, CDM_Span span);

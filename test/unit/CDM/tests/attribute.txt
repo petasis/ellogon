@@ -106,3 +106,27 @@ tip_AddAttribute {{type {CDM_STRING {test}}}} {type CDM_STRING test2}
 tip_AddAttribute {} {type {CDM_STRING test}}
 {type {CDM_STRING {test}}}
 
+tip_CreateAttributeValue CDM_STRING StringValue
+CDM_STRING {StringValue}
+
+tip_CreateAttributeValue CDM_STRING_SET {0 1 2 3 end}
+CDM_STRING_SET {0 1 2 3 end}
+
+set v [tip_CreateAttributeValue CDM_STRING StringValue]; tip_CreateAttribute Attr1 $v
+Attr1 {CDM_STRING {StringValue}}
+
+set v [tip_CreateAttributeValue CDM_STRING_SET {0 1 2 3 end}]; tip_CreateAttribute Attr2 $v
+Attr2 {CDM_STRING_SET {0 1 2 3 end}}
+
+set v [tip_CreateAttributeValue CDM_STRING StringValue]; set a [tip_CreateAttribute Attr1 $v]; tip_GetName $a
+Attr1
+
+set v [tip_CreateAttributeValue CDM_STRING_SET {0 1 2 3 end}]; set a [tip_CreateAttribute Attr2 $v]; tip_GetName $a
+Attr2
+
+set v [tip_CreateAttributeValue CDM_STRING StringValue]; set a [tip_CreateAttribute Attr1 $v]; tip_GetValue $a
+CDM_STRING {StringValue}
+
+set v [tip_CreateAttributeValue CDM_STRING_SET {0 1 2 3 end}]; set a [tip_CreateAttribute Attr2 $v]; tip_GetValue $a
+CDM_STRING_SET {0 1 2 3 end}
+

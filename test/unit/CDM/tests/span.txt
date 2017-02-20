@@ -67,3 +67,12 @@ start exceeds end
 set s [tip_AddSpan {{40 50}} {0 10}]; set s [tip_AddSpan $s {100 200}]; list [tip_SpanSetOffsetMin $s] [tip_SpanSetOffsetMax $s]
 0 200
 
+tip_CreateSpan 0 12
+0 12
+
+set s [tip_CreateSpan 0 12]; tip_GetStart $s
+0
+
+set s [tip_CreateSpan 0 12]; tip_GetEnd $s
+12
+
