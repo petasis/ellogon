@@ -42,3 +42,45 @@ set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {String
 
 set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {StringValue}}} {Attr2 CDM_STRING_SET {0 1 2 3 end}}]]; tip_PutAttribute $a {Attr1 {CDM_STRING {New StringValue}}}
 {} token {{0 12}} {{Attr1 {CDM_STRING {New StringValue}}} {Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}
+
+set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {StringValue}}} {Attr2 CDM_STRING_SET {0 1 2 3 end}}]]; tip_RemoveAttribute $a Attr1
+{} token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}
+
+set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {StringValue}}} {Attr2 CDM_STRING_SET {0 1 2 3 end}}]]; tip_GetType $a
+token
+
+set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {StringValue}}} {Attr2 CDM_STRING_SET {0 1 2 3 end}}]]; tip_GetId $a
+
+
+tip_GetId {123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}
+123
+
+tip_CreateAnnotationSet
+
+
+tip_AddAnnotation {} {123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}
+{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}
+
+tip_AddAnnotation {{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}} {123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}
+{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}
+
+tip_Length {{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}}
+2
+
+tip_Length {}
+0
+
+tip_Nth {{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {1234 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}} 0
+123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}
+
+tip_Nth {{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {1234 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}} 1
+1234 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}
+
+catch {tip_Nth {{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {1234 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}} 5} e; set e
+vector::_M_range_check: __n (which is 5) >= this->size() (which is 2)
+
+tip_MergeAnnotations {} {{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {1234 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}}
+{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {1234 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}
+
+tip_MergeAnnotations {{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {1234 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}} {{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {1234 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}}
+{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {1234 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {1234 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}

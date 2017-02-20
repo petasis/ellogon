@@ -433,6 +433,14 @@
 %{// Typemap(out) CDM_Status
   if ($1 != CDM_OK) SWIG_fail;%}
 
+%typemap(out) CDM_Id
+%{// Typemap(out) CDM_Id
+  if ($1 != ELEP::CDM::Annotation::no) {
+    Tcl_SetObjResult(interp, SWIG_From_unsigned_SS_long(static_cast< unsigned long >($1)));
+  } else {
+   Tcl_SetObjResult(interp, Tcl_NewStringObj("", 0));
+  };%}
+
 %typemap(in) const CDM_AttributeType
 %{{// Typemap(in) const CDM_AttributeType: $input, $1
   static const char *Types[] = {

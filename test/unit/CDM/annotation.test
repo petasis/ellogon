@@ -27,7 +27,7 @@ namespace eval ::annotation {
 
     set index 0
     foreach {cmd result _} $data {
-        puts $cmd; flush stdout
+      # puts $cmd; flush stdout
       test annotation-[incr index] {} \
         -setup   $SETUP \
         -cleanup $CLEANUP \

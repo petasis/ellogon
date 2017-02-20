@@ -407,6 +407,11 @@ bool ELEP::CDM::AttributeSet::containsAttributeMatchingValue(
   return std::regex_match(attr->value(), pattern);
 };
 
+void ELEP::CDM::AttributeSet::removeAttribute(const char *name) {
+  auto attr = find(name);
+  if (attr != set.end()) erase(attr);
+};
+
 bool ELEP::CDM::AttributeSet::valid() const {
   if (set.empty()) return false;
   auto it = set.cbegin();

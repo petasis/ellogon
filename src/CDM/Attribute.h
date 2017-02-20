@@ -177,6 +177,9 @@ namespace ELEP {
         bool              containsAttributeMatchingValue(const std::string& name, const std::regex& pattern) const;
 #endif /* SWIG */
 
+        void              putAttribute(const Attribute& attribute) {push_back(attribute);};
+        void              removeAttribute(const char *name);
+
         /* The following methods simulate std::vector. */
         template <class InputIterator>
         // void              assign (InputIterator first, InputIterator last) {set.assign(first, last);};

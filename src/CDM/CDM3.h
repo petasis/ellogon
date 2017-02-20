@@ -102,6 +102,7 @@ typedef void *            CDM_Attribute;
 typedef void *            CDM_AttributeSet;
 typedef void *            CDM_Annotation;
 typedef void *            CDM_AnnotationSet;
+typedef char *            CDM_ByteSequence;
 
 #include "Span.h"
 #include "Attribute.h"

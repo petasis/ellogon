@@ -105,6 +105,7 @@ namespace ELEP {
 #ifdef TCL_VERSION
         SpanSet(Tcl_Interp *interp, Tcl_Obj *obj);
 #endif /* TCL_VERSION */
+        void              addSpan(const Span& span) {push_back(span);};
         const Position&   firstSpanStart() const;
         const Position&   firstSpanEnd()   const;
         Status            firstSpanOffsets(Position &start, Position &end) const;

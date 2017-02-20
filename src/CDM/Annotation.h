@@ -108,8 +108,9 @@ namespace ELEP {
         bool                   containsAttributeMatchingValue(const std::string& name, const std::regex& pattern) const;
         bool                   contains(const Position p) const {return _spans.contains(p);};
         bool                   matchesRange(const Position start, const Position end) const {return _spans.matchesRange(start, end);};
-        void                   putAttribute(const Attribute& attribute) {_attributes.push_back(attribute);};
-        void                   addSpan(const Span& span) {_spans.push_back(span);};
+        void                   putAttribute(const Attribute& attribute) {_attributes.putAttribute(attribute);};
+        void                   removeAttribute(const char *name) {_attributes.removeAttribute(name);};
+        void                   addSpan(const Span& span) {_spans.addSpan(span);};
 
         bool                   valid()      const;
         const std::string      toString()   const;
@@ -163,6 +164,8 @@ namespace ELEP {
 #ifdef TCL_VERSION
         AnnotationSet(Tcl_Interp *interp, Tcl_Obj *obj);
 #endif /* TCL_VERSION */
+        void              addAnnotation(const Annotation& ann) {push_back(ann);};
+        void              mergeAnnotations(const AnnotationSet& other);
         bool              valid() const;
         const std::string toString() const;
 
@@ -256,6 +259,9 @@ const CDM_Attribute       CDM_GetAttribute(const CDM_Annotation Annotation, cons
 const CDM_AttributeSet    CDM_GetAttributes(const CDM_Annotation Annotation);
 const CDM_SpanSet         CDM_GetSpans(const CDM_Annotation Ann);
 CDM_Status                CDM_PutAttribute(CDM_Annotation Ann, const CDM_Attribute Attr);
+CDM_Status                CDM_RemoveAttribute(CDM_Annotation Ann, const char *Name);
+const CDM_ByteSequence    CDM_GetType(const CDM_Annotation Ann);
+CDM_Id                    CDM_GetId(const CDM_Annotation Ann);
 
 #if 0
 int                 CDM_AnnotationContainsAttributeMatchingValues(CDM_Annotation Ann, char *AttributeName, Tcl_Obj *ValuePatternsObj = NULL);
@@ -266,17 +272,20 @@ CDM_AttributeValue  CDM_GetAttributeValue(CDM_Annotation Annotation, const char 
 CDM_ByteSequenceSet CDM_GetFirstAnnotatedTextRange(CDM_ByteSequence Text, CDM_Annotation Annotation);
 CDM_Span            CDM_GetFirstSpan(CDM_Annotation Ann);
 CDM_Status          CDM_GetFirstSpanOffsets(CDM_Annotation Annotation, long *start, long *end);
-const std::string  &CDM_GetType(CDM_Annotation Ann);
 CDM_ByteSequence    CDM_GetTypeObj(CDM_Annotation Ann);
-CDM_Id              CDM_GetId(CDM_Annotation Ann);
-CDM_Annotation      CDM_RemoveAttribute(CDM_Annotation Ann, char *Name);
 CDM_Annotation      CDM_ReconstructAnnotation(CDM_Annotation Annotation);
 CDM_Annotation      CDM_AddAnnotationSpan(CDM_Annotation Annotation, CDM_Span span);
 CDM_Annotation      CDM_RemoveSpan(CDM_Annotation Annotation, long start, long end);
+#endif
 
+CDM_AnnotationSet         CDM_CreateAnnotationSet();
+CDM_Status                CDM_AddAnnotation(CDM_AnnotationSet Set, const CDM_Annotation Ann);
+CDM_Size                  CDM_Length(const CDM_AnnotationSet Set);
+const CDM_Annotation      CDM_Nth(const CDM_AnnotationSet Set, CDM_Size n);
+CDM_Status                CDM_MergeAnnotations(CDM_AnnotationSet Set1, const CDM_AnnotationSet Set2);
+
+#if 0
 int                 CDM_AnnotationSetGetElements(CDM_AnnotationSet AnnotationSet, int *objcPtr, CDM_Annotation **objvPtr);
-CDM_AnnotationSet   CDM_CreateAnnotationSet(void);
-CDM_AnnotationSet   CDM_AddAnnotation(CDM_AnnotationSet Set, CDM_Annotation Ann);
 CDM_AnnotationSet   CDM_AnnotationsAt(CDM_AnnotationSet Set, long Position);
 CDM_AnnotationSet   CDM_AnnotationsContaining(CDM_AnnotationSet Set, long Position);
 CDM_AnnotationSet   CDM_AnnotationsContaining(CDM_AnnotationSet Set, long Position1, long Position2);
@@ -286,10 +295,7 @@ CDM_AnnotationSet   CDM_DisplaceAnnotations(CDM_AnnotationSet Set, long offset, 
 CDM_Annotation      CDM_FirstAnnotationContaining(CDM_AnnotationSet Set, const long Position);
 CDM_Annotation      CDM_FirstAnnotationContaining(CDM_AnnotationSet Set, const long Position1, const long Position2);
 CDM_Annotation      CDM_GetAnnotation(CDM_AnnotationSet Set, long Id);
-int                 CDM_Length(CDM_AnnotationSet Set);
 CDM_AnnotationSet   CDM_NextAnnotations(CDM_AnnotationSet Set, long Position);
-Tcl_Obj            *CDM_Nth(Tcl_Obj *Set, long n);
-CDM_AnnotationSet   CDM_MergeAnnotations(CDM_AnnotationSet Set1, CDM_AnnotationSet Set2);
 CDM_AnnotationSet   CDM_RemoveAnnotation(CDM_AnnotationSet Set, long Id);
 CDM_AnnotationSet   CDM_SelectAnnotations(CDM_AnnotationSet Set, char *Type);
 CDM_AnnotationSet   CDM_SelectAnnotations(CDM_AnnotationSet Set, char *Type, char *Constraints);
