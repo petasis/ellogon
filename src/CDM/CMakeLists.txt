@@ -25,8 +25,24 @@
 #   "Ellogon" Language Engineering Platform.                                 #
 ##############################################################################
 
-CMAKE_MINIMUM_REQUIRED ( VERSION 2.8 )
+CMAKE_MINIMUM_REQUIRED ( VERSION 3.2 FATAL_ERROR )
 PROJECT ( CDM3 )
+
+find_package(Boost)
+IF (Boost_FOUND)
+include_directories(${Boost_INCLUDE_DIR})
+endif()
+
+## ===========================================================================
+##  Locate Boost C++ libraries
+## ===========================================================================
+MESSAGE ( STATUS "Searching for Boost..." )
+SET ( Boost_USE_STATIC_LIBS OFF ) # enable dynamic linking
+SET ( Boost_USE_MULTITHREAD ON  ) # enable multithreading
+FIND_PACKAGE ( Boost COMPONENTS REQUIRED filesystem )
+IF ( Boost_FOUND )
+  INCLUDE_DIRECTORIES ( ${Boost_INCLUDE_DIR} )
+ENDIF ( Boost_FOUND )
 
 ## ===========================================================================
 ##  Locate SWIG
@@ -47,7 +63,8 @@ ENDIF ( SWIG_FOUND )
 MESSAGE ( STATUS "Searching for Tcl/Tk..." )
 FIND_PACKAGE ( TCL REQUIRED )
 FIND_PACKAGE ( TclStub REQUIRED )
-ADD_DEFINITIONS ( -DELLOGON_CDM_USE_TCL -DUSE_TCL_STUBS )
+ADD_DEFINITIONS ( -DELLOGON_CDM_USE_TCL -DUSE_TCL_STUBS
+                  -DBOOST_FILESYSTEM_NO_DEPRECATED )
 INCLUDE_DIRECTORIES ( ${CMAKE_CURRENT_SOURCE_DIR} )
 
 SET ( CDM_LIBRARY_SOURCES
@@ -55,10 +72,11 @@ SET ( CDM_LIBRARY_SOURCES
   Span.cpp
   Attribute.cpp
   Annotation.cpp
+  Document.cpp
 )
 ADD_LIBRARY (CDM3 SHARED ${CDM_LIBRARY_SOURCES} )
 ADD_LIBRARY (CDM3S STATIC ${CDM_LIBRARY_SOURCES} )
-TARGET_LINK_LIBRARIES(CDM3 ${TCL_STUB_LIBRARY})
+TARGET_LINK_LIBRARIES(CDM3 ${Boost_LIBRARIES} ${TCL_STUB_LIBRARY})
 
 ## Bindings for Tcl...
 ## ===========================================================================
@@ -66,9 +84,11 @@ TARGET_LINK_LIBRARIES(CDM3 ${TCL_STUB_LIBRARY})
 ## ===========================================================================
 ADD_CUSTOM_COMMAND ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/CDM_wrap_tcl.cxx"
       MAIN_DEPENDENCY CDM3.h
-      DEPENDS CDM3.h CDM.cpp Span.h Span.cpp
-      Attribute.h Attribute.cpp
-      Annotation.h Annotation.cpp
+      DEPENDS CDM3.h CDM.cpp
+      Span.h         Span.cpp
+      Attribute.h    Attribute.cpp
+      Annotation.h   Annotation.cpp
+      Document.h     Document.cpp
       swig/CDM_Tcl.i swig/CDM_Tcl.cpp
     COMMAND ${SWIG_EXECUTABLE} -Wall -c++ -tcl8 -O -module CDM -prefix CDM
       -namespace -pkgversion 3.0 -includeall -ignoremissing
@@ -80,9 +100,10 @@ SET_SOURCE_FILES_PROPERTIES ( ${CMAKE_CURRENT_BINARY_DIR}/CDM_wrap_tcl.cxx
 ADD_LIBRARY ( tclCDM3 SHARED
    "${CMAKE_CURRENT_BINARY_DIR}/CDM_wrap_tcl.cxx" ${CDM_LIBRARY_SOURCES}
 )
+MESSAGE(STATUS "BOOSTLIBS" ${Boost_LIBRARIES})
 TARGET_COMPILE_DEFINITIONS(tclCDM3 PUBLIC
    -DSWIG_TCL_STUBS_VERSION=TCL_VERSION -DSWIGTCL )
-TARGET_LINK_LIBRARIES(tclCDM3 ${TCL_STUB_LIBRARY})
+TARGET_LINK_LIBRARIES(tclCDM3 ${Boost_LIBRARIES} ${TCL_STUB_LIBRARY})
 
 ## ===========================================================================
 ##  Tests

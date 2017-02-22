@@ -216,6 +216,22 @@ Tcl_ObjType CDM_AnnotationSet_ObjType = {
     Object_SetFromAny<ELEP::CDM::AnnotationSet, &CDM_AnnotationSet_ObjType>
 };
 
+Tcl_ObjType CDM_Document_ObjType = {
+    (char *) "CDM_Document",
+    Object_FreeInternalRep<ELEP::CDM::Document>,
+    Object_DuplicateInternalRep<ELEP::CDM::Document, &CDM_Document_ObjType>,
+    Object_UpdateString<ELEP::CDM::Document>,
+    Object_SetFromAny<ELEP::CDM::Document, &CDM_Document_ObjType>
+};
+
+Tcl_ObjType CDM_Collection_ObjType = {
+    (char *) "CDM_Collection",
+    Object_FreeInternalRep<ELEP::CDM::Collection>,
+    Object_DuplicateInternalRep<ELEP::CDM::Collection, &CDM_Collection_ObjType>,
+    Object_UpdateString<ELEP::CDM::Collection>,
+    Object_SetFromAny<ELEP::CDM::Collection, &CDM_Collection_ObjType>
+};
+
 void CDM_InitialiseObjTypes() {
   Tcl_RegisterObjType(&CDM_Span_ObjType);
   Tcl_RegisterObjType(&CDM_SpanSet_ObjType);
@@ -224,4 +240,6 @@ void CDM_InitialiseObjTypes() {
   Tcl_RegisterObjType(&CDM_AttributeSet_ObjType);
   Tcl_RegisterObjType(&CDM_Annotation_ObjType);
   Tcl_RegisterObjType(&CDM_AnnotationSet_ObjType);
+  Tcl_RegisterObjType(&CDM_Document_ObjType);
+  Tcl_RegisterObjType(&CDM_Collection_ObjType);
 };

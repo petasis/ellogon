@@ -178,7 +178,25 @@ namespace ELEP {
       void annotationset(AnnotationSet& first, AnnotationSet& second) {
         // enable ADL (not necessary in our case, but good practice)
         using std::swap;
-        swap(first.set, second.set);
+        swap(first.set,          second.set);
+        swap(first._next_ann_id, second._next_ann_id);
+      };
+      void document(Document& first, Document& second) {
+        // enable ADL (not necessary in our case, but good practice)
+        using std::swap;
+        swap(first._id,          second._id);
+        swap(first._external_id, second._external_id);
+        swap(first._data,        second._data);
+        swap(first._attributes,  second._attributes);
+        swap(first._annotations, second._annotations);
+        swap(first._collection,  second._collection);
+      };
+      void collection(Collection& first, Collection& second) {
+        // enable ADL (not necessary in our case, but good practice)
+        using std::swap;
+        swap(first._id,         second._id);
+        swap(first._attributes, second._attributes);
+        swap(first.set,         second.set);
       };
     }; /* namespace ELEP::CDM::swap */
 

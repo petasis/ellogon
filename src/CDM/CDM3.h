@@ -103,9 +103,12 @@ typedef void *            CDM_AttributeSet;
 typedef void *            CDM_Annotation;
 typedef void *            CDM_AnnotationSet;
 typedef char *            CDM_ByteSequence;
+typedef void *            CDM_Document;
+typedef void *            CDM_Collection;
 
 #include "Span.h"
 #include "Attribute.h"
 #include "Annotation.h"
+#include "Document.h"
 
 #endif /* ELLOGON_CDM */

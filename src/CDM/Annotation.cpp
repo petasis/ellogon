@@ -88,6 +88,11 @@ ELEP::CDM::Annotation::Annotation(const std::string &type, const SpanSet &spans,
   _type = Cache::get_string(type);
 };
 
+ELEP::CDM::Annotation::Annotation(const Id id, const std::string &type, const SpanSet &spans, const AttributeSet &attributes) :
+  _id {id}, _spans(spans), _attributes(attributes) {
+  _type = Cache::get_string(type);
+};
+
 ELEP::CDM::Annotation::Annotation(const std::string &type, const AttributeSet &attributes) :
   _id {no}, _spans(), _attributes(attributes) {
   _type = Cache::get_string(type);
@@ -100,6 +105,11 @@ ELEP::CDM::Annotation::Annotation(const std::string &type, SpanSet &&spans) :
 
 ELEP::CDM::Annotation::Annotation(const std::string &type, SpanSet &&spans, AttributeSet &&attributes) :
   _id {no}, _spans(spans), _attributes(attributes) {
+  _type = Cache::get_string(type);
+};
+
+ELEP::CDM::Annotation::Annotation(const Id id, const std::string &type, SpanSet &&spans, AttributeSet &&attributes) :
+  _id {id}, _spans(spans), _attributes(attributes) {
   _type = Cache::get_string(type);
 };
 
@@ -208,101 +218,119 @@ ELEP::CDM::Annotation::Annotation(Tcl_Interp *interp, Tcl_Obj *obj) :
   if (Tcl_GetWideIntFromObj(interp, items[0], &id) != TCL_OK) {
     Tcl_GetStringFromObj(items[0], &len);
     if (len != 0) throw Status::ERROR;
+  } else {
+    _id = id;
   }
   /* Get the type... */
-  _id         = id;
   _type       = Cache::get_string(Tcl_GetString(items[1]));
   _spans      = SpanSet(interp, items[2]);
   _attributes = AttributeSet(interp, items[3]);
 };
 #endif /* TCL_VERSION */
 
-ELEP::CDM::AnnotationSet::AnnotationSet() : set() {
+ELEP::CDM::AnnotationSet::AnnotationSet() : set(), _next_ann_id(0) {
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const Annotation &annotation):
-  set(1, annotation) {
+  set(), _next_ann_id(0) {
+  insert(annotation);
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(Annotation &&annotation):
-  set(1, annotation) {
+  set(), _next_ann_id(0) {
+  insert(annotation);
 };
 
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type):
-  set(1, Annotation(type)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type,
       const SpanSet &spans):
-  set(1, Annotation(type, spans)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type, spans));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type,
       const SpanSet &spans, const AttributeSet &attributes):
-  set(1, Annotation(type, spans, attributes)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type, spans, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type,
       const AttributeSet &attributes):
-  set(1, Annotation(type, attributes)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type,
       SpanSet &&spans):
-  set(1, Annotation(type, spans)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type, spans));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type,
       SpanSet &&spans, AttributeSet &&attributes):
-  set(1, Annotation(type, spans, attributes)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type, spans, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type,
       AttributeSet &&attributes):
-  set(1, Annotation(type, attributes)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type):
-  set(1, Annotation(type)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type,
       const SpanSet &spans):
-  set(1, Annotation(type, spans)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type, spans));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type,
       const SpanSet &spans, const AttributeSet &attributes):
-  set(1, Annotation(type, spans, attributes)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type, spans, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type,
       const AttributeSet &attributes):
-  set(1, Annotation(type, attributes)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type,
       SpanSet &&spans):
-  set(1, Annotation(type, spans)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type, spans));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type,
       SpanSet &&spans, AttributeSet &&attributes):
-  set(1, Annotation(type, spans, attributes)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type, spans, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type,
       AttributeSet &&attributes):
-  set(1, Annotation(type, attributes)) {
+  set(), _next_ann_id(0) {
+  insert(Annotation(type, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const AnnotationSet& src) :
-  set(src.set) {
+  set(src.set), _next_ann_id(src._next_ann_id) {
 };
 
 #ifdef TCL_VERSION
-ELEP::CDM::AnnotationSet::AnnotationSet(Tcl_Interp *interp, Tcl_Obj *obj) {
+ELEP::CDM::AnnotationSet::AnnotationSet(Tcl_Interp *interp, Tcl_Obj *obj):
+  _next_ann_id(0), set() {
   Tcl_Obj **items;
   int count;
   /* A valid Annotation set is a list of Annotations... */
@@ -310,33 +338,63 @@ ELEP::CDM::AnnotationSet::AnnotationSet(Tcl_Interp *interp, Tcl_Obj *obj) {
     throw Status::ERROR;
   }
   for (int i = 0; i < count; ++i) {
-    set.push_back(Annotation(interp, items[i]));
+    insert(Annotation(interp, items[i]));
   }
 };
 #endif /* TCL_VERSION */
 
 void ELEP::CDM::AnnotationSet::mergeAnnotations(const AnnotationSet& other) {
-  insert(set.cend(), other.cbegin(), other.cend());
+  insert(other.cbegin(), other.cend());
 };
 
 bool ELEP::CDM::AnnotationSet::valid() const {
-  if (set.empty()) return false;
-  auto it = set.cbegin();
+  if (empty()) return false;
+  auto it = cbegin();
   return it->valid();
 };
 
 const std::string ELEP::CDM::AnnotationSet::toString() const {
-  if (set.empty()) return "";
+  if (empty()) return "";
   std::ostringstream ss;
   bool add_space = false;
   // ss << '{';
-  for (auto it = set.cbegin(); it != set.cend(); ++it) {
+  for (auto it = cbegin(); it != cend(); ++it) {
     if (add_space) ss << ' ';
     ss << '{' << it->toString() << '}';
     add_space = true;
   }
   // ss << '}';
   return ss.str();
+};
+
+std::pair<ELEP::CDM::AnnotationSet::iterator, bool>
+ELEP::CDM::AnnotationSet::insert(const ELEP::CDM::AnnotationSet::value_type& x) {
+  if (x.emptyId()) {
+    return set.insert(Annotation(_next_ann_id++, x.type(),
+                      x._spans, x._attributes));
+  }
+  if (x._id > _next_ann_id) _next_ann_id = x._id +1;
+  std::pair<ELEP::CDM::AnnotationSet::iterator, bool>&& r = set.insert(x);
+  if (r.second) return r;
+  if (!set.replace(r.first, x)) {
+    throw std::invalid_argument("replacing annotation failed");
+  }
+  return std::make_pair(r.first, false);
+};
+
+std::pair<ELEP::CDM::AnnotationSet::iterator, bool>
+ELEP::CDM::AnnotationSet::insert(ELEP::CDM::AnnotationSet::value_type&& x) {
+  if (x.emptyId()) {
+    x._id = _next_ann_id++;
+    return set.insert(x);
+  }
+  if (x._id > _next_ann_id) _next_ann_id = x._id +1;
+  std::pair<ELEP::CDM::AnnotationSet::iterator, bool>&& r = set.insert(x);
+  if (r.second) return r;
+  if (!set.replace(r.first, x)) {
+    throw std::invalid_argument("replacing annotation failed");
+  }
+  return std::make_pair(r.first, false);
 };
 
 /*

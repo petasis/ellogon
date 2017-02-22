@@ -32,6 +32,15 @@
 #include <vector>      /* For std::vector         */
 #include <memory>      /* For smart pointers      */
 #include <regex>       /* For regular expressions */
+#include <utility>     /* For std::pair           */
+#include <algorithm>   /* For std::for_each       */
+
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/identity.hpp>
+#include <boost/multi_index/member.hpp>
+#include <boost/multi_index/mem_fun.hpp>
 #endif /* SWIG */
 
 #ifdef __cplusplus
@@ -61,6 +70,7 @@ namespace ELEP {
         Annotation(const char *type, const AttributeSet &attributes);
         Annotation(const std::string &type);
         Annotation(const std::string &type, const SpanSet &spans);
+        Annotation(const Id id, const std::string &type, const SpanSet &spans, const AttributeSet &attributes);
         Annotation(const std::string &type, const SpanSet &spans, const AttributeSet &attributes);
         Annotation(const std::string &type, const AttributeSet &attributes);
         Annotation(const Annotation& src);
@@ -70,6 +80,7 @@ namespace ELEP {
         Annotation(const char *type, AttributeSet &&attributes);
         Annotation(const std::string &type, SpanSet &&spans);
         Annotation(const std::string &type, SpanSet &&spans, AttributeSet &&attributes);
+        Annotation(const Id id, const std::string &type, SpanSet &&spans, AttributeSet &&attributes);
         Annotation(const std::string &type, AttributeSet &&attributes);
         Annotation(Annotation&& other) : Annotation() {swap::annotation(*this, other);}
 #endif /* SWIG */
@@ -77,6 +88,8 @@ namespace ELEP {
         Annotation(Tcl_Interp *interp, Tcl_Obj *obj);
 #endif /* TCL_VERSION */
         const Id               id()         const;
+        bool                   hasId()      const {return _id != no;};
+        bool                   emptyId()    const {return _id == no;};
         const std::string&     type()       const;
         void                   type(const char* type);
 #ifndef SWIG
@@ -122,19 +135,54 @@ namespace ELEP {
         SpanSet                      _spans;
         AttributeSet                 _attributes;
         friend void swap::annotation(class Annotation& first, class Annotation& second);
+        friend class AnnotationSet;
     }; /* class Annotation */
+
+    namespace internal {
+      namespace tags {
+        struct id_asc  {};
+        struct ann_asc {};
+        struct hash    {};
+      }
+
+      typedef boost::multi_index::multi_index_container<
+        Annotation,                                                                  // the stored object
+        boost::multi_index::indexed_by<
+          // sort by less<Id> on Annotation::id()
+          boost::multi_index::ordered_unique<                                        // first view
+            boost::multi_index::tag<tags::id_asc>,                                   // tag used to access the view
+            boost::multi_index::const_mem_fun<Annotation, const Id, &Annotation::id>,// ordered on id()...
+            std::less<const Id>                                                      // ... by ascending order
+          >,
+          // sort by Annotation::operator<
+          boost::multi_index::ordered_non_unique<                                    // second view
+            boost::multi_index::tag<tags::ann_asc>,                                  // tag used to access the view
+            boost::multi_index::identity<Annotation>                                 // ordered on Annotation...
+          >,
+          // Quick lookup through a hash table on Annotation::id()
+          boost::multi_index::hashed_unique<                                         // third view: unordered (hashed)
+            boost::multi_index::tag<tags::hash>,                                     // tag used to access the view
+            boost::multi_index::const_mem_fun<Annotation, const Id, &Annotation::id> // we hash on id()...
+            // std::hash<const Id>
+          >
+        >
+      > DocumentAnnotationSet;
+    };
+#ifndef SWIG
+#endif /* SWIG */
 
     class AnnotationSet {
       public:
-        typedef typename std::vector<Annotation>::value_type value_type;
-        typedef typename std::vector<Annotation>::size_type size_type;
-        typedef typename std::vector<Annotation>::iterator iterator;
-        typedef typename std::vector<Annotation>::const_iterator const_iterator;
-        typedef typename std::vector<Annotation>::reverse_iterator reverse_iterator;
-        typedef typename std::vector<Annotation>::const_reverse_iterator const_reverse_iterator;
+        typedef typename internal::DocumentAnnotationSet::key_type key_type;
+        typedef typename internal::DocumentAnnotationSet::value_type value_type;
+        typedef typename internal::DocumentAnnotationSet::size_type size_type;
+        typedef typename internal::DocumentAnnotationSet::iterator iterator;
+        typedef typename internal::DocumentAnnotationSet::const_iterator const_iterator;
+        typedef typename internal::DocumentAnnotationSet::reverse_iterator reverse_iterator;
+        typedef typename internal::DocumentAnnotationSet::const_reverse_iterator const_reverse_iterator;
 #ifndef SWIG
-        typedef typename std::vector<Annotation>::reference reference;
-        typedef typename std::vector<Annotation>::const_reference const_reference;
+        typedef typename internal::DocumentAnnotationSet::reference reference;
+        typedef typename internal::DocumentAnnotationSet::const_reference const_reference;
 #else  /* SWIG */
         typedef       typename Annotation& reference;
         typedef const typename Annotation& const_reference;
@@ -164,14 +212,106 @@ namespace ELEP {
 #ifdef TCL_VERSION
         AnnotationSet(Tcl_Interp *interp, Tcl_Obj *obj);
 #endif /* TCL_VERSION */
-        void              addAnnotation(const Annotation& ann) {push_back(ann);};
+        void              addAnnotation(const Annotation& ann) {insert(ann);};
         void              mergeAnnotations(const AnnotationSet& other);
         bool              valid() const;
         const std::string toString() const;
 
+        /* DocumentAnnotationSet, view tags::id_asc */
+#ifndef SWIG
+        reference              at(size_type n) {auto&& view = set.get<internal::tags::id_asc>(); auto it = std::next(view.begin(), n); *it;};
+ ;
+#endif /* SWIG */
+        const_reference        at(size_type n) const {auto&& view = set.get<internal::tags::id_asc>(); auto it = std::next(view.cbegin(), n); *it;};
+#ifndef SWIG
+        iterator               begin()   noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.begin();};
+#endif /* SWIG */
+        const_iterator         begin()   const noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.begin();};
+#ifndef SWIG
+        iterator               end()     noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.end();};
+#endif /* SWIG */
+        const_iterator         end()     const noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.end();};
+#ifndef SWIG
+        reverse_iterator       rbegin()  noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.rbegin();};
+#endif /* SWIG */
+        const_reverse_iterator rbegin()  const noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.rbegin();};
+#ifndef SWIG
+        reverse_iterator       rend()    noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.rend();};
+#endif /* SWIG */
+        const_reverse_iterator rend()    const noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.rend();};
+        const_iterator         cbegin()  const noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.cbegin();};
+        const_iterator         cend()    const noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.cend();};
+        const_reverse_iterator crbegin() const noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.crbegin();};
+        const_reverse_iterator crend()   const noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.crend();};
+
+#ifndef SWIG
+        iterator               iterator_to(const value_type& x) {auto&& view = set.get<internal::tags::id_asc>(); return view.iterator_to(x);};
+#endif /* SWIG */
+        const_iterator         iterator_to(const value_type& x) const {auto&& view = set.get<internal::tags::id_asc>(); return view.iterator_to(x);};
+
+        // capacity:
+        bool                   empty()    const noexcept {return set.empty();};
+        size_type              size()     const noexcept {return set.size();};
+        size_type              max_size() const noexcept {return set.max_size();};
+
+        // modifiers:
+#ifndef SWIG
+        std::pair<iterator,bool> insert(const value_type& x);
+        std::pair<iterator,bool> insert(value_type&& x);
+#endif /* SWIG */
+#ifndef SWIG
+        template<typename InputIterator>
+        void insert(InputIterator first,InputIterator last) {std::for_each(first, last, [&](const value_type& x) {insert(x);});} ;
+        void insert(std::initializer_list<value_type> list) {insert(list.begin(), list.end());};
+#endif /* SWIG */
+
+        iterator  erase(iterator position)                     {return set.erase(position);};
+        size_type erase(const key_type& x)                     {return set.erase(x);};
+        iterator  erase(iterator first,iterator last)          {return set.erase(first, last);};
+
+        bool replace(iterator position,const value_type& x)    {return set.replace(position, x);};
+#ifndef SWIG
+        bool replace(iterator position,value_type&& x)         {return set.replace(position, x);};
+#endif /* SWIG */
+
+        void clear() noexcept {_next_ann_id = 0; set.clear();};
+
+        // set operations:
+        template<typename CompatibleKey>
+        iterator find(const CompatibleKey& x)const;
+        template<typename CompatibleKey,typename CompatibleCompare>
+        iterator find(
+          const CompatibleKey& x,const CompatibleCompare& comp)const;
+
+        template<typename CompatibleKey>
+        size_type count(const CompatibleKey& x)const;
+        template<typename CompatibleKey,typename CompatibleCompare>
+        size_type count(const CompatibleKey& x,const CompatibleCompare& comp)const;
+
+        template<typename CompatibleKey>
+        iterator lower_bound(const CompatibleKey& x)const;
+        template<typename CompatibleKey,typename CompatibleCompare>
+        iterator lower_bound(
+          const CompatibleKey& x,const CompatibleCompare& comp)const;
+
+        template<typename CompatibleKey>
+        iterator upper_bound(const CompatibleKey& x)const;
+        template<typename CompatibleKey,typename CompatibleCompare>
+        iterator upper_bound(
+          const CompatibleKey& x,const CompatibleCompare& comp)const;
+
+        template<typename CompatibleKey>
+        std::pair<iterator,iterator> equal_range(
+          const CompatibleKey& x)const;
+        template<typename CompatibleKey,typename CompatibleCompare>
+        std::pair<iterator,iterator> equal_range(
+          const CompatibleKey& x,const CompatibleCompare& comp)const;
+
+
+#if 0
         /* The following methods simulate std::vector. */
         template <class InputIterator>
-        void              assign (InputIterator first, InputIterator last) {set.assign(first, last);};
+        void              assign (InputIterator first, InputIterator last) {auto&& view = set.get<internal::tags::id_asc>(); view.assign(first, last);};
         void              assign(size_type n, const value_type& val) {set.assign(n, val);};
 #ifndef SWIG
         reference         at(size_type n) {return set.at(n);};
@@ -236,10 +376,12 @@ namespace ELEP {
         void              resize (size_type n, const value_type& val) {set.resize(n, val);};
         void              shrink_to_fit() {set.shrink_to_fit();};
         size_type         size() const noexcept {return set.size();};
+#endif
 
         AnnotationSet& operator=(AnnotationSet other) {swap::annotationset(*this, other); return *this;}
       private:
-        std::vector<Annotation> set;
+        internal::DocumentAnnotationSet  set;
+        Id                              _next_ann_id;
         friend void swap::annotationset(class AnnotationSet& first, class AnnotationSet& second);
     }; /* class AnnotationSet */
 
