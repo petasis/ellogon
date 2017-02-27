@@ -77,10 +77,11 @@ set s [tip_CreateSpan 0 12]; tip_GetEnd $s
 12
 
 set s [CDM::Span -args 1 2]; set r [$s save_XML]; $s -delete; set r
-<?xml version="1.0" encoding="utf-8"?><cereal><span><start>1</start><end>2</end></span></cereal>
+<?xml version="1.0" encoding="utf-8"?><Ellogon><Span><start>1</start><end>2</end></Span></Ellogon>
 
 set s [CDM::Span -args 1 2]; set r [$s save_JSON]; $s -delete; string map {\n {}} $r
-{"span": {"start": 1,"end": 2}}
+{"Span": {"start": 1,"end": 2}}
 
 set s [CDM::SpanSet -args 1 2]; set r [$s save_XML]; $s -delete; set r
-<?xml version="1.0" encoding="utf-8"?><cereal><spanset><min>1</min><max>2</max><set size="dynamic"><value0><start>1</start><end>2</end></value0></set></spanset></cereal>
+<?xml version="1.0" encoding="utf-8"?><Ellogon><SpanSet><min>1</min><max>2</max><set size="dynamic"><value0><start>1</start><end>2</end></value0></set></SpanSet></Ellogon>
+
