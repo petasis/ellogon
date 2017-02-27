@@ -487,4 +487,18 @@
   }
   Tcl_SetResult(interp, (char *) cdms, TCL_STATIC);}%}
 
+%include "Serialisation.h"
+%template(serialisation_Span)              ELEP::CDM::serialisation::Serialisation<ELEP::CDM::Span>;
+%template(serialisation_SpanSet)           ELEP::CDM::serialisation::Serialisation<ELEP::CDM::SpanSet>;
+%template(serialisation_AttributeValue)    ELEP::CDM::serialisation::Serialisation<ELEP::CDM::AttributeValue>;
+%template(serialisation_Attribute)         ELEP::CDM::serialisation::Serialisation<ELEP::CDM::Attribute>;
+%template(serialisation_AttributeSet)      ELEP::CDM::serialisation::Serialisation<ELEP::CDM::AttributeSet>;
+%template(serialisation_Annotation)        ELEP::CDM::serialisation::Serialisation<ELEP::CDM::Annotation>;
+%template(serialisation_AnnotationSet)     ELEP::CDM::serialisation::Serialisation<ELEP::CDM::AnnotationSet>;
+%template(serialisation_Document)          ELEP::CDM::serialisation::Serialisation<ELEP::CDM::Document>;
+%template(serialisation_Collection)        ELEP::CDM::serialisation::Serialisation<ELEP::CDM::Collection>;
 %include "CDM3.h"
+
+/*
+ * vim: nowrap columns=120
+ */

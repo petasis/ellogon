@@ -56,7 +56,7 @@ namespace ELEP {
     };
 #endif /* SWIG */
 
-    class Annotation {
+    class Annotation: public serialisation::Serialisation<Annotation> {
       public:
         typedef typename std::vector<Attribute>::iterator attribute_iterator;
         typedef typename std::vector<Attribute>::const_iterator const_attribute_iterator;
@@ -136,6 +136,15 @@ namespace ELEP {
         AttributeSet                 _attributes;
         friend void swap::annotation(class Annotation& first, class Annotation& second);
         friend class AnnotationSet;
+
+        friend class cereal::access;
+        template <class Archive>
+        void serialize( Archive & ar /*, const std::uint32_t version*/ ) {
+          ar( cereal::make_nvp("id", _id), cereal::make_nvp("type", _type),
+              cereal::make_nvp("spans", _spans), cereal::make_nvp("attributes", _attributes) );
+        }
+        friend class serialisation::Serialisation<Annotation>;
+        static const char* serialise_variable_name() {return "Annotation";};
     }; /* class Annotation */
 
     namespace internal {
@@ -171,7 +180,7 @@ namespace ELEP {
 #ifndef SWIG
 #endif /* SWIG */
 
-    class AnnotationSet {
+    class AnnotationSet: public serialisation::Serialisation<AnnotationSet> {
       public:
         typedef typename internal::DocumentAnnotationSet::key_type key_type;
         typedef typename internal::DocumentAnnotationSet::value_type value_type;
@@ -383,6 +392,14 @@ namespace ELEP {
         internal::DocumentAnnotationSet  set;
         Id                              _next_ann_id;
         friend void swap::annotationset(class AnnotationSet& first, class AnnotationSet& second);
+
+        friend class cereal::access;
+        template <class Archive>
+        void serialize( Archive & ar /*, const std::uint32_t version*/ ) {
+          ar( cereal::make_nvp("nextId", _next_ann_id) /*cereal::make_nvp("set", set)*/ );
+        }
+        friend class serialisation::Serialisation<AnnotationSet>;
+        static const char* serialise_variable_name() {return "AnnotationSet";};
     }; /* class AnnotationSet */
 
   }; /* namespace ELEP::CDM */

@@ -28,11 +28,6 @@
 CMAKE_MINIMUM_REQUIRED ( VERSION 3.2 FATAL_ERROR )
 PROJECT ( CDM3 )
 
-find_package(Boost)
-IF (Boost_FOUND)
-include_directories(${Boost_INCLUDE_DIR})
-endif()
-
 ## ===========================================================================
 ##  Locate Boost C++ libraries
 ## ===========================================================================
@@ -64,7 +59,12 @@ MESSAGE ( STATUS "Searching for Tcl/Tk..." )
 FIND_PACKAGE ( TCL REQUIRED )
 FIND_PACKAGE ( TclStub REQUIRED )
 ADD_DEFINITIONS ( -DELLOGON_CDM_USE_TCL -DUSE_TCL_STUBS
-                  -DBOOST_FILESYSTEM_NO_DEPRECATED )
+                  -DBOOST_FILESYSTEM_NO_DEPRECATED
+                  -DCEREAL_XML_STRING_VALUE="Ellogon" )
+
+## =========================================================================
+## Additional include directories
+## =========================================================================
 INCLUDE_DIRECTORIES ( ${CMAKE_CURRENT_SOURCE_DIR} )
 
 SET ( CDM_LIBRARY_SOURCES
@@ -85,11 +85,12 @@ TARGET_LINK_LIBRARIES(CDM3 ${Boost_LIBRARIES} ${TCL_STUB_LIBRARY})
 ADD_CUSTOM_COMMAND ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/CDM_wrap_tcl.cxx"
       MAIN_DEPENDENCY CDM3.h
       DEPENDS CDM3.h CDM.cpp
-      Span.h         Span.cpp
-      Attribute.h    Attribute.cpp
-      Annotation.h   Annotation.cpp
-      Document.h     Document.cpp
-      swig/CDM_Tcl.i swig/CDM_Tcl.cpp
+      Serialisation.h Serialisation.cpp
+      Span.h          Span.cpp
+      Attribute.h     Attribute.cpp
+      Annotation.h    Annotation.cpp
+      Document.h      Document.cpp
+      swig/CDM_Tcl.i  swig/CDM_Tcl.cpp
     COMMAND ${SWIG_EXECUTABLE} -Wall -c++ -tcl8 -O -module CDM -prefix CDM
       -namespace -pkgversion 3.0 -includeall -ignoremissing
       -o ${CMAKE_CURRENT_BINARY_DIR}/CDM_wrap_tcl.cxx

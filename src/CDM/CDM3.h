@@ -106,6 +106,7 @@ typedef char *            CDM_ByteSequence;
 typedef void *            CDM_Document;
 typedef void *            CDM_Collection;
 
+#include "Serialisation.h"
 #include "Span.h"
 #include "Attribute.h"
 #include "Annotation.h"

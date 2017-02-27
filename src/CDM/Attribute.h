@@ -55,7 +55,7 @@ namespace ELEP {
     };
 #endif /* SWIG */
 
-    class AttributeValue {
+    class AttributeValue: public serialisation::Serialisation<AttributeValue> {
       public:
         AttributeValue();
         AttributeValue(const char *value, const AttributeType type=AttributeType::STRING);
@@ -86,9 +86,17 @@ namespace ELEP {
           std::shared_ptr<std::string> _v_string;
         //};
         friend void swap::attributevalue(class AttributeValue& first, class AttributeValue& second);
+
+        friend class cereal::access;
+        template <class Archive>
+        void serialize( Archive & ar /*, const std::uint32_t version*/ ) {
+          ar( cereal::make_nvp("type", _type), cereal::make_nvp("value", _v_string) );
+        }
+        friend class serialisation::Serialisation<AttributeValue>;
+        static const char* serialise_variable_name() {return "AttributeValue";};
     }; /* class AttributeValue */
 
-    class Attribute {
+    class Attribute: public serialisation::Serialisation<Attribute> {
       public:
         Attribute();
         Attribute(const char *name);
@@ -125,9 +133,17 @@ namespace ELEP {
           std::shared_ptr<std::string> _v_string;
         //};
         friend void swap::attribute(class Attribute& first, class Attribute& second);
+
+        friend class cereal::access;
+        template <class Archive>
+        void serialize( Archive & ar /*, const std::uint32_t version*/ ) {
+          ar( cereal::make_nvp("type", _type), cereal::make_nvp("name", _name), cereal::make_nvp("value", _v_string) );
+        }
+        friend class serialisation::Serialisation<Attribute>;
+        static const char* serialise_variable_name() {return "Attribute";};
     }; /* class Attribute */
 
-    class AttributeSet {
+    class AttributeSet: public serialisation::Serialisation<AttributeSet> {
       public:
         typedef typename std::vector<Attribute>::value_type value_type;
         typedef typename std::vector<Attribute>::size_type size_type;
@@ -253,6 +269,14 @@ namespace ELEP {
         std::vector<Attribute> set;
         void              assert_not_exists(const value_type& val) const;
         friend void swap::attributeset(class AttributeSet& first, class AttributeSet& second);
+
+        friend class cereal::access;
+        template <class Archive>
+        void serialize( Archive & ar /*, const std::uint32_t version*/ ) {
+          ar( cereal::make_nvp("set", set) );
+        }
+        friend class serialisation::Serialisation<AttributeSet>;
+        static const char* serialise_variable_name() {return "AttributeSet";};
     }; /* class AttributeSet */
 
   }; /* namespace ELEP::CDM */

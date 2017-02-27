@@ -49,7 +49,7 @@ namespace ELEP {
     };
 #endif /* SWIG */
 
-    class Span {
+    class Span: public serialisation::Serialisation<Span> {
       public:
         Span();
         Span(const Position start, const Position end);
@@ -78,9 +78,17 @@ namespace ELEP {
         Position _start, _end;
 #endif
         friend void swap::span(class Span& first, class Span& second);
+
+        friend class cereal::access;
+        template <class Archive>
+        void serialize( Archive & ar /*, const std::uint32_t version*/ ) {
+          ar( cereal::make_nvp("start", _start), cereal::make_nvp("end", _end) );
+        }
+        friend class serialisation::Serialisation<Span>;
+        static const char* serialise_variable_name() {return "Span";};
     }; /* class Span */
 
-    class SpanSet {
+    class SpanSet: public serialisation::Serialisation<SpanSet> {
       public:
         typedef typename std::vector<Span>::value_type value_type;
         typedef typename std::vector<Span>::size_type size_type;
@@ -197,10 +205,25 @@ namespace ELEP {
         Position _min, _max;
         std::vector<Span> set;
         friend void swap::spanset(class SpanSet& first, class SpanSet& second);
+
+        friend class cereal::access;
+        template <class Archive>
+        void serialize( Archive & ar /*, const std::uint32_t version */ ) {
+          ar( cereal::make_nvp("min", _min), cereal::make_nvp("max", _max), cereal::make_nvp("set", set) );
+        };
+        friend class serialisation::Serialisation<SpanSet>;
+        static const char* serialise_variable_name() {return "SpanSet";};
     }; /* class SpanSet */
+
 
   }; /* namespace ELEP::CDM */
 }; /* namespace ELEP */
+
+#ifndef SWIG
+CEREAL_CLASS_VERSION(ELEP::CDM::Span,    1);
+CEREAL_CLASS_VERSION(ELEP::CDM::SpanSet, 1);
+#endif /* SWIG */
+
 #endif /* __cplusplus */
 
 CDM_Span     CDM_CreateSpan(const CDM_Position start, const CDM_Position end);

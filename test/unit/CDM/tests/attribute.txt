@@ -130,3 +130,20 @@ CDM_STRING {StringValue}
 set v [tip_CreateAttributeValue CDM_STRING_SET {0 1 2 3 end}]; set a [tip_CreateAttribute Attr2 $v]; tip_GetValue $a
 CDM_STRING_SET {0 1 2 3 end}
 
+set o [CDM::AttributeValue -args value1]; set r [$o save_XML]; $o -delete; set r
+<?xml version="1.0" encoding="utf-8"?><Ellogon><AttributeValue><type>1</type><value><ptr_wrapper><id>2147483649</id><data>value1</data></ptr_wrapper></value></AttributeValue></Ellogon>
+
+set o [CDM::Attribute -args type1 value1]; set r [$o save_XML]; $o -delete; set r
+<?xml version="1.0" encoding="utf-8"?><Ellogon><Attribute><type>1</type><name><ptr_wrapper><id>2147483649</id><data>type1</data></ptr_wrapper></name><value><ptr_wrapper><id>2147483650</id><data>value1</data></ptr_wrapper></value></Attribute></Ellogon>
+
+set o [CDM::AttributeSet -args type1 value1]; set r [$o save_XML]; $o -delete; set r
+<?xml version="1.0" encoding="utf-8"?><Ellogon><AttributeSet><set size="dynamic"><value0><type>1</type><name><ptr_wrapper><id>2147483649</id><data>type1</data></ptr_wrapper></name><value><ptr_wrapper><id>2147483650</id><data>value1</data></ptr_wrapper></value></value0></set></AttributeSet></Ellogon>
+
+set o [CDM::AttributeValue -args value1]; set r [$o save_JSON]; $o -delete; string map {\n {}} $r
+{"AttributeValue": {"type": 1,"value": {"ptr_wrapper": {"id": 2147483649,"data": "value1"}}}}
+
+set o [CDM::Attribute -args type1 value1]; set r [$o save_JSON]; $o -delete; string map {\n {}} $r
+{"Attribute": {"type": 1,"name": {"ptr_wrapper": {"id": 2147483649,"data": "type1"}},"value": {"ptr_wrapper": {"id": 2147483650,"data": "value1"}}}}
+
+set o [CDM::AttributeSet -args type1 value1]; set r [$o save_JSON]; $o -delete; string map {\n {}} $r
+{"AttributeSet": {"set": [{"type": 1,"name": {"ptr_wrapper": {"id": 2147483649,"data": "type1"}},"value": {"ptr_wrapper": {"id": 2147483650,"data": "value1"}}}]}}

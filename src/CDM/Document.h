@@ -48,7 +48,7 @@ namespace ELEP {
     };
 #endif /* SWIG */
 
-    class Document {
+    class Document: public serialisation::Serialisation<Document> {
       public:
         Document();
         Document(const Document& src);
@@ -80,9 +80,19 @@ namespace ELEP {
         AnnotationSet                _annotations;
         std::shared_ptr<Collection>  _collection;
         friend void swap::document(class Document& first, class Document& second);
+
+        friend class cereal::access;
+        template <class Archive>
+        void serialize( Archive & ar /*, const std::uint32_t version*/ ) {
+          ar( cereal::make_nvp("id", _id), cereal::make_nvp("externalId", _external_id),
+              cereal::make_nvp("collection", _collection), cereal::make_nvp("data", _data),
+              cereal::make_nvp("annotations", _annotations), cereal::make_nvp("annotations", _annotations) );
+        }
+        friend class serialisation::Serialisation<Document>;
+        static const char* serialise_variable_name() {return "Document";};
     }; /* class Document */
 
-    class Collection {
+    class Collection: public serialisation::Serialisation<Collection> {
       public:
         typedef typename std::vector<Document>::value_type value_type;
         typedef typename std::vector<Document>::size_type size_type;
@@ -202,6 +212,15 @@ namespace ELEP {
         AttributeSet                 _attributes;
         std::vector<Document>        set;
         friend void swap::collection(class Collection& first, class Collection& second);
+
+        friend class cereal::access;
+        template <class Archive>
+        void serialize( Archive & ar /*, const std::uint32_t version*/ ) {
+          ar( cereal::make_nvp("id", _id), cereal::make_nvp("attributes", _attributes),
+              cereal::make_nvp("documents", set)  );
+        }
+        friend class serialisation::Serialisation<Collection>;
+        static const char* serialise_variable_name() {return "Collection";};
     }; /* class Collection */
 
   }; /* namespace ELEP::CDM */
