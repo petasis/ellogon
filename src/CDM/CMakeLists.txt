@@ -34,10 +34,19 @@ PROJECT ( CDM3 )
 MESSAGE ( STATUS "Searching for Boost..." )
 SET ( Boost_USE_STATIC_LIBS OFF ) # enable dynamic linking
 SET ( Boost_USE_MULTITHREAD ON  ) # enable multithreading
-FIND_PACKAGE ( Boost COMPONENTS REQUIRED filesystem )
+FIND_PACKAGE ( Boost COMPONENTS REQUIRED filesystem locale )
 IF ( Boost_FOUND )
   INCLUDE_DIRECTORIES ( ${Boost_INCLUDE_DIR} )
 ENDIF ( Boost_FOUND )
+
+## ===========================================================================
+##  Locate ICU C++ libraries
+## ===========================================================================
+# MESSAGE ( STATUS "Searching for ICU..." )
+# FIND_PACKAGE ( ICU COMPONENTS REQUIRED filesystem )
+# IF ( ICU_FOUND )
+#   INCLUDE_DIRECTORIES ( ${ICU_INCLUDE_DIRS} )
+# ENDIF ( ICU_FOUND )
 
 ## ===========================================================================
 ##  Locate SWIG

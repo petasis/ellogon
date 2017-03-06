@@ -52,8 +52,12 @@ namespace ELEP {
       public:
         Document();
         Document(const Document& src);
+        Document(const char* name);
+        Document(const char* name, const char* data);
         Document(const char* name, const char* data, const AttributeSet& attributes, const AnnotationSet& annotations);
 #ifndef SWIG
+        Document(const std::string& name);
+        Document(const std::string& name, const std::string& data);
         Document(const std::string& name, const std::string& data, const AttributeSet& attributes, const AnnotationSet& annotations);
         Document(Document&& other) : Document() {swap::document(*this, other);}
 #endif /* SWIG */
@@ -90,6 +94,7 @@ namespace ELEP {
         }
         friend class serialisation::Serialisation<Document>;
         static const char* serialise_variable_name() {return "Document";};
+        void normalise_data();
     }; /* class Document */
 
     class Collection: public serialisation::Serialisation<Collection> {

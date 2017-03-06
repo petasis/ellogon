@@ -30,6 +30,7 @@
 #include <sstream>
 #include <mutex>
 #include <algorithm>
+#include <boost/locale.hpp>     /* For normalising unicode strings */
 
 namespace ELEP {
   namespace CDM {
@@ -199,6 +200,13 @@ namespace ELEP {
         swap(first.set,         second.set);
       };
     }; /* namespace ELEP::CDM::swap */
+
+    namespace Unicode {
+      const std::string normalise_nfc(const std::string& data) {
+        std::locale loc = boost::locale::generator().generate("");
+        return boost::locale::normalize(data, boost::locale::norm_nfc, loc);
+      };
+    }; /* namespace ELEP::CDM::Unicode */
 
   }; /* namespace ELEP::CDM */
 }; /* namespace ELEP */

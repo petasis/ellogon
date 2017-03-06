@@ -1,0 +1,8 @@
+set o [CDM::Document -args /tmp/test {This is a test}]; set r [$o toString]; $o -delete; set r
+{test} {/tmp/test} {This is a test} {} {} {}
+
+set o [CDM::Document -args /tmp/test {Μείωση σοκ κατά 1,2% σημείωσε το ΑΕΠ στο τέταρτο τρίμηνο του έτους}]; set r [$o toString]; $o -delete; set r
+{test} {/tmp/test} {Μείωση σοκ κατά 1,2% σημείωσε το ΑΕΠ στο τέταρτο τρίμηνο του έτους} {} {} {}
+
+CDM::normalise_nfc κατά
+κατά

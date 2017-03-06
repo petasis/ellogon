@@ -27,9 +27,10 @@
 #include "CDM3.h"
 #include <iostream>
 #include <sstream>
-#include <stdexcept>            /* For std::invalid_argument   */
-#include <algorithm>            /* For std::for_each           */
-#include <boost/filesystem.hpp> /* For boost::filesystem::path */
+#include <stdexcept>            /* For std::invalid_argument       */
+#include <algorithm>            /* For std::for_each               */
+#include <boost/filesystem.hpp> /* For boost::filesystem::path     */
+#include <boost/locale.hpp>     /* For normalising unicode strings */
 
 using namespace ELEP::CDM;
 
@@ -38,19 +39,53 @@ ELEP::CDM::Document::Document() :
   _collection() {
 };
 
-ELEP::CDM::Document::Document(const char* name, const char* data,
-      const AttributeSet& attributes, const AnnotationSet& annotations):
-  _external_id(name), _data(data), _attributes(attributes),
+ELEP::CDM::Document::Document(const char* name):
+  _external_id(name), _data(), _attributes(), _annotations(),
   _collection() {
   _id = boost::filesystem::path(_external_id).filename().string();
+};
+
+ELEP::CDM::Document::Document(const char* name, const char* data):
+  _external_id(name), _data(data), _attributes(), _annotations(),
+  _collection() {
+  _id = boost::filesystem::path(_external_id).filename().string();
+  normalise_data();
+};
+
+ELEP::CDM::Document::Document(const char* name, const char* data,
+      const AttributeSet& attributes, const AnnotationSet& annotations):
+  _external_id(name), _data(data),
+  _attributes(attributes), _annotations(annotations),
+  _collection() {
+  _id = boost::filesystem::path(_external_id).filename().string();
+  normalise_data();
+};
+
+ELEP::CDM::Document::Document(const std::string& name):
+  _external_id(name), _data(),
+  _attributes(), _annotations(),
+  _collection() {
+  _id = boost::filesystem::path(_external_id).filename().string();
+  normalise_data();
+};
+
+ELEP::CDM::Document::Document(const std::string& name,
+      const std::string& data):
+  _external_id(name), _data(data),
+  _attributes(), _annotations(),
+  _collection() {
+  _id = boost::filesystem::path(_external_id).filename().string();
+  normalise_data();
 };
 
 ELEP::CDM::Document::Document(const std::string& name,
       const std::string& data,
       const AttributeSet& attributes, const AnnotationSet& annotations):
-  _external_id(name), _data(data), _attributes(attributes),
+  _external_id(name), _data(data),
+  _attributes(attributes), _annotations(annotations),
   _collection() {
   _id = boost::filesystem::path(_external_id).filename().string();
+  normalise_data();
 };
 
 ELEP::CDM::Document::Document(const Document& src) :
@@ -62,28 +97,33 @@ ELEP::CDM::Document::Document(const Document& src) :
 ELEP::CDM::Document::Document(Tcl_Interp *interp, Tcl_Obj *obj) {
   Tcl_Obj **items;
   int count;
-  Tcl_WideInt start, end;
+  const char *str;
+  int len;
 
-  /* A valid Document is a list with 2 integers... */
+  /* A valid Document is a list with 6 elements... */
   if (Tcl_ListObjGetElements(interp, obj, &count, &items) != TCL_OK ||
-      count != 2) {
-    std::string msg("invalid Document (2-item list expected): ");
+      count != 6) {
+    std::string msg("invalid Document (6-item list expected): ");
     msg += Tcl_GetStringResult(interp);
     throw std::invalid_argument(msg);
   }
-  if (Tcl_GetWideIntFromObj(interp, items[0], &start) != TCL_OK) {
-    std::string msg("invalid Document start (unsigned integer expected): ");
-    msg += Tcl_GetStringResult(interp);
-    throw std::invalid_argument(msg);
-  }
-  if (Tcl_GetWideIntFromObj(interp, items[1], &end) != TCL_OK) {
-    std::string msg("invalid Document end (unsigned integer expected): ");
-    msg += Tcl_GetStringResult(interp);
-    throw std::invalid_argument(msg);
-  }
-  if (start > end) throw std::invalid_argument("start exceeds end");
+  str = Tcl_GetStringFromObj(items[0], &len);
+  _id = {str, (size_t) len};
+  str = Tcl_GetStringFromObj(items[1], &len);
+  _external_id = {str, (size_t) len};
+  str = Tcl_GetStringFromObj(items[2], &len);
+  _data = {str, (size_t) len};
+  _attributes = AttributeSet(interp, items[3]);
+  _annotations = AnnotationSet(interp, items[4]);
+
+  normalise_data();
 };
 #endif /* TCL_VERSION */
+
+void ELEP::CDM::Document::normalise_data() {
+  std::locale loc = boost::locale::generator().generate("");
+  _data = boost::locale::normalize(_data, boost::locale::norm_nfc, loc);
+};
 
 const std::string& ELEP::CDM::Document::id() const {
   return _id;
@@ -111,6 +151,17 @@ bool ELEP::CDM::Document::valid() const {
 
 const std::string ELEP::CDM::Document::toString() const {
   std::ostringstream ss;
+  ss << '{' << ELEP::CDM::Utilities::ensure_list_element(_id) << '}'
+     << ' '
+     << '{' << ELEP::CDM::Utilities::ensure_list_element(_external_id) << '}'
+     << ' '
+     << '{' << ELEP::CDM::Utilities::ensure_list_element(_data) << '}'
+     << ' '
+     << '{' << _attributes.toString() << '}'
+     << ' '
+     << '{' << _annotations.toString() << '}'
+     << ' '
+     << '{' << '}';
   return ss.str();
 };
 

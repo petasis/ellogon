@@ -24,6 +24,10 @@
 %}
 
 %init %{
+#ifdef SWIG_namespace
+  Tcl_Export(interp, Tcl_FindNamespace(interp, SWIG_namespace, NULL, TCL_GLOBAL_ONLY), "tip_*", 0);
+#endif
+#if 0
   /* Decrate all tip_* functions also on the global namespace... */
   for (i = 0; swig_commands[i].name; i++) {
     char *tip = strstr((char *) swig_commands[i].name, "tip_");
@@ -32,6 +36,7 @@
         (swig_wrapper_func) swig_commands[i].wrapper,
          swig_commands[i].clientdata, NULL);
   }
+#endif
   CDM_InitialiseObjTypes();
 %}
 

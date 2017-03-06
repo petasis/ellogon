@@ -71,6 +71,10 @@ namespace ELEP {
       std::string ensure_list_element(const std::string &str);
     }; /* namespace ELEP::CDM::Utilities */
 
+    namespace Unicode {
+      const std::string normalise_nfc(const std::string& data);
+    }; /* namespace ELEP::CDM::Unicode */
+
   }; /* namespace ELEP::CDM */
 }; /* namespace ELEP */
 #endif /* __cplusplus */
