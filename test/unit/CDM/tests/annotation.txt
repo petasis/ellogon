@@ -95,13 +95,13 @@ tip_AddAnnotation {{5 token {} {}}} {3 token {} {}}
 {3 token {} {}} {5 token {} {}}
 
 set o [CDM::Annotation -args token]; set r [$o save_XML]; $o -delete; set r
-<?xml version="1.0" encoding="utf-8"?><Ellogon><Annotation><id>18446744073709551615</id><type><ptr_wrapper><id>2147483649</id><data>token</data></ptr_wrapper></type><spans><min>18446744073709551615</min><max>0</max><set size="dynamic"/></spans><attributes><set size="dynamic"/></attributes></Annotation></Ellogon>
+<?xml version="1.0" encoding="utf-8"?><Ellogon><Annotation><id>4294967295</id><type><ptr_wrapper><id>2147483649</id><data>token</data></ptr_wrapper></type><spans><min>4294967295</min><max>0</max><set size="dynamic"/></spans><attributes><set size="dynamic"/></attributes></Annotation></Ellogon>
 
 set o [CDM::AnnotationSet -args token]; set r [$o save_XML]; $o -delete; set r
-<?xml version="1.0" encoding="utf-8"?><Ellogon><AnnotationSet><nextId>1</nextId></AnnotationSet></Ellogon>
+<?xml version="1.0" encoding="utf-8"?><Ellogon><AnnotationSet><nextId>1</nextId><set size="dynamic"><value0><id>0</id><type><ptr_wrapper><id>2147483649</id><data>token</data></ptr_wrapper></type><spans><min>4294967295</min><max>0</max><set size="dynamic"/></spans><attributes><set size="dynamic"/></attributes></value0></set></AnnotationSet></Ellogon>
 
 set o [CDM::Annotation -args token]; set r [$o save_JSON]; $o -delete; string map {\n {}} $r
-{"Annotation": {"id": 18446744073709551615,"type": {"ptr_wrapper": {"id": 2147483649,"data": "token"}},"spans": {"min": 18446744073709551615,"max": 0,"set": []},"attributes": {"set": []}}}
+{"Annotation": {"id": 4294967295,"type": {"ptr_wrapper": {"id": 2147483649,"data": "token"}},"spans": {"min": 4294967295,"max": 0,"set": []},"attributes": {"set": []}}}
 
 set o [CDM::AnnotationSet -args token]; set r [$o save_JSON]; $o -delete; string map {\n {}} $r
-{"AnnotationSet": {"nextId": 1}}
+{"AnnotationSet": {"nextId": 1,"set": [{"id": 0,"type": {"ptr_wrapper": {"id": 2147483649,"data": "token"}},"spans": {"min": 4294967295,"max": 0,"set": []},"attributes": {"set": []}}]}}

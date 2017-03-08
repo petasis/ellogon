@@ -32,12 +32,14 @@
 #ifndef ELLOGON_CDM
 #define ELLOGON_CDM
 
+#ifdef __cplusplus
+
 #ifndef SWIG
-#include <string>      /* For std::string    */
-#include <memory>      /* For smart pointers */
+#include <string>      /* For std::string             */
+#include <memory>      /* For smart pointers          */
+#include <cstdint>     /* For C++11 type uint32_t     */
 #endif /* SWIG */
 
-#ifdef __cplusplus
 namespace ELEP {
   namespace CDM {
     enum class                Status {OK = 0, ERROR = 1};
@@ -52,9 +54,9 @@ namespace ELEP {
                                   IMAGE              = 10,
                                   BASE64_IMAGE       = 11
     };
-    typedef unsigned long int Position;
-    typedef unsigned long int Id;
-    typedef unsigned int      Size;
+    typedef uint32_t          Position;
+    typedef uint32_t          Id;
+    typedef size_t            Size;
 
     namespace Cache {
       std::shared_ptr<std::string>
@@ -77,6 +79,8 @@ namespace ELEP {
 
   }; /* namespace ELEP::CDM */
 }; /* namespace ELEP */
+#else  /* __cplusplus */
+#include <stdint.h>
 #endif /* __cplusplus */
 
 /* Status */
@@ -95,13 +99,13 @@ namespace ELEP {
 #define CDM_BASE64_IMAGE             11
 
 typedef int               CDM_Status;
-typedef unsigned long int CDM_Position;
-typedef unsigned long int CDM_Id;
-typedef unsigned int      CDM_Size;
+typedef uint32_t          CDM_Position;
+typedef uint32_t          CDM_Id;
+typedef size_t            CDM_Size;
 typedef void *            CDM_Span;
 typedef void *            CDM_SpanSet;
 typedef void *            CDM_AttributeValue;
-typedef unsigned int      CDM_AttributeType;
+typedef uint8_t           CDM_AttributeType;
 typedef void *            CDM_Attribute;
 typedef void *            CDM_AttributeSet;
 typedef void *            CDM_Annotation;

@@ -39,6 +39,7 @@
 #include <cereal/types/vector.hpp>                /* std::vector      */
 #include <cereal/types/string.hpp>                /* std::string      */
 #include <cereal/types/memory.hpp>                /* std::shared_ptr  */
+#include <cereal/types/boost_multi_index.hpp>
 #endif /* SWIG */
 
 #ifdef __cplusplus

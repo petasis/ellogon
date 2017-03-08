@@ -396,7 +396,7 @@ namespace ELEP {
         friend class cereal::access;
         template <class Archive>
         void serialize( Archive & ar /*, const std::uint32_t version*/ ) {
-          ar( cereal::make_nvp("nextId", _next_ann_id) /*cereal::make_nvp("set", set)*/ );
+          ar( cereal::make_nvp("nextId", _next_ann_id), cereal::make_nvp("set", set) );
         }
         friend class serialisation::Serialisation<AnnotationSet>;
         static const char* serialise_variable_name() {return "AnnotationSet";};

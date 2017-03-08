@@ -32,7 +32,7 @@
 
 using namespace ELEP::CDM;
 
-const Id ELEP::CDM::Annotation::no = ULONG_MAX;
+const Id ELEP::CDM::Annotation::no = UINT32_MAX;
 
 ELEP::CDM::Annotation::Annotation() :
   _id {no}, _type(), _spans(), _attributes() {

@@ -32,10 +32,12 @@
 
 using namespace ELEP::CDM;
 
+const Position ELEP::CDM::Span::no = UINT32_MAX;
+
 #ifdef    ELLOGON_CDM_SPAN_USE_PAIR
 
 ELEP::CDM::Span::Span() :
-  segment {ULONG_MAX, ULONG_MAX} {
+  segment {ELEP::CDM::Span::no, ELEP::CDM::Span::no} {
 };
 
 ELEP::CDM::Span::Span(const Position start, const Position end) :
@@ -54,7 +56,7 @@ const Position& ELEP::CDM::Span::end() const {
 };
 
 bool ELEP::CDM::Span::valid() const {
-  return segment.first != ULONG_MAX && segment.second != ULONG_MAX;
+  return segment.first != ELEP::CDM::Span::no && segment.second != ELEP::CDM::Span::no;
 };
 
 const std::string ELEP::CDM::Span::toString() const {
@@ -75,7 +77,7 @@ bool ELEP::CDM::Span::operator< (const Span& span) const {
 
 #else  /* ELLOGON_CDM_SPAN_USE_PAIR */
 ELEP::CDM::Span::Span() :
-  _start {ULONG_MAX}, _end {ULONG_MAX} {
+  _start {ELEP::CDM::Span::no}, _end {ELEP::CDM::Span::no} {
 };
 
 ELEP::CDM::Span::Span(const Position start, const Position end) :
@@ -107,7 +109,7 @@ void ELEP::CDM::Span::end(const Position end) {
 };
 
 bool ELEP::CDM::Span::valid() const {
-  return _start != ULONG_MAX && _end != ULONG_MAX;
+  return _start != ELEP::CDM::Span::no && _end != ELEP::CDM::Span::no;
 };
 
 const std::string ELEP::CDM::Span::toString() const {
@@ -169,7 +171,7 @@ bool ELEP::CDM::Span::matchesRange(const Position s, const Position e) const {
   return s == _start && e == _end;
 };
 
-ELEP::CDM::SpanSet::SpanSet() : set(), _min {ULONG_MAX}, _max {0} {
+ELEP::CDM::SpanSet::SpanSet() : set(), _min {ELEP::CDM::Span::no}, _max {0} {
 };
 
 ELEP::CDM::SpanSet::SpanSet(const Position start, const Position end):
@@ -180,7 +182,7 @@ ELEP::CDM::SpanSet::SpanSet(const SpanSet& src) : set(src.set), _min(src._min), 
 };
 
 #ifdef TCL_VERSION
-ELEP::CDM::SpanSet::SpanSet(Tcl_Interp *interp, Tcl_Obj *obj) : set(), _min {ULONG_MAX}, _max {0} {
+ELEP::CDM::SpanSet::SpanSet(Tcl_Interp *interp, Tcl_Obj *obj) : set(), _min {ELEP::CDM::Span::no}, _max {0} {
   Tcl_Obj **items;
   int count;
   /* A valid span set is a list of spans... */
@@ -196,12 +198,12 @@ ELEP::CDM::SpanSet::SpanSet(Tcl_Interp *interp, Tcl_Obj *obj) : set(), _min {ULO
 #endif /* TCL_VERSION */
 
 const Position& ELEP::CDM::SpanSet::firstSpanStart() const {
-  if (set.empty()) return ULONG_MAX;
+  if (set.empty()) return ELEP::CDM::Span::no;
   return set.cbegin()->start();
 };
 
 const Position& ELEP::CDM::SpanSet::firstSpanEnd() const {
-  if (set.empty()) return ULONG_MAX;
+  if (set.empty()) return ELEP::CDM::Span::no;
   return set.cbegin()->end();
 };
 
@@ -244,7 +246,7 @@ const std::string ELEP::CDM::SpanSet::toString() const {
 };
 
 void ELEP::CDM::SpanSet::update_boundaries() {
-  _min = ULONG_MAX; _max = 0;
+  _min = ELEP::CDM::Span::no; _max = 0;
   std::for_each(set.cbegin(), set.cend(),
                [&](const value_type& val){update_boundaries(val);});
 };
@@ -279,13 +281,13 @@ CDM_Span CDM_CreateSpan(const CDM_Position start, const CDM_Position end) {
 CDM_Position CDM_GetStart(const CDM_Span span) {
   const ELEP::CDM::Span *p = reinterpret_cast<const ELEP::CDM::Span*>(span);
   if (p) return p->start();
-  return ULONG_MAX;
+  return ELEP::CDM::Span::no;
 };
 
 CDM_Position CDM_GetEnd(const CDM_Span span) {
   const ELEP::CDM::Span *p = reinterpret_cast<const ELEP::CDM::Span*>(span);
   if (p) return p->end();
-  return ULONG_MAX;
+  return ELEP::CDM::Span::no;
 };
 
 CDM_Status CDM_GetSpanOffsets(const CDM_Span span, CDM_Position *start,
@@ -337,7 +339,7 @@ CDM_Status CDM_AddSpan(CDM_SpanSet spans, const CDM_Position start,
 CDM_Position CDM_SpanSetOffsetMin(const CDM_SpanSet spans) {
   const ELEP::CDM::SpanSet *p = reinterpret_cast<const ELEP::CDM::SpanSet*>(spans);
   if (p) return p->min();
-  return ULONG_MAX;
+  return ELEP::CDM::Span::no;
 };
 
 CDM_Position CDM_SpanSetOffsetMax(const CDM_SpanSet spans) {

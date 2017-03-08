@@ -90,7 +90,7 @@ namespace ELEP {
         void serialize( Archive & ar /*, const std::uint32_t version*/ ) {
           ar( cereal::make_nvp("id", _id), cereal::make_nvp("externalId", _external_id),
               cereal::make_nvp("collection", _collection), cereal::make_nvp("data", _data),
-              cereal::make_nvp("annotations", _annotations), cereal::make_nvp("annotations", _annotations) );
+              cereal::make_nvp("attributes", _attributes), cereal::make_nvp("annotations", _annotations) );
         }
         friend class serialisation::Serialisation<Document>;
         static const char* serialise_variable_name() {return "Document";};
@@ -222,7 +222,7 @@ namespace ELEP {
         template <class Archive>
         void serialize( Archive & ar /*, const std::uint32_t version*/ ) {
           ar( cereal::make_nvp("id", _id), cereal::make_nvp("attributes", _attributes),
-              cereal::make_nvp("documents", set)  );
+              cereal::make_nvp("documents", set) );
         }
         friend class serialisation::Serialisation<Collection>;
         static const char* serialise_variable_name() {return "Collection";};

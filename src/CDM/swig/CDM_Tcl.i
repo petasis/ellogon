@@ -1,4 +1,5 @@
 /* Language independent exception handler */
+%include stdint.i
 %include typemaps.i
 %include exception.i
 %include stl.i
@@ -420,6 +421,16 @@
  * Integer types
  */
 
+%typemap(out) ELEP::CDM::Position
+%{// Typemap(out) ELEP::CDM::Position
+  if ($1 != ELEP::CDM::Span::no) {
+    Tcl_SetObjResult(interp, SWIG_From_unsigned_SS_long(static_cast< unsigned long >($1)));
+  } else {
+   Tcl_SetObjResult(interp, Tcl_NewStringObj("", 0));
+  };%}
+
+%typemap(out) CDM_Position = ELEP::CDM::Position;
+
 %typemap(in) ELEP::CDM::Position& (ELEP::CDM::Position position)
 %{// Typemap(in) ELEP::CDM::Position&
   $1 = &position;%}
@@ -429,8 +440,17 @@
   if (Tcl_ObjSetVar2(interp, $input, NULL, SWIG_From_unsigned_SS_long(*$1),
                      TCL_LEAVE_ERR_MSG) == NULL) SWIG_fail;%}
 
+%typemap(out) ELEP::CDM::Position&
+%{// Typemap(out) ELEP::CDM::Position&
+  if (*$1 != ELEP::CDM::Span::no) {
+    Tcl_SetObjResult(interp, SWIG_From_unsigned_SS_long(static_cast< unsigned long >(*$1)));
+  } else {
+   Tcl_SetObjResult(interp, Tcl_NewStringObj("", 0));
+  };%}
+
 %typemap(in)     CDM_Position* = ELEP::CDM::Position&;
 %typemap(argout) CDM_Position* = ELEP::CDM::Position&;
+%typemap(out)    CDM_Position* = ELEP::CDM::Position&;
 
 %typemap(out) ELEP::CDM::SpanSet::size_type = unsigned int;
 

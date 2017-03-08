@@ -178,29 +178,31 @@ ELEP::CDM::Collection::Collection(const Collection& src) :
 };
 
 #ifdef TCL_VERSION
-ELEP::CDM::Collection::Collection(Tcl_Interp *interp, Tcl_Obj *obj) {
+ELEP::CDM::Collection::Collection(Tcl_Interp *interp, Tcl_Obj *obj) : set() {
   Tcl_Obj **items;
   int count;
-  Tcl_WideInt start, end;
+  const char *str;
+  int len;
 
-  /* A valid Collection is a list with 2 integers... */
+  /* A valid Collection is a list with 3 elements... */
   if (Tcl_ListObjGetElements(interp, obj, &count, &items) != TCL_OK ||
-      count != 2) {
-    std::string msg("invalid Collection (2-item list expected): ");
+      count != 3) {
+    std::string msg("invalid Collection (3-item list expected): ");
     msg += Tcl_GetStringResult(interp);
     throw std::invalid_argument(msg);
   }
-  if (Tcl_GetWideIntFromObj(interp, items[0], &start) != TCL_OK) {
-    std::string msg("invalid Collection start (unsigned integer expected): ");
+  str = Tcl_GetStringFromObj(items[0], &len);
+  _id = {str, (size_t) len};
+  _attributes = AttributeSet(interp, items[1]);
+  /* The last object is a list of documents... */
+  if (Tcl_ListObjGetElements(interp, items[2], &count, &items) != TCL_OK) {
+    std::string msg("invalid list of Documents: ");
     msg += Tcl_GetStringResult(interp);
     throw std::invalid_argument(msg);
   }
-  if (Tcl_GetWideIntFromObj(interp, items[1], &end) != TCL_OK) {
-    std::string msg("invalid Collection end (unsigned integer expected): ");
-    msg += Tcl_GetStringResult(interp);
-    throw std::invalid_argument(msg);
+  for (int i = 0; i < count; ++i) {
+    set.push_back(Document(interp, items[i]));
   }
-  if (start > end) throw std::invalid_argument("start exceeds end");
 };
 #endif /* TCL_VERSION */
 
@@ -210,6 +212,18 @@ bool ELEP::CDM::Collection::valid() const {
 
 const std::string ELEP::CDM::Collection::toString() const {
   std::ostringstream ss;
+  bool add_space = false;
+  ss << '{' << ELEP::CDM::Utilities::ensure_list_element(_id) << '}'
+     << ' '
+     << '{' << _attributes.toString() << '}'
+     << ' '
+     << '{';
+  for(auto && doc : set) {
+    if (add_space) ss << ' ';
+    ss << '{' << doc.toString() << '}';
+    add_space = true;
+  }
+  ss << '}';
   return ss.str();
 };
 

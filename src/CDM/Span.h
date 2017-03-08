@@ -51,6 +51,8 @@ namespace ELEP {
 
     class Span: public serialisation::Serialisation<Span> {
       public:
+        static const Position no;
+
         Span();
         Span(const Position start, const Position end);
         Span(const Span& src);
