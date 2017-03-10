@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added serialisation through the [cereal](http://uscilab.github.io/cereal/index.html) C++ library. Library headers have been copied to src/CDM/cereal (2017-02-26).
 - Added UNICODE normalisation (NFC) through boost::locale.
 - Changed unsigned long to uint32\_t.
+- Allowed Tcl functions \(tip\_\*\) to accept either CDM objects wrapped as Tcl value objects, or as SWIG objects. For example, both "tip\_GetType [CDM::Annotation -args token]" and "tip\_GetType {{} token {} {}}" are valid.
 
 ### Changed
 ### Deprecated

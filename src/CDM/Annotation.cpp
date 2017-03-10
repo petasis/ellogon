@@ -228,109 +228,110 @@ ELEP::CDM::Annotation::Annotation(Tcl_Interp *interp, Tcl_Obj *obj) :
 };
 #endif /* TCL_VERSION */
 
-ELEP::CDM::AnnotationSet::AnnotationSet() : set(), _next_ann_id(0) {
+ELEP::CDM::AnnotationSet::AnnotationSet() :
+  set(), _next_ann_id(0), _modified(false) {
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const Annotation &annotation):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(annotation);
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(Annotation &&annotation):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(annotation);
 };
 
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type,
       const SpanSet &spans):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type, spans));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type,
       const SpanSet &spans, const AttributeSet &attributes):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type, spans, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type,
       const AttributeSet &attributes):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type,
       SpanSet &&spans):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type, spans));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type,
       SpanSet &&spans, AttributeSet &&attributes):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type, spans, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const char *type,
       AttributeSet &&attributes):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type,
       const SpanSet &spans):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type, spans));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type,
       const SpanSet &spans, const AttributeSet &attributes):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type, spans, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type,
       const AttributeSet &attributes):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type,
       SpanSet &&spans):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type, spans));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type,
       SpanSet &&spans, AttributeSet &&attributes):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type, spans, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const std::string &type,
       AttributeSet &&attributes):
-  set(), _next_ann_id(0) {
+  set(), _next_ann_id(0), _modified(false) {
   insert(Annotation(type, attributes));
 };
 
 ELEP::CDM::AnnotationSet::AnnotationSet(const AnnotationSet& src) :
-  set(src.set), _next_ann_id(src._next_ann_id) {
+  set(src.set), _next_ann_id(src._next_ann_id), _modified(src._modified) {
 };
 
 #ifdef TCL_VERSION
 ELEP::CDM::AnnotationSet::AnnotationSet(Tcl_Interp *interp, Tcl_Obj *obj):
-  _next_ann_id(0), set() {
+  _next_ann_id(0), set(), _modified(false) {
   Tcl_Obj **items;
   int count;
   /* A valid Annotation set is a list of Annotations... */
@@ -369,6 +370,7 @@ const std::string ELEP::CDM::AnnotationSet::toString() const {
 
 std::pair<ELEP::CDM::AnnotationSet::iterator, bool>
 ELEP::CDM::AnnotationSet::insert(const ELEP::CDM::AnnotationSet::value_type& x) {
+  _modified = true;
   if (x.emptyId()) {
     return set.insert(Annotation(_next_ann_id++, x.type(),
                       x._spans, x._attributes));
@@ -384,6 +386,7 @@ ELEP::CDM::AnnotationSet::insert(const ELEP::CDM::AnnotationSet::value_type& x) 
 
 std::pair<ELEP::CDM::AnnotationSet::iterator, bool>
 ELEP::CDM::AnnotationSet::insert(ELEP::CDM::AnnotationSet::value_type&& x) {
+  _modified = true;
   if (x.emptyId()) {
     x._id = _next_ann_id++;
     return set.insert(x);
@@ -404,9 +407,9 @@ CDM_Annotation CDM_CreateAnnotation(const char *type, const CDM_SpanSet spans,
                                     const CDM_AttributeSet attributes) {
   ELEP::CDM::Annotation *p = nullptr;
   const ELEP::CDM::SpanSet *s =
-        reinterpret_cast<const ELEP::CDM::SpanSet*>(spans);
+        static_cast<const ELEP::CDM::SpanSet*>(spans);
   const ELEP::CDM::AttributeSet *a =
-        reinterpret_cast<const ELEP::CDM::AttributeSet*>(attributes);
+        static_cast<const ELEP::CDM::AttributeSet*>(attributes);
   if (s) {
     if (a) p = new ELEP::CDM::Annotation(type, (const ELEP::CDM::SpanSet) *s, (const ELEP::CDM::AttributeSet) *a);
     else   p = new ELEP::CDM::Annotation(type, (const ELEP::CDM::SpanSet) *s);
@@ -423,7 +426,7 @@ CDM_Annotation CDM_CreateAnnotation(const char *type,
                                     const CDM_AttributeSet attributes) {
   ELEP::CDM::Annotation *p = nullptr;
   const ELEP::CDM::AttributeSet *a =
-        reinterpret_cast<const ELEP::CDM::AttributeSet*>(attributes);
+        static_cast<const ELEP::CDM::AttributeSet*>(attributes);
   if (a) p = new ELEP::CDM::Annotation(type, SpanSet(start, end), *a);
   else   p = new ELEP::CDM::Annotation(type, SpanSet(start, end));
   return p;
@@ -432,7 +435,7 @@ CDM_Annotation CDM_CreateAnnotation(const char *type,
 int CDM_AnnotationContainsAttributeMatchingValue(const CDM_Annotation Ann,
         const char *AttributeName, const char *ValuePattern) {
   const ELEP::CDM::Annotation *a =
-        reinterpret_cast<const ELEP::CDM::Annotation*>(Ann);
+        static_cast<const ELEP::CDM::Annotation*>(Ann);
   if (a) return a->containsAttributeMatchingValue(AttributeName, ValuePattern);
   return false;
 };
@@ -440,7 +443,7 @@ int CDM_AnnotationContainsAttributeMatchingValue(const CDM_Annotation Ann,
 int CDM_AnnotationContainsPosition(const CDM_Annotation Ann,
         const CDM_Position Position) {
   const ELEP::CDM::Annotation *a =
-        reinterpret_cast<const ELEP::CDM::Annotation*>(Ann);
+        static_cast<const ELEP::CDM::Annotation*>(Ann);
   if (a) return a->contains(Position);
   return false;
 };
@@ -448,7 +451,7 @@ int CDM_AnnotationContainsPosition(const CDM_Annotation Ann,
 int CDM_AnnotationMatchesRange(const CDM_Annotation Ann,
          const CDM_Position start, const CDM_Position end) {
   const ELEP::CDM::Annotation *a =
-        reinterpret_cast<const ELEP::CDM::Annotation*>(Ann);
+        static_cast<const ELEP::CDM::Annotation*>(Ann);
   if (a) return a->matchesRange(start, end);
   return false;
 };
@@ -456,9 +459,9 @@ int CDM_AnnotationMatchesRange(const CDM_Annotation Ann,
 int CDM_CompareAnnotations(const CDM_Annotation Ann1,
                            const CDM_Annotation Ann2) {
   const ELEP::CDM::Annotation *a1 =
-        reinterpret_cast<const ELEP::CDM::Annotation*>(Ann1);
+        static_cast<const ELEP::CDM::Annotation*>(Ann1);
   const ELEP::CDM::Annotation *a2 =
-        reinterpret_cast<const ELEP::CDM::Annotation*>(Ann2);
+        static_cast<const ELEP::CDM::Annotation*>(Ann2);
   if (!a1) return  1;
   if (!a2) return -1;
   if (*a1 < *a2) return -1;
@@ -469,7 +472,7 @@ int CDM_CompareAnnotations(const CDM_Annotation Ann1,
 
 const CDM_SpanSet CDM_GetSpans(const CDM_Annotation Ann) {
   const ELEP::CDM::Annotation *a =
-        reinterpret_cast<const ELEP::CDM::Annotation*>(Ann);
+        static_cast<const ELEP::CDM::Annotation*>(Ann);
   if (a) return (const CDM_SpanSet) &(a->spans());
   return nullptr;
 };
@@ -477,7 +480,7 @@ const CDM_SpanSet CDM_GetSpans(const CDM_Annotation Ann) {
 const CDM_Attribute CDM_GetAttribute(const CDM_Annotation Annotation,
                                      const char *Name) {
   const ELEP::CDM::Annotation *a =
-        reinterpret_cast<const ELEP::CDM::Annotation*>(Annotation);
+        static_cast<const ELEP::CDM::Annotation*>(Annotation);
   if (a) {
     auto it = a->find(Name);
     if (it != a->attributes().end()) return (const CDM_Attribute) &(*it);
@@ -487,17 +490,17 @@ const CDM_Attribute CDM_GetAttribute(const CDM_Annotation Annotation,
 
 const CDM_AttributeSet CDM_GetAttributes(const CDM_Annotation Annotation) {
   const ELEP::CDM::Annotation *a =
-        reinterpret_cast<const ELEP::CDM::Annotation*>(Annotation);
+        static_cast<const ELEP::CDM::Annotation*>(Annotation);
   if (a) return (const CDM_AttributeSet) &(a->attributes());
   return nullptr;
 };
 
 CDM_Status CDM_PutAttribute(CDM_Annotation Ann, const CDM_Attribute Attr) {
   ELEP::CDM::Annotation *a =
-        reinterpret_cast<ELEP::CDM::Annotation*>(Ann);
+        static_cast<ELEP::CDM::Annotation*>(Ann);
   if (!a) return CDM_ERROR;
   const ELEP::CDM::Attribute *at =
-        reinterpret_cast<const ELEP::CDM::Attribute*>(Attr);
+        static_cast<const ELEP::CDM::Attribute*>(Attr);
   if (!at) return CDM_ERROR;
   a->putAttribute(*at);
   return CDM_OK;
@@ -505,7 +508,7 @@ CDM_Status CDM_PutAttribute(CDM_Annotation Ann, const CDM_Attribute Attr) {
 
 CDM_Status CDM_RemoveAttribute(CDM_Annotation Ann, const char *Name) {
   ELEP::CDM::Annotation *a =
-        reinterpret_cast<ELEP::CDM::Annotation*>(Ann);
+        static_cast<ELEP::CDM::Annotation*>(Ann);
   if (!a) return CDM_ERROR;
   a->removeAttribute(Name);
   return CDM_OK;
@@ -513,14 +516,14 @@ CDM_Status CDM_RemoveAttribute(CDM_Annotation Ann, const char *Name) {
 
 const CDM_ByteSequence CDM_GetType(const CDM_Annotation Ann) {
   ELEP::CDM::Annotation *a =
-        reinterpret_cast<ELEP::CDM::Annotation*>(Ann);
+        static_cast<ELEP::CDM::Annotation*>(Ann);
   if (!a) return nullptr;
   return (const CDM_ByteSequence) a->type().c_str();
 };
 
 CDM_Id CDM_GetId(const CDM_Annotation Ann) {
   ELEP::CDM::Annotation *a =
-        reinterpret_cast<ELEP::CDM::Annotation*>(Ann);
+        static_cast<ELEP::CDM::Annotation*>(Ann);
   if (!a) return ELEP::CDM::Annotation::no;
   return a->id();
 };
@@ -529,15 +532,15 @@ CDM_Id CDM_GetId(const CDM_Annotation Ann) {
  * CDM_AnnotationSet
  */
 CDM_AnnotationSet CDM_CreateAnnotationSet() {
-  return new ELEP::CDM::AnnotationSet();
+  return static_cast<CDM_AnnotationSet>( new ELEP::CDM::AnnotationSet() );
 };
 
-CDM_Status CDM_AddAnnotation(CDM_AnnotationSet Set, const CDM_Annotation Ann) {
+CDM_Status CDM_AddAnnotationToSet(CDM_AnnotationSet Set, const CDM_Annotation Ann) {
   ELEP::CDM::AnnotationSet *s =
-        reinterpret_cast<ELEP::CDM::AnnotationSet*>(Set);
+        static_cast<ELEP::CDM::AnnotationSet*>(Set);
   if (!s) return CDM_ERROR;
   const ELEP::CDM::Annotation *a =
-        reinterpret_cast<const ELEP::CDM::Annotation*>(Ann);
+        static_cast<const ELEP::CDM::Annotation*>(Ann);
   if (!a) return CDM_ERROR;
   s->addAnnotation(*a);
   return CDM_OK;
@@ -545,14 +548,14 @@ CDM_Status CDM_AddAnnotation(CDM_AnnotationSet Set, const CDM_Annotation Ann) {
 
 CDM_Size CDM_Length(const CDM_AnnotationSet Set) {
   const ELEP::CDM::AnnotationSet *s =
-        reinterpret_cast<const ELEP::CDM::AnnotationSet*>(Set);
+        static_cast<const ELEP::CDM::AnnotationSet*>(Set);
   if (!s) return 0;
   return s->size();
 };
 
 const CDM_Annotation CDM_Nth(const CDM_AnnotationSet Set, CDM_Size n) {
   const ELEP::CDM::AnnotationSet *s =
-        reinterpret_cast<const ELEP::CDM::AnnotationSet*>(Set);
+        static_cast<const ELEP::CDM::AnnotationSet*>(Set);
   if (!s) return nullptr;
   return (const CDM_Annotation) &(s->at(n));
 };
@@ -560,10 +563,10 @@ const CDM_Annotation CDM_Nth(const CDM_AnnotationSet Set, CDM_Size n) {
 CDM_Status CDM_MergeAnnotations(CDM_AnnotationSet Set1,
                                 const CDM_AnnotationSet Set2) {
   ELEP::CDM::AnnotationSet *s1 =
-        reinterpret_cast<ELEP::CDM::AnnotationSet*>(Set1);
+        static_cast<ELEP::CDM::AnnotationSet*>(Set1);
   if (!s1) return CDM_ERROR;
   const ELEP::CDM::AnnotationSet *s2 =
-        reinterpret_cast<const ELEP::CDM::AnnotationSet*>(Set2);
+        static_cast<const ELEP::CDM::AnnotationSet*>(Set2);
   if (!s2) return CDM_ERROR;
   s1->mergeAnnotations(*s2);
   return CDM_OK;

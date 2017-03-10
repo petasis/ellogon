@@ -145,6 +145,14 @@ const AnnotationSet& ELEP::CDM::Document::annotations() const {
   return _annotations;
 };
 
+ELEP::CDM::Id ELEP::CDM::Document::addAnnotation(const Annotation& ann) {
+  return _annotations.addAnnotation(ann);
+};
+
+ELEP::CDM::Id ELEP::CDM::Document::addAnnotation(const Annotation&& ann) {
+  return _annotations.addAnnotation(ann);
+};
+
 bool ELEP::CDM::Document::valid() const {
   return true;
 };
@@ -234,13 +242,18 @@ bool ELEP::CDM::Collection::operator< (const Collection& Collection) const {
 CDM_Document CDM_CreateDocument(const char *name, const CDM_ByteSequence data,
     const CDM_AttributeSet attributes, const CDM_AnnotationSet annotations) {
   const ELEP::CDM::AttributeSet *attrs =
-        reinterpret_cast<const ELEP::CDM::AttributeSet*>(attributes);
+        static_cast<const ELEP::CDM::AttributeSet*>(attributes);
   if (!name || *name == '\0') return nullptr;
   if (!attrs) return nullptr;
   const ELEP::CDM::AnnotationSet *anns =
-        reinterpret_cast<const ELEP::CDM::AnnotationSet*>(annotations);
+        static_cast<const ELEP::CDM::AnnotationSet*>(annotations);
   if (!anns) return nullptr;
   return new Document(name, data, *attrs, *anns);
 };
 
-
+CDM_Id CDM_AddAnnotation(CDM_Document Document, const CDM_Annotation Ann) {
+  if (!Document || !Ann) return ELEP::CDM::Annotation::no;
+  ELEP::CDM::Document *d = static_cast<ELEP::CDM::Document*>(Document);
+  const ELEP::CDM::Annotation *a = static_cast<ELEP::CDM::Annotation*>(Ann);
+  return d->addAnnotation(*a);
+};

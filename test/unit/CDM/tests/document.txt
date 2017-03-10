@@ -13,3 +13,8 @@ set o [CDM::Collection]; set r [$o toString]; $o -delete; set r
 set o [CDM::Document -args /tmp/test {Μείωση σοκ κατά 1,2% σημείωσε το ΑΕΠ στο τέταρτο τρίμηνο του έτους}]; set r [string map {\n {}} [$o save_JSON]]; $o -delete; set r
 {"Document": {"id": "test","externalId": "/tmp/test","collection": {"ptr_wrapper": {"id": 0}},"data": "Μείωση σοκ κατά 1,2% σημείωσε το ΑΕΠ στο τέταρτο τρίμηνο του έτους","attributes": {"set": []},"annotations": {"nextId": 0,"set": []}}}
 
+set o [CDM::Document]; tip_AddAnnotation $o {{} token {} {}}; tip_AddAnnotation $o {{} token {} {}}; set r [$o toString]; $o -delete; set r
+{} {} {} {} {{0 token {} {}} {1 token {} {}}} {}
+
+set o [CDM::Document]; tip_AddAnnotation $o [CDM::Annotation -args token]; set r [$o toString]; $o -delete; set r
+{} {} {} {} {{0 token {} {}}} {}

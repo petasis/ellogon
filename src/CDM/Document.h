@@ -71,6 +71,11 @@ namespace ELEP {
         const AttributeSet&          attributes()  const;
         const AnnotationSet&         annotations() const;
 
+        Id                           addAnnotation(const Annotation& ann);
+#ifndef SWIG
+        Id                           addAnnotation(const Annotation&& ann);
+#endif /* SWIG */
+
         bool                         valid()       const;
         const std::string            toString()    const;
 
@@ -232,20 +237,109 @@ namespace ELEP {
 }; /* namespace ELEP */
 #endif /* __cplusplus */
 
-CDM_Document CDM_CreateDocument(const char *name, const CDM_ByteSequence data, const CDM_AttributeSet attributes, const CDM_AnnotationSet annotations);
-
+CDM_Id                CDM_AddAnnotation(CDM_Document Document, const CDM_Annotation Ann);
+CDM_Document          CDM_CreateDocument(const char *name, const CDM_ByteSequence data, const CDM_AttributeSet attributes, const CDM_AnnotationSet annotations);
 #if 0
-CDM_Position CDM_GetStart(const CDM_Document Document);
-CDM_Position CDM_GetEnd(const CDM_Document Document);
-CDM_Status   CDM_GetDocumentOffsets(const CDM_Document Document, CDM_Position *start, CDM_Position *end);
+CDM_AnnotationSet     CDM_AnnotationsAt(const CDM_Document Document, const CDM_Position Position);
+CDM_AnnotationSet     CDM_AnnotationsContaining(const CDM_Document Document, const CDM_Position Position);
+CDM_AnnotationSet     CDM_AnnotationsContaining(const CDM_Document Document, const CDM_Position Position1, const CDM_Position Position2);
+CDM_AnnotationSet     CDM_AnnotationsInRange(const CDM_Document Document, const CDM_Position Start, const CDM_Position End);
+CDM_AnnotationSet     CDM_AnnotationsMatchingRange(const CDM_Document Document, const CDM_Position Start, const CDM_Position End);
+CDM_ByteSequence      CDM_ByteSequenceInsertString(CDM_Document Document, const CDM_Position pos, const char *string);
+CDM_ByteSequence      CDM_ByteSequenceReplaceCharacters(CDM_Document Document, const CDM_Position pos, int chars, const char *string);
+CDM_ByteSequence      CDM_ByteSequenceReplace(CDM_Document Document, const CDM_Position first, const CDM_Position last, const char *newstring);
+CDM_Status            CDM_Close(CDM_Document Document);
+CDM_Status            CDM_DeleteAnnotations(CDM_Document Document, const char *Type);
+CDM_Status            CDM_DeleteAnnotations(CDM_Document Document, const char *Type, const char *Constraints);
+CDM_Status            CDM_DeleteAttributes(CDM_Document Document);
+CDM_Status            CDM_DisplaceAnnotations(CDM_Document Document, const CDM_Position offset, const CDM_Position displacement);
+CDM_Id                CDM_FindMaxUsedAnnotationId(const CDM_Document Document);
+CDM_Annotation        CDM_FirstAnnotationContaining(const CDM_Document Document, const CDM_Position Position);
+CDM_Annotation        CDM_FirstAnnotationContaining(const CDM_Document Document, const CDM_Position Position1, const CDM_Position Position2);
+CDM_ByteSequenceSet   CDM_GetAnnotatedTextRanges(const CDM_Document Document, const CDM_Annotation Annotation);
+CDM_Annotation        CDM_GetAnnotation(const CDM_Document Document, const CDM_Id Id);
+CDM_AnnotationSet     CDM_GetAnnotations(const CDM_Document Document);
+CDM_Attribute         CDM_GetAttribute(const CDM_Document Document, const char *Name);
+CDM_AttributeSet      CDM_GetAttributes(const CDM_Document Document);
+CDM_AttributeValue    CDM_GetAttributeValue(const CDM_Document Document, const char *Name, const CDM_AttributeValue def = NULL);
+CDM_ByteSequence      CDM_GetByteSequence(const CDM_Document Document);
+const char*           CDM_GetExternalId(const CDM_Document Document);
+CDM_ByteSequenceSet   CDM_GetFirstAnnotatedTextRange(const CDM_Document Document, const CDM_Annotation Annotation);
+CDM_Annotation        CDM_GetFirstAnnotation(const CDM_Document Document, const char *Type);
+const char*           CDM_GetId(const CDM_Collection Collection, const CDM_Document Document);
+const char*           CDM_GetId(const CDM_Document Document);
+CDM_Annotation        CDM_GetNextAnnotation(const CDM_Document Document);
+CDM_Collection        CDM_GetParent(const CDM_Document Document);
+int                   CDM_Modified(const CDM_Document Document);
+int                   CDM_Modified(const CDM_Document Document, const int value);
+CDM_AnnotationSet     CDM_NextAnnotations(const CDM_Document Document, const CDM_Position Position);
+CDM_Status            CDM_PutAttribute(CDM_Document Document, const CDM_Attribute Attr);
+int                   CDM_ReadOnly(const CDM_Document Document);
+int                   CDM_ReadOnly(CDM_Document Document, const int value);
+CDM_Status            CDM_RemoveAnnotation(CDM_Document Document, const CDM_Id Id);
+CDM_Status            CDM_RemoveAttribute(CDM_Document Document, const char *Name);
+CDM_AnnotationSet     CDM_SelectAnnotations(const CDM_Document Document, const char *Type);
+CDM_AnnotationSet     CDM_SelectAnnotations(const CDM_Document Document, const char *Type, const char *Constraints);
+CDM_AnnotationSet     CDM_SelectAnnotationsSorted(const CDM_Document Document, const char *Type);
+CDM_AnnotationSet     CDM_SelectAnnotationsSorted(const CDM_Document Document, const char *Type, const char *Constraints);
+CDM_Status            CDM_SetByteSequence(CDM_Document Document, const CDM_ByteSequence Text);
+CDM_Status            CDM_SetExternalId(CDM_Document Document, const char *ExternalId);
+CDM_Status            CDM_Sync(const CDM_Document Document);
+CDM_Status            CDM_Free(CDM_Document Document);
+CDM_Status            CDM_Reset(CDM_Document Document);
 
-CDM_Collection  CDM_CreateCollection();
-CDM_Collection  CDM_CreateCollection(const CDM_Position start, const CDM_Position end);
-CDM_Status   CDM_GetFirstDocumentOffsets(const CDM_Collection Documents, CDM_Position *start, CDM_Position *end);
-CDM_Status   CDM_AddDocument(CDM_Collection Documents, const CDM_Document Document);
-CDM_Status   CDM_AddDocument(CDM_Collection Documents, const CDM_Position start, const CDM_Position end);
-CDM_Position CDM_CollectionOffsetMin(const CDM_Collection Documents);
-CDM_Position CDM_CollectionOffsetMax(const CDM_Collection Documents);
+int                   CDM_Close(CDM_Collection Collection);
+CDM_Collection        CDM_CreateCollection(
+                          char *Name, CDM_AttributeSet Attributes, char *Encoding);
+CDM_Collection        CDM_CreateCollection(char *Name,CDM_AttributeSet Attributes);
+CDM_Document          CDM_CreateDocument(
+                          CDM_Collection Collection, char *ExternalId,
+                          CDM_ByteSequence RawData, CDM_AnnotationSet Annotations,
+                          CDM_AttributeSet Attributes, char *Encoding);
+CDM_Document          CDM_CreateDocument(
+                          CDM_Collection Collection, char *ExternalId,
+                          CDM_ByteSequence RawData, CDM_AnnotationSet Annotations,
+                          CDM_AttributeSet Attributes);
+int                   CDM_DeleteAttributes(CDM_Collection Collection);
+int                   CDM_Destroy(char *Name);
+CDM_Document          CDM_FirstDocument(CDM_Collection Collection);
+Tcl_Obj           *   CDM_GetAssociatedInfo(CDM_Collection Collection);
+CDM_Attribute         CDM_GetAttribute(CDM_Collection Collection,
+                                       const char *Name);
+CDM_AttributeSet      CDM_GetAttributes(CDM_Collection Collection);
+CDM_AttributeValue    CDM_GetAttributeValue(CDM_Collection Collection,
+                      const char *Name, CDM_AttributeValue def = NULL);
+CDM_Document          CDM_GetByExternalId(CDM_Collection Collection, char *XID);
+void              *   CDM_GetClientData(CDM_Collection Collection);
+Tcl_Obj           *   CDM_GetComment(CDM_Collection Collection);
+CDM_Document          CDM_GetDocument(CDM_Collection Collection, char *Id);
+char              *   CDM_GetEncoding(CDM_Collection Collection);
+char              *   CDM_GetName(CDM_Collection Collection);
+unsigned long         CDM_GetOpenedDocumentIndex(CDM_Collection Collection,
+                                                 CDM_Document   Document);
+char              *   CDM_GetOwner(CDM_Collection Collection);
+unsigned long         CDM_Length(CDM_Collection Collection);
+int                   CDM_Modified(CDM_Collection Collection);
+int                   CDM_Modified(CDM_Collection Collection, int *result);
+int                   CDM_Modified(CDM_Collection Collection, int value);
+CDM_Document          CDM_NextDocument(CDM_Collection Collection);
+CDM_Collection        CDM_OpenCollection(CDM_CONST char *Path);
+int                   CDM_PutAttribute(CDM_Collection Collection,
+                                       CDM_Attribute Attr);
+int                   CDM_ReadOnly(CDM_Collection Collection);
+int                   CDM_ReadOnly(CDM_Collection Collection, int *result);
+int                   CDM_ReadOnly(CDM_Collection Collection, int value);
+int                   CDM_RemoveAttribute(CDM_Collection Collection, char *Name);
+int                   CDM_RemoveDocument(CDM_Collection Collection, char *Id);
+int                   CDM_SetAssociatedInfo(CDM_Collection Collection,
+                                       Tcl_Obj *Info);
+int                   CDM_SetClientData(CDM_Collection Collection, void *data);
+int                   CDM_SetComment(CDM_Collection Collection, Tcl_Obj *Info);
+char              *   CDM_SetEncoding(CDM_Collection Collection, char *Encoding);
+char              *   CDM_SetOwner(CDM_Collection Collection, char *Owner);
+char              *   CDM_SetName(CDM_Collection Collection, char *Name);
+CDM_ByteSequence      CDM_Status(CDM_Collection Collection);
+int                   CDM_Sync(CDM_Collection Collection);
 #endif
 
 #endif /* ELLOGON_CDM_Document */

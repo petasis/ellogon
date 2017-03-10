@@ -496,7 +496,7 @@ CDM_AttributeValue CDM_CreateAttributeValue(const CDM_AttributeType type,
 CDM_Attribute CDM_CreateAttribute(const char *name,
                                   const CDM_AttributeValue value) {
   const ELEP::CDM::AttributeValue *p =
-        reinterpret_cast<const ELEP::CDM::AttributeValue*>(value);
+        static_cast<const ELEP::CDM::AttributeValue*>(value);
   if (p) return new ELEP::CDM::Attribute(name, *p);
   return new ELEP::CDM::Attribute(name);
 };
@@ -507,28 +507,28 @@ CDM_Attribute CDM_CreateAttribute(const char *name, const char *value, const CDM
 
 const char *CDM_GetName(const CDM_Attribute Attribute) {
   const ELEP::CDM::Attribute *p =
-        reinterpret_cast<const ELEP::CDM::Attribute*>(Attribute);
+        static_cast<const ELEP::CDM::Attribute*>(Attribute);
   if (p) return p->name().c_str();
   return NULL;
 };
 
 CDM_AttributeValue CDM_GetValue(const CDM_Attribute Attribute) {
   const ELEP::CDM::Attribute *p =
-        reinterpret_cast<const ELEP::CDM::Attribute*>(Attribute);
+        static_cast<const ELEP::CDM::Attribute*>(Attribute);
   if (p) return new ELEP::CDM::AttributeValue(p->value(), p->type());
   return NULL;
 };
 
 CDM_AttributeType CDM_GetValueType(const CDM_Attribute Attribute) {
   const ELEP::CDM::Attribute *p =
-        reinterpret_cast<const ELEP::CDM::Attribute*>(Attribute);
+        static_cast<const ELEP::CDM::Attribute*>(Attribute);
   if (p) return (CDM_AttributeType) convert::AttributeType(p->type());
   return CDM_NONE;
 };
 
 const char *CDM_GetValueValue(const CDM_Attribute Attribute) {
   const ELEP::CDM::Attribute *p =
-        reinterpret_cast<const ELEP::CDM::Attribute*>(Attribute);
+        static_cast<const ELEP::CDM::Attribute*>(Attribute);
   if (p) return p->value().c_str();
   return NULL;
 };
@@ -542,14 +542,14 @@ CDM_AttributeSet CDM_CreateAttributeSet() {
 
 CDM_AttributeSet CDM_CreateAttributeSet(const CDM_Attribute Attribute) {
   const ELEP::CDM::Attribute *p =
-        reinterpret_cast<const ELEP::CDM::Attribute*>(Attribute);
+        static_cast<const ELEP::CDM::Attribute*>(Attribute);
   if (p) return new ELEP::CDM::AttributeSet(*p);
   return new ELEP::CDM::AttributeSet();
 };
 
 CDM_AttributeSet CDM_CreateAttributeSet(const char *name, const CDM_AttributeValue value) {
   const ELEP::CDM::AttributeValue *p =
-        reinterpret_cast<const ELEP::CDM::AttributeValue*>(value);
+        static_cast<const ELEP::CDM::AttributeValue*>(value);
   if (p) return new ELEP::CDM::AttributeSet(name, *p);
   return nullptr;
 };
@@ -562,10 +562,10 @@ CDM_AttributeSet CDM_CreateAttributeSet(const char *name, const char *value,
 CDM_Status CDM_AddAttribute(CDM_AttributeSet Attributes,
                             const CDM_Attribute Attribute) {
   ELEP::CDM::AttributeSet *p =
-        reinterpret_cast<ELEP::CDM::AttributeSet*>(Attributes);
+        static_cast<ELEP::CDM::AttributeSet*>(Attributes);
   if (!p) return CDM_ERROR;
   ELEP::CDM::Attribute *a =
-        reinterpret_cast<ELEP::CDM::Attribute*>(Attribute);
+        static_cast<ELEP::CDM::Attribute*>(Attribute);
   if (!a) return CDM_ERROR;
   p->push_back(*a);
   return CDM_OK;
@@ -574,10 +574,10 @@ CDM_Status CDM_AddAttribute(CDM_AttributeSet Attributes,
 CDM_Status CDM_AddAttribute(CDM_AttributeSet Attributes, const char *name,
                             const CDM_AttributeValue value) {
   ELEP::CDM::AttributeSet *p =
-        reinterpret_cast<ELEP::CDM::AttributeSet*>(Attributes);
+        static_cast<ELEP::CDM::AttributeSet*>(Attributes);
   if (!p) return CDM_ERROR;
   ELEP::CDM::AttributeValue *v =
-        reinterpret_cast<ELEP::CDM::AttributeValue*>(value);
+        static_cast<ELEP::CDM::AttributeValue*>(value);
   if (!v) return CDM_ERROR;
   p->push_back(Attribute(name, *v));
   return CDM_OK;

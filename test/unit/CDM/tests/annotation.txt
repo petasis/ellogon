@@ -49,6 +49,9 @@ set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {String
 set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {StringValue}}} {Attr2 CDM_STRING_SET {0 1 2 3 end}}]]; tip_GetType $a
 token
 
+set a [CDM::Annotation -args token]; set r [tip_GetType $a]; $a -delete; set r
+token
+
 set a [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {StringValue}}} {Attr2 CDM_STRING_SET {0 1 2 3 end}}]]; tip_GetId $a
 
 
@@ -58,10 +61,10 @@ tip_GetId {123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}
 tip_CreateAnnotationSet
 
 
-tip_AddAnnotation {} {123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}
+tip_AddAnnotationToSet {} {123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}
 {123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}
 
-tip_AddAnnotation {{123 token {{0 12}} {{Attr2 {CDM_STRING old}}}}} {123 token {{10 12}} {{Attr2 {CDM_STRING new}}}}
+tip_AddAnnotationToSet {{123 token {{0 12}} {{Attr2 {CDM_STRING old}}}}} {123 token {{10 12}} {{Attr2 {CDM_STRING new}}}}
 {123 token {{10 12}} {{Attr2 {CDM_STRING {new}}}}}
 
 tip_Length {{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}} {1234 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}}}}}
@@ -88,10 +91,10 @@ tip_MergeAnnotations {{123 token {{0 12}} {{Attr2 {CDM_STRING_SET {0 1 2 3 end}}
 tip_MergeAnnotations {{1 token {} {}} {2 token {} {}}} {{1 replaced {} {}} {3 replaced {} {}}}
 {1 replaced {} {}} {2 token {} {}} {3 replaced {} {}}
 
-tip_AddAnnotation {{5 token {} {}}} {{} token {} {}}
+tip_AddAnnotationToSet {{5 token {} {}}} {{} token {} {}}
 {5 token {} {}} {6 token {} {}}
 
-tip_AddAnnotation {{5 token {} {}}} {3 token {} {}}
+tip_AddAnnotationToSet {{5 token {} {}}} {3 token {} {}}
 {3 token {} {}} {5 token {} {}}
 
 set o [CDM::Annotation -args token]; set r [$o save_XML]; $o -delete; set r
