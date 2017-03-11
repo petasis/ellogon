@@ -10,6 +10,9 @@ set s [CDM::Span -args 1 2]; set r [$s end]; $s -delete; set r
 set s [CDM::Span]; set r [$s end]; $s -delete; set r
 
 
+catch {CDM::Span -args $CDM::Span_no 2} r; set r
+start cannot be equal to ELEP::CDM::Span::no
+
 puts [time {set s [CDM::Span -args 0 0]; $s -delete} 10000]; set r {}
 
 
@@ -51,6 +54,9 @@ set s [tip_CreateSpanSet 0 10]; tip_GetFirstSpanOffsets $s start end; list $star
 
 tip_GetStart [list 0 10]
 0
+
+catch {tip_GetStart [list $CDM::Span_no 10]} r; set r
+cannot convert input to "ELEP::CDM::Span": start cannot be equal to ELEP::CDM::Span::no
 
 tip_GetEnd [list 0 10]
 10

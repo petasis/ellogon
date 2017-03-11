@@ -18,3 +18,13 @@ set o [CDM::Document]; tip_AddAnnotation $o {{} token {} {}}; tip_AddAnnotation 
 
 set o [CDM::Document]; tip_AddAnnotation $o [CDM::Annotation -args token]; set r [$o toString]; $o -delete; set r
 {} {} {} {} {{0 token {} {}}} {}
+
+set o [CDM::Document]; set r [tip_AddAnnotation $o [CDM::Annotation -args token]]; $o -delete; set r
+0
+
+tip_AddAnnotation {{test} {/tmp/test} {This is a test} {} {} {}} [CDM::Annotation -args token]
+{test} {/tmp/test} {This is a test} {} {{0 token {} {}}} {}
+
+set o [CDM::Document]; tip_AddAnnotation $o {4294967294 token {} {}}; catch {tip_AddAnnotation $o {{} token {} {}}} r; $o -delete; set r
+maximum number of annotations reached
+

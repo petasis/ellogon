@@ -26,7 +26,7 @@ tip_GetValueValue [tip_CreateAttribute type [tip_CreateAttributeValue CDM_STRING
 test
 
 catch {tip_CreateAttribute type test} e; string trim [set e]
-cannot convert input to "ELEP::CDM::AttributeValue":
+cannot convert input to "ELEP::CDM::AttributeValue": invalid AttributeValue (2-item list expected): found items: 1 ("test")
 
 tip_CreateAttributeSet
 
@@ -35,7 +35,7 @@ llength [tip_CreateAttributeSet]
 0
 
 catch {tip_CreateAttributeSet type test} e; string trim [set e]
-cannot convert input to "ELEP::CDM::AttributeValue":
+cannot convert input to "ELEP::CDM::AttributeValue": invalid AttributeValue (2-item list expected): found items: 1 ("test")
 
 tip_CreateAttributeValue CDM_STRING 8test12\]\}
 CDM_STRING {8test12]\}}
@@ -56,7 +56,7 @@ tip_GetName {}
 
 
 catch {tip_GetValue {}} e; string trim $e
-invalid argument: call returned NULL
+call returned NULL pointer
 
 time {set t [tip_GetName {type CDM_STRING test}]} 10000; set t
 type
@@ -83,7 +83,7 @@ tip_GetValueValue {}
 
 
 catch {tip_GetValueValue invalid} e; string trim $e
-cannot convert input to "ELEP::CDM::Attribute":
+cannot convert input to "ELEP::CDM::Attribute": invalid Attribute (2|3-item list expected): found items: 1 ("invalid")
 
 tip_CreateAttributeSet
 
@@ -95,7 +95,7 @@ tip_CreateAttributeSet type {CDM_STRING test}
 {type {CDM_STRING {test}}}
 
 catch {tip_CreateAttributeSet type {}} e; string trim $e
-invalid argument: call returned NULL
+call returned NULL pointer
 
 tip_AddAttribute {} {type CDM_STRING test}
 {type {CDM_STRING {test}}}

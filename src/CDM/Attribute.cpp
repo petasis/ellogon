@@ -132,11 +132,14 @@ ELEP::CDM::AttributeValue::AttributeValue(Tcl_Interp *interp, Tcl_Obj *obj) {
   };
 
   /* A valid AttributeValue is a list with 2 items... */
-  if (Tcl_ListObjGetElements(interp, obj, &count, &items) != TCL_OK ||
-      count != 2) {
-    std::string msg("invalid AttributeValue (2-item list expected): ");
-    msg += Tcl_GetStringResult(interp);
-    throw std::invalid_argument(msg);
+  if (Tcl_ListObjGetElements(interp, obj, &count, &items) != TCL_OK) {
+    throw std::invalid_argument("invalid AttributeValue (2-item list expected)");
+  }
+  if (count != 2) {
+    std::ostringstream msg;
+    msg << "invalid AttributeValue (2-item list expected): ";
+    msg << "found items: " << count << " (\"" << Tcl_GetString(obj) << "\")";
+    throw std::invalid_argument(msg.str());
   }
   if (Tcl_GetIndexFromObj(interp, items[0], (const char **) Types,
                               "type", 0, &count) != TCL_OK) {
@@ -295,21 +298,27 @@ ELEP::CDM::Attribute::Attribute(Tcl_Interp *interp, Tcl_Obj *obj) {
   };
 
   /* A valid Attribute is a list with 3 items, or a list of two items... */
-  if (Tcl_ListObjGetElements(interp, obj, &count, &items) != TCL_OK ||
-      count < 2 || count > 3) {
-    std::string msg("invalid Attribute (2|3-item list expected): ");
-    msg += Tcl_GetStringResult(interp);
-    throw std::invalid_argument(msg);
+  if (Tcl_ListObjGetElements(interp, obj, &count, &items) != TCL_OK) {
+    throw std::invalid_argument("invalid Attribute (2|3-item list expected)");
+  }
+  if (count < 2 || count > 3) {
+    std::ostringstream msg;
+    msg << "invalid Attribute (2|3-item list expected): ";
+    msg << "found items: " << count << " (\"" << Tcl_GetString(obj) << "\")";
+    throw std::invalid_argument(msg.str());
   }
   name = items[0];
   if (count == 3) {
     type = items[1]; value = items[2];
   } else {
-    if (Tcl_ListObjGetElements(interp, items[1], &count, &items) != TCL_OK ||
-                               count != 2) {
-      std::string msg("invalid Attribute AttributeValue (2-item list expected): ");
-      msg += Tcl_GetStringResult(interp);
-      throw Status::ERROR;
+    if (Tcl_ListObjGetElements(interp, items[1], &count, &items) != TCL_OK) {
+      throw std::invalid_argument("invalid AttributeValue (2-item list expected)");
+    }
+    if (count != 2) {
+      std::ostringstream msg;
+      msg << "invalid AttributeValue (2-item list expected): ";
+      msg << "found items: " << count << " (\"" << Tcl_GetString(items[1]) << "\")";
+      throw std::invalid_argument(msg.str());
     }
     type = items[0]; value = items[1];
   }

@@ -80,14 +80,15 @@ ELEP::CDM::Span::Span() :
   _start {ELEP::CDM::Span::no}, _end {ELEP::CDM::Span::no} {
 };
 
-ELEP::CDM::Span::Span(const Position start, const Position end) :
-  _start {start}, _end {end} {
-  if (_start > _end) throw std::invalid_argument("start exceeds end");
+ELEP::CDM::Span::Span(const Position start, const Position end) {
+  if (start == no)  throw std::invalid_argument("start cannot be equal to ELEP::CDM::Span::no");
+  if (end   == no)  throw std::invalid_argument("end cannot be equal to ELEP::CDM::Span::no");
+  if (start > end) throw std::invalid_argument("start exceeds end");
+  _start = start; _end = end;
 };
 
 ELEP::CDM::Span::Span(const Span& src) :
   _start {src._start}, _end {src._end} {
-  if (_start > _end) throw std::invalid_argument("start exceeds end");
 };
 
 const Position& ELEP::CDM::Span::start() const {
@@ -99,11 +100,13 @@ const Position& ELEP::CDM::Span::end() const {
 };
 
 void ELEP::CDM::Span::start(const Position start) {
+  if (start == no)  throw std::invalid_argument("start cannot be equal to ELEP::CDM::Span::no");
   if (start > _end) throw std::invalid_argument("start exceeds end");
   _start = start;
 };
 
 void ELEP::CDM::Span::end(const Position end) {
+  if (end   == no)  throw std::invalid_argument("end cannot be equal to ELEP::CDM::Span::no");
   if (_start > end) throw std::invalid_argument("start exceeds end");
   _end = end;
 };
@@ -150,7 +153,9 @@ ELEP::CDM::Span::Span(Tcl_Interp *interp, Tcl_Obj *obj) {
     msg += Tcl_GetStringResult(interp);
     throw std::invalid_argument(msg);
   }
-  if (start > end) throw std::invalid_argument("start exceeds end");
+  if (start == no)  throw std::invalid_argument("start cannot be equal to ELEP::CDM::Span::no");
+  if (end   == no)  throw std::invalid_argument("end cannot be equal to ELEP::CDM::Span::no");
+  if (start > end)  throw std::invalid_argument("start exceeds end");
 #ifdef    ELLOGON_CDM_SPAN_USE_PAIR
   segment.first  = start;
   segment.second = end;

@@ -101,10 +101,20 @@ int Object_SetFromAny(Tcl_Interp *interp, Tcl_Obj *obj) {
     p = new T(interp, obj);
   }
   catch (std::exception &e) {
+    // Conversion failed...
+    int status;
+    std::string msg("cannot convert input to \"");
+    msg += abi::__cxa_demangle(typeid(T).name(), 0, 0, &status);
+    msg += "\": ";
+    msg += e.what();
+    Tcl_SetResult(interp, (char *) msg.c_str(), TCL_VOLATILE);
     return TCL_ERROR;
   }
-  if (!p)
-    throw std::invalid_argument("invalid argument: call returned NULL pointer");
+  if (!p) {
+    std::string msg("call returned NULL pointer: ");
+    msg += Tcl_GetStringResult(interp);
+    throw std::invalid_argument(msg);
+  }
   /* The object has been created! */
   if (obj->typePtr != NULL && obj->typePtr->freeIntRepProc != NULL) {
     obj->typePtr->freeIntRepProc(obj);
@@ -119,7 +129,7 @@ int Object_SetFromAny(Tcl_Interp *interp, Tcl_Obj *obj) {
 template<typename T, Tcl_ObjType *type>
 Tcl_Obj *CDM_NewObject(T *p) {
   if (!p) {
-    return Tcl_NewStringObj("invalid argument: call returned NULL", -1);
+    return Tcl_NewStringObj("call returned NULL pointer", -1);
   }
   Tcl_Obj *obj = Tcl_NewObj();
   Tcl_InvalidateStringRep(obj);
@@ -134,7 +144,8 @@ void CDM_ReturnNewObject(Tcl_Interp *interp, T *p) {
   Tcl_SetObjResult(interp, CDM_NewObject<T, type>(p));
 }
 
-#define CDM_OBJ_ALLOCATED 100
+#define CDM_OBJ_ALLOCATED           100
+#define CDM_OBJ_SWIG_OBJECT_REUSED  101
 template<typename T, typename cT, const int cdmT, Tcl_ObjType *type>
 int CDM_EnsureObject(Tcl_Interp *interp, Tcl_Obj *obj, cT *v) {
   if (obj->typePtr == type) {
@@ -148,14 +159,14 @@ int CDM_EnsureObject(Tcl_Interp *interp, Tcl_Obj *obj, cT *v) {
     int res = SWIG_ConvertPtr(obj, &p, cdm_swig_pointer_type[cdmT].swigT, 0);
     if (SWIG_IsOK(res)) {
       *v = static_cast<cT *>(p);
-      return TCL_OK;
+      return CDM_OBJ_SWIG_OBJECT_REUSED;
     }
   }
   int status;
   try {
     status = Object_SetFromAny<T, type>(interp, obj);
   } catch (std::exception &e) {
-    // Tcl_SetResult(interp, (char *) e.what(), TCL_VOLATILE);
+    Tcl_SetResult(interp, (char *) e.what(), TCL_VOLATILE);
     return TCL_ERROR;
   }
   if (status == TCL_ERROR) return TCL_ERROR;
@@ -196,12 +207,12 @@ void *CDM_EnsureConstObjectOrNULL(Tcl_Interp *interp, Tcl_Obj *obj) {
   }
   if (status != TCL_OK) {
     // Conversion failed...
-    std::string msg("cannot convert input to \"");
-    msg += abi::__cxa_demangle(typeid(T).name(), 0, 0, &status);
-    msg += "\": ";
-    msg += Tcl_GetStringResult(interp);
-    Tcl_SetResult(interp, (char *) msg.c_str(), TCL_VOLATILE);
-    throw std::invalid_argument(msg);
+    //  std::string msg("cannot convert input to \"");
+    //  msg += abi::__cxa_demangle(typeid(T).name(), 0, 0, &status);
+    //  msg += "\": ";
+    //  msg += Tcl_GetStringResult(interp);
+    //  Tcl_SetResult(interp, (char *) msg.c_str(), TCL_VOLATILE);
+    throw std::runtime_error(Tcl_GetStringResult(interp));
   }
   return obj->internalRep.twoPtrValue.ptr1;
 }

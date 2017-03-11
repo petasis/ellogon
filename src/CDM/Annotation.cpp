@@ -370,6 +370,10 @@ const std::string ELEP::CDM::AnnotationSet::toString() const {
 
 std::pair<ELEP::CDM::AnnotationSet::iterator, bool>
 ELEP::CDM::AnnotationSet::insert(const ELEP::CDM::AnnotationSet::value_type& x) {
+  if (_next_ann_id == ELEP::CDM::Annotation::no) {
+    // We cannot add any more annotations...
+    throw std::overflow_error("maximum number of annotations reached");
+  }
   _modified = true;
   if (x.emptyId()) {
     return set.insert(Annotation(_next_ann_id++, x.type(),
@@ -379,13 +383,17 @@ ELEP::CDM::AnnotationSet::insert(const ELEP::CDM::AnnotationSet::value_type& x) 
   std::pair<ELEP::CDM::AnnotationSet::iterator, bool>&& r = set.insert(x);
   if (r.second) return r;
   if (!set.replace(r.first, x)) {
-    throw std::invalid_argument("replacing annotation failed");
+    throw std::runtime_error("replacing annotation failed");
   }
   return std::make_pair(r.first, false);
 };
 
 std::pair<ELEP::CDM::AnnotationSet::iterator, bool>
 ELEP::CDM::AnnotationSet::insert(ELEP::CDM::AnnotationSet::value_type&& x) {
+  if (_next_ann_id == ELEP::CDM::Annotation::no) {
+    // We cannot add any more annotations...
+    throw std::overflow_error("maximum number of annotations reached");
+  }
   _modified = true;
   if (x.emptyId()) {
     x._id = _next_ann_id++;
@@ -395,7 +403,7 @@ ELEP::CDM::AnnotationSet::insert(ELEP::CDM::AnnotationSet::value_type&& x) {
   std::pair<ELEP::CDM::AnnotationSet::iterator, bool>&& r = set.insert(x);
   if (r.second) return r;
   if (!set.replace(r.first, x)) {
-    throw std::invalid_argument("replacing annotation failed");
+    throw std::runtime_error("replacing annotation failed");
   }
   return std::make_pair(r.first, false);
 };

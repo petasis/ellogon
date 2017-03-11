@@ -121,8 +121,10 @@ const Tcl_ObjType *CDMTcl_StringType = NULL;
 
 %typemap(argout) cT
 %{// Typemap(argout) cT: result=$result, input=$input, sysname=$symname
-  CDM_ReturnNewObject<cppT, &tclT>(interp, static_cast<cppT *>($1));
- if (!$1) SWIG_fail; $1 = NULL;%}
+  if (status$argnum == CDM_OBJ_ALLOCATED) {
+    CDM_ReturnNewObject<cppT, &tclT>(interp, static_cast<cppT *>($1));
+  }
+  if (!$1) SWIG_fail; $1 = NULL;%}
 
 %typemap(out) cT
 %{// Typemap(out) cT
@@ -137,7 +139,7 @@ TYPE_IN_CONST(CDM_Attribute, ELEP::CDM::Attribute, CDM_Attribute_ObjType, CDMTYP
 TYPE_IN_ANY  (CDM_AttributeSet, ELEP::CDM::AttributeSet, CDM_AttributeSet_ObjType, CDMTYPE_p_ELEP__CDM__AttributeSet)
 TYPE_IN_ANY  (CDM_Annotation, ELEP::CDM::Annotation, CDM_Annotation_ObjType, CDMTYPE_p_ELEP__CDM__Annotation)
 TYPE_IN_ANY  (CDM_AnnotationSet, ELEP::CDM::AnnotationSet, CDM_AnnotationSet_ObjType, CDMTYPE_p_ELEP__CDM__AnnotationSet)
-//TYPE(Document)
+TYPE_IN_ANY  (CDM_Document, ELEP::CDM::Document, CDM_Document_ObjType, CDMTYPE_p_ELEP__CDM__Document)
 //TYPE_IN_ANY(Collection)
 
 /*
@@ -149,7 +151,7 @@ TYPE_IN_ANY  (CDM_AnnotationSet, ELEP::CDM::AnnotationSet, CDM_AnnotationSet_Obj
   if ($1 != ELEP::CDM::Span::no) {
     Tcl_SetObjResult(interp, SWIG_From_unsigned_SS_long(static_cast< unsigned long >($1)));
   } else {
-   Tcl_SetObjResult(interp, Tcl_NewStringObj("", 0));
+    Tcl_SetObjResult(interp, Tcl_NewStringObj("", 0));
   };%}
 
 %typemap(out) CDM_Position = ELEP::CDM::Position;
@@ -168,7 +170,7 @@ TYPE_IN_ANY  (CDM_AnnotationSet, ELEP::CDM::AnnotationSet, CDM_AnnotationSet_Obj
   if (*$1 != ELEP::CDM::Span::no) {
     Tcl_SetObjResult(interp, SWIG_From_unsigned_SS_long(static_cast< unsigned long >(*$1)));
   } else {
-   Tcl_SetObjResult(interp, Tcl_NewStringObj("", 0));
+    Tcl_SetObjResult(interp, Tcl_NewStringObj(nullptr, 0));
   };%}
 
 %typemap(in)     CDM_Position* = ELEP::CDM::Position&;
@@ -186,7 +188,7 @@ TYPE_IN_ANY  (CDM_AnnotationSet, ELEP::CDM::AnnotationSet, CDM_AnnotationSet_Obj
   if ($1 != ELEP::CDM::Annotation::no) {
     Tcl_SetObjResult(interp, SWIG_From_unsigned_SS_long(static_cast< unsigned long >($1)));
   } else {
-   Tcl_SetObjResult(interp, Tcl_NewStringObj("", 0));
+    Tcl_SetObjResult(interp, Tcl_NewStringObj("", 0));
   };%}
 
 %typemap(in) const CDM_AttributeType
