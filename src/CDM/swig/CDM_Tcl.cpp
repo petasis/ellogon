@@ -24,27 +24,30 @@
  *****************************************************************************/
 #include <tcl.h>
 #include "CDM3.h"
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <typeinfo>
 
 #include <cxxabi.h>
 
+#include <cstring>
+
 typedef struct cdm_type_info {
   const char           *pointerT;
-  swig_type_info       *swigT;
+  swig_type_info       **swigT;
 } cdm_type_info;
 
 static const cdm_type_info cdm_swig_pointer_type[] = {
-  {"_p_ELEP__CDM__Span",            SWIGTYPE_p_ELEP__CDM__Span},
-  {"_p_ELEP__CDM__SpanSet",         SWIGTYPE_p_ELEP__CDM__SpanSet},
-  {"_p_ELEP__CDM__AttributeValue",  SWIGTYPE_p_ELEP__CDM__AttributeValue},
-  {"_p_ELEP__CDM__Attribute",       SWIGTYPE_p_ELEP__CDM__Attribute},
-  {"_p_ELEP__CDM__AttributeSet",    SWIGTYPE_p_ELEP__CDM__AttributeSet},
-  {"_p_ELEP__CDM__Annotation",      SWIGTYPE_p_ELEP__CDM__Annotation},
-  {"_p_ELEP__CDM__AnnotationSet",   SWIGTYPE_p_ELEP__CDM__AnnotationSet},
-  {"_p_ELEP__CDM__Document",        SWIGTYPE_p_ELEP__CDM__Document},
-  {"_p_ELEP__CDM__Collection",      SWIGTYPE_p_ELEP__CDM__Collection},
+  {"_p_ELEP__CDM__Span",            &SWIGTYPE_p_ELEP__CDM__Span},
+  {"_p_ELEP__CDM__SpanSet",         &SWIGTYPE_p_ELEP__CDM__SpanSet},
+  {"_p_ELEP__CDM__AttributeValue",  &SWIGTYPE_p_ELEP__CDM__AttributeValue},
+  {"_p_ELEP__CDM__Attribute",       &SWIGTYPE_p_ELEP__CDM__Attribute},
+  {"_p_ELEP__CDM__AttributeSet",    &SWIGTYPE_p_ELEP__CDM__AttributeSet},
+  {"_p_ELEP__CDM__Annotation",      &SWIGTYPE_p_ELEP__CDM__Annotation},
+  {"_p_ELEP__CDM__AnnotationSet",   &SWIGTYPE_p_ELEP__CDM__AnnotationSet},
+  {"_p_ELEP__CDM__Document",        &SWIGTYPE_p_ELEP__CDM__Document},
+  {"_p_ELEP__CDM__Collection",      &SWIGTYPE_p_ELEP__CDM__Collection},
 };
 #define CDMTYPE_p_ELEP__CDM__Span             0
 #define CDMTYPE_p_ELEP__CDM__SpanSet          1
@@ -156,10 +159,25 @@ int CDM_EnsureObject(Tcl_Interp *interp, Tcl_Obj *obj, cT *v) {
   /* If obj->typePtr == nullptr, we have a "pure string"... */
   if (!obj->typePtr || obj->typePtr == CDMTcl_StringType) {
     void *p = 0;
-    int res = SWIG_ConvertPtr(obj, &p, cdm_swig_pointer_type[cdmT].swigT, 0);
+    int res = SWIG_ConvertPtr(obj, &p, *cdm_swig_pointer_type[cdmT].swigT, 0);
     if (SWIG_IsOK(res)) {
       *v = static_cast<cT *>(p);
       return CDM_OBJ_SWIG_OBJECT_REUSED;
+    }
+    const char *str = Tcl_GetString(obj), *tstr;
+    if (str && *str == '_') {
+      // This cannot be one of our types.
+      if (tstr = strstr(str, "_p_ELEP__CDM__")) {
+        std::string swigtype(tstr+3);
+        std::replace(swigtype.begin(), swigtype.end(), '_', ':');
+        std::string msg("wrong input type: expected \"");
+        msg += (*cdm_swig_pointer_type[cdmT].swigT)->str;
+        msg += "\" instead of \"";
+        msg += swigtype;
+        msg += " *\"";
+        Tcl_SetResult(interp, (char *) msg.c_str(), TCL_VOLATILE);
+        return TCL_ERROR;
+      }
     }
   }
   int status;
@@ -190,8 +208,22 @@ void *CDM_EnsureConstObjectOrNULL(Tcl_Interp *interp, Tcl_Obj *obj) {
   /* If obj->typePtr == nullptr, we have a "pure string"... */
   if (!obj->typePtr || obj->typePtr == CDMTcl_StringType) {
     void *p = 0;
-    int res = SWIG_ConvertPtr(obj, &p, cdm_swig_pointer_type[cdmT].swigT, 0);
+    int res = SWIG_ConvertPtr(obj, &p, *cdm_swig_pointer_type[cdmT].swigT, 0);
     if (SWIG_IsOK(res)) return p;
+    const char *str = Tcl_GetString(obj), *tstr;
+    if (str && *str == '_') {
+      // This cannot be one of our types.
+      if (tstr = strstr(str, "_p_ELEP__CDM__")) {
+        std::string swigtype(tstr+3);
+        std::replace(swigtype.begin(), swigtype.end(), '_', ':');
+        std::string msg("wrong input type: expected \"");
+        msg += (*cdm_swig_pointer_type[cdmT].swigT)->str;
+        msg += "\" instead of \"";
+        msg += swigtype;
+        msg += " *\"";
+        throw std::invalid_argument(msg);
+      }
+    }
   }
   // Since all our objects are lists, take a shortcut:
   // If the object is the empty list, return NULL, and do not
