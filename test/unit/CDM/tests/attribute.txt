@@ -1,6 +1,12 @@
 time {set set [tip_AddAttribute {} [tip_CreateAttribute type [tip_CreateAttributeValue CDM_STRING test]]]} 10000; set set
 {type {CDM_STRING {test}}}
 
+CDM::Attribute attr type test; set r [attr toString]; attr -delete; set r
+type {CDM_STRING {test}}
+
+CDM::Attribute attr type test; set r [tip_GetName attr]; attr -delete; set r
+type
+
 set a [CDM::Attribute -args type test]; set r [$a toString]; $a -delete; set r
 type {CDM_STRING {test}}
 
@@ -147,3 +153,32 @@ set o [CDM::Attribute -args type1 value1]; set r [$o save_JSON]; $o -delete; str
 
 set o [CDM::AttributeSet -args type1 value1]; set r [$o save_JSON]; $o -delete; string map {\n {}} $r
 {"AttributeSet": {"set": [{"type": 1,"name": {"ptr_wrapper": {"id": 2147483649,"data": "type1"}},"value": {"ptr_wrapper": {"id": 2147483650,"data": "value1"}}}]}}
+
+set o [CDM::AnnotationSet]; tip_AddAnnotationToSet $o {4294967294 token {} {}}; catch {tip_AddAnnotationToSet $o {{} token {} {}}} r; $o -delete; set r
+maximum number of annotations reached
+
+set o [CDM::AnnotationSet]; set r [tip_AddAnnotationToSet $o {{} token {} {}}]; $o -delete; set r
+0
+
+set o1 [CDM::AnnotationSet]; set o2 [CDM::AnnotationSet]; tip_AddAnnotationToSet $o1 {{} token1 {} {}}; tip_AddAnnotationToSet $o2 {{} token2 {} {}}; tip_AddAnnotationToSet $o2 {{} token3 {} {}}; tip_MergeAnnotations $o1 $o2; tip_MergeAnnotations $o1 $o2; set r [$o1 toString]+[$o2 toString]; $o1 -delete; $o2 -delete; set r
+{0 token2 {} {}} {1 token3 {} {}}+{0 token2 {} {}} {1 token3 {} {}}
+
+tip_MergeAnnotations { {10 token10 {} {}} } { {2 token2 {} {}} {3 token3 {} {}} }
+{2 token2 {} {}} {3 token3 {} {}} {10 token10 {} {}}
+
+tip_MergeAnnotations { {{} token1 {} {}} } { {2 token2 {} {}} {3 token3 {} {}} }
+{0 token1 {} {}} {2 token2 {} {}} {3 token3 {} {}}
+
+puts [time {tip_MergeAnnotations { {10 token1 {} {}} } { {2 token2 {} {}} {3 token3 {} {}} }} 10000]
+
+
+set o1 [CDM::AnnotationSet]; set o2 [CDM::AnnotationSet]; tip_AddAnnotationToSet $o1 {{} token1 {} {}}; tip_AddAnnotationToSet $o2 {{} token2 {} {}}; tip_AddAnnotationToSet $o2 {{} token3 {} {}}; tip_ConcatAnnotations $o1 $o2; tip_ConcatAnnotations $o1 $o2; set r [$o1 toString]+[$o2 toString]; $o1 -delete; $o2 -delete; set r
+{0 token1 {} {}} {1 token2 {} {}} {2 token3 {} {}} {3 token2 {} {}} {4 token3 {} {}}+{0 token2 {} {}} {1 token3 {} {}}
+
+tip_ConcatAnnotations { {10 token1 {} {}} } { {2 token2 {} {}} {3 token3 {} {}} }
+{10 token1 {} {}} {11 token2 {} {}} {12 token3 {} {}}
+
+tip_ConcatAnnotations { {{} token1 {} {}} } { {2 token2 {} {}} {3 token3 {} {}} }
+{0 token1 {} {}} {1 token2 {} {}} {2 token3 {} {}}
+
+puts [time {tip_ConcatAnnotations { {10 token1 {} {}} } { {2 token2 {} {}} {3 token3 {} {}} }} 10000]

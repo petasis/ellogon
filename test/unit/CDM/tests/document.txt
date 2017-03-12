@@ -31,5 +31,3 @@ maximum number of annotations reached
 set o [CDM::AnnotationSet]; catch {tip_AddAnnotation $o {4294967294 token {} {}}} r; $o -delete; set r
 wrong input type: expected "ELEP::CDM::Document *" instead of "ELEP::CDM::AnnotationSet *"
 
-set o [CDM::AnnotationSet]; tip_AddAnnotationToSet $o {4294967294 token {} {}}; catch {tip_AddAnnotationToSet $o {{} token {} {}}} r; $o -delete; set r
-maximum number of annotations reached

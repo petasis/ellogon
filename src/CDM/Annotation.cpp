@@ -348,6 +348,14 @@ void ELEP::CDM::AnnotationSet::mergeAnnotations(const AnnotationSet& other) {
   insert(other.cbegin(), other.cend());
 };
 
+void ELEP::CDM::AnnotationSet::concatAnnotations(const AnnotationSet& other) {
+  for (const auto& ann : other) {
+    Annotation a(ann);
+    a.clearId();
+    insert(std::move(a));
+  }
+};
+
 bool ELEP::CDM::AnnotationSet::valid() const {
   if (empty()) return false;
   auto it = cbegin();
@@ -543,15 +551,13 @@ CDM_AnnotationSet CDM_CreateAnnotationSet() {
   return static_cast<CDM_AnnotationSet>( new ELEP::CDM::AnnotationSet() );
 };
 
-CDM_Status CDM_AddAnnotationToSet(CDM_AnnotationSet Set, const CDM_Annotation Ann) {
+CDM_Id CDM_AddAnnotationToSet(CDM_AnnotationSet Set, const CDM_Annotation Ann) {
+  if (!Set || !Ann) return ELEP::CDM::Annotation::no;
   ELEP::CDM::AnnotationSet *s =
         static_cast<ELEP::CDM::AnnotationSet*>(Set);
-  if (!s) return CDM_ERROR;
   const ELEP::CDM::Annotation *a =
         static_cast<const ELEP::CDM::Annotation*>(Ann);
-  if (!a) return CDM_ERROR;
-  s->addAnnotation(*a);
-  return CDM_OK;
+  return s->addAnnotation(*a);
 };
 
 CDM_Size CDM_Length(const CDM_AnnotationSet Set) {
@@ -577,5 +583,17 @@ CDM_Status CDM_MergeAnnotations(CDM_AnnotationSet Set1,
         static_cast<const ELEP::CDM::AnnotationSet*>(Set2);
   if (!s2) return CDM_ERROR;
   s1->mergeAnnotations(*s2);
+  return CDM_OK;
+};
+
+CDM_Status CDM_ConcatAnnotations(CDM_AnnotationSet Set1,
+                                const CDM_AnnotationSet Set2) {
+  ELEP::CDM::AnnotationSet *s1 =
+        static_cast<ELEP::CDM::AnnotationSet*>(Set1);
+  if (!s1) return CDM_ERROR;
+  const ELEP::CDM::AnnotationSet *s2 =
+        static_cast<const ELEP::CDM::AnnotationSet*>(Set2);
+  if (!s2) return CDM_ERROR;
+  s1->concatAnnotations(*s2);
   return CDM_OK;
 };

@@ -88,6 +88,7 @@ namespace ELEP {
         Annotation(Tcl_Interp *interp, Tcl_Obj *obj);
 #endif /* TCL_VERSION */
         const Id               id()         const;
+        void                   clearId()          {_id = no;};
         bool                   hasId()      const {return _id != no;};
         bool                   emptyId()    const {return _id == no;};
         const std::string&     type()       const;
@@ -226,6 +227,7 @@ namespace ELEP {
         Id                addAnnotation(const Annotation&& ann) {return insert(ann).first->id();};
 #endif /* SWIG */
         void              mergeAnnotations(const AnnotationSet& other);
+        void              concatAnnotations(const AnnotationSet& other);
         bool              valid() const;
         const std::string toString() const;
 
@@ -442,10 +444,11 @@ CDM_Annotation      CDM_RemoveSpan(CDM_Annotation Annotation, long start, long e
 #endif
 
 CDM_AnnotationSet         CDM_CreateAnnotationSet();
-CDM_Status                CDM_AddAnnotationToSet(CDM_AnnotationSet Set, const CDM_Annotation Ann);
+CDM_Id                    CDM_AddAnnotationToSet(CDM_AnnotationSet Set, const CDM_Annotation Ann);
 CDM_Size                  CDM_Length(const CDM_AnnotationSet Set);
 const CDM_Annotation      CDM_Nth(const CDM_AnnotationSet Set, CDM_Size n);
 CDM_Status                CDM_MergeAnnotations(CDM_AnnotationSet Set1, const CDM_AnnotationSet Set2);
+CDM_Status                CDM_ConcatAnnotations(CDM_AnnotationSet Set1, const CDM_AnnotationSet Set2);
 
 #if 0
 int                 CDM_AnnotationSetGetElements(CDM_AnnotationSet AnnotationSet, int *objcPtr, CDM_Annotation **objvPtr);

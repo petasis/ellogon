@@ -38,7 +38,7 @@ typedef struct cdm_type_info {
   swig_type_info       **swigT;
 } cdm_type_info;
 
-static const cdm_type_info cdm_swig_pointer_type[] = {
+static cdm_type_info cdm_swig_pointer_type[] = {
   {"_p_ELEP__CDM__Span",            &SWIGTYPE_p_ELEP__CDM__Span},
   {"_p_ELEP__CDM__SpanSet",         &SWIGTYPE_p_ELEP__CDM__SpanSet},
   {"_p_ELEP__CDM__AttributeValue",  &SWIGTYPE_p_ELEP__CDM__AttributeValue},
@@ -58,6 +58,34 @@ static const cdm_type_info cdm_swig_pointer_type[] = {
 #define CDMTYPE_p_ELEP__CDM__AnnotationSet    6
 #define CDMTYPE_p_ELEP__CDM__Document         7
 #define CDMTYPE_p_ELEP__CDM__Collection       8
+
+void SWIGObject_FreeInternalRep(Tcl_Obj *obj) {
+  obj->internalRep.twoPtrValue.ptr1 = NULL;
+  obj->internalRep.twoPtrValue.ptr2 = NULL;
+}
+
+void SWIGObject_DuplicateInternalRep(Tcl_Obj *src, Tcl_Obj *copy) {
+  copy->internalRep.twoPtrValue.ptr1 = src->internalRep.twoPtrValue.ptr1;
+  copy->internalRep.twoPtrValue.ptr2 = src->internalRep.twoPtrValue.ptr2;
+};
+
+void SWIGObject_UpdateString(Tcl_Obj *obj) {
+  obj->length = 0;
+  obj->bytes  = nullptr;
+}
+
+int SWIGObject_SetFromAny(Tcl_Interp *interp, Tcl_Obj *obj) {
+  return TCL_ERROR;
+}
+
+Tcl_ObjType CDM_SWIG_Object_ObjType = {
+    (char *) "CDM_SWIG_Object",
+    SWIGObject_FreeInternalRep,
+    SWIGObject_DuplicateInternalRep,
+    SWIGObject_UpdateString,
+    SWIGObject_SetFromAny
+};
+
 
 template<typename T>
 void Object_FreeInternalRep(Tcl_Obj *obj) {
@@ -147,6 +175,8 @@ void CDM_ReturnNewObject(Tcl_Interp *interp, T *p) {
   Tcl_SetObjResult(interp, CDM_NewObject<T, type>(p));
 }
 
+#define CDM_USE_PURE_STRING_POINTERS 1
+
 #define CDM_OBJ_ALLOCATED           100
 #define CDM_OBJ_SWIG_OBJECT_REUSED  101
 template<typename T, typename cT, const int cdmT, Tcl_ObjType *type>
@@ -156,11 +186,27 @@ int CDM_EnsureObject(Tcl_Interp *interp, Tcl_Obj *obj, cT *v) {
     *v = new T(*static_cast<T*>(obj->internalRep.twoPtrValue.ptr1));
     return CDM_OBJ_ALLOCATED;
   }
+#if CDM_USE_PURE_STRING_POINTERS
+  if (obj->typePtr == &CDM_SWIG_Object_ObjType &&
+      obj->internalRep.twoPtrValue.ptr1 &&
+      obj->internalRep.twoPtrValue.ptr2 == &cdm_swig_pointer_type[cdmT]) {
+    *v = static_cast<T*>(obj->internalRep.twoPtrValue.ptr1);
+    return CDM_OBJ_SWIG_OBJECT_REUSED;
+  }
+#endif /* CDM_USE_PURE_STRING_POINTERS */
   /* If obj->typePtr == nullptr, we have a "pure string"... */
-  if (!obj->typePtr || obj->typePtr == CDMTcl_StringType) {
+  if (!obj->typePtr || obj->typePtr == CDMTcl_stringType ||
+                       obj->typePtr == CDMTcl_cmdNameType) {
     void *p = 0;
     int res = SWIG_ConvertPtr(obj, &p, *cdm_swig_pointer_type[cdmT].swigT, 0);
     if (SWIG_IsOK(res)) {
+#if CDM_USE_PURE_STRING_POINTERS
+      if (!obj->typePtr) {
+        obj->typePtr = &CDM_SWIG_Object_ObjType;
+        obj->internalRep.twoPtrValue.ptr1 = p;
+        obj->internalRep.twoPtrValue.ptr2 = &cdm_swig_pointer_type[cdmT];
+      }
+#endif /* CDM_USE_PURE_STRING_POINTERS */
       *v = static_cast<cT *>(p);
       return CDM_OBJ_SWIG_OBJECT_REUSED;
     }
@@ -196,7 +242,7 @@ int CDM_EnsureObject(Tcl_Interp *interp, Tcl_Obj *obj, cT *v) {
 template<typename T, const int cdmT, Tcl_ObjType *type>
 void *CDM_EnsureConstObjectOrNULL(Tcl_Interp *interp, Tcl_Obj *obj) {
   // printf("2: %s\n", Tcl_GetString(obj));
-  // printf("2: %p -> %p (%p)\n", obj->typePtr, type, CDMTcl_StringType);
+  // printf("2: %p -> %p (%p)\n", obj->typePtr, type, CDMTcl_stringType);
   // if (obj->typePtr) {
   //   printf("2: %s -> %s\n", obj->typePtr->name, type->name);
   // }
@@ -205,11 +251,28 @@ void *CDM_EnsureConstObjectOrNULL(Tcl_Interp *interp, Tcl_Obj *obj) {
     //Tcl_InvalidateStringRep(obj);
     return obj->internalRep.twoPtrValue.ptr1;
   }
+#if CDM_USE_PURE_STRING_POINTERS
+  if (obj->typePtr == &CDM_SWIG_Object_ObjType &&
+      obj->internalRep.twoPtrValue.ptr1 &&
+      obj->internalRep.twoPtrValue.ptr2 == &cdm_swig_pointer_type[cdmT]) {
+    return obj->internalRep.twoPtrValue.ptr1;
+  }
+#endif /* CDM_USE_PURE_STRING_POINTERS */
   /* If obj->typePtr == nullptr, we have a "pure string"... */
-  if (!obj->typePtr || obj->typePtr == CDMTcl_StringType) {
+  if (!obj->typePtr || obj->typePtr == CDMTcl_stringType ||
+                       obj->typePtr == CDMTcl_cmdNameType) {
     void *p = 0;
     int res = SWIG_ConvertPtr(obj, &p, *cdm_swig_pointer_type[cdmT].swigT, 0);
-    if (SWIG_IsOK(res)) return p;
+    if (SWIG_IsOK(res)) {
+#if CDM_USE_PURE_STRING_POINTERS
+      if (!obj->typePtr) {
+        obj->typePtr = &CDM_SWIG_Object_ObjType;
+        obj->internalRep.twoPtrValue.ptr1 = p;
+        obj->internalRep.twoPtrValue.ptr2 = &cdm_swig_pointer_type[cdmT];
+      }
+#endif /* CDM_USE_PURE_STRING_POINTERS */
+      return p;
+    }
     const char *str = Tcl_GetString(obj), *tstr;
     if (str && *str == '_') {
       // This cannot be one of our types.
@@ -341,4 +404,8 @@ void CDM_InitialiseObjTypes() {
   Tcl_RegisterObjType(&CDM_AnnotationSet_ObjType);
   Tcl_RegisterObjType(&CDM_Document_ObjType);
   Tcl_RegisterObjType(&CDM_Collection_ObjType);
+
+#if CDM_USE_PURE_STRING_POINTERS
+  Tcl_RegisterObjType(&CDM_SWIG_Object_ObjType);
+#endif /* CDM_USE_PURE_STRING_POINTERS */
 };

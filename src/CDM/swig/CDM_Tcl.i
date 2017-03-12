@@ -20,7 +20,8 @@
   }%}
 
 %{
-const Tcl_ObjType *CDMTcl_StringType = NULL;
+const Tcl_ObjType *CDMTcl_stringType = NULL;
+const Tcl_ObjType *CDMTcl_cmdNameType = NULL;
 #include "swig/CDM_Tcl.cpp"
 %}
 
@@ -39,7 +40,8 @@ const Tcl_ObjType *CDMTcl_StringType = NULL;
   }
 #endif
   CDM_InitialiseObjTypes();
-  CDMTcl_StringType = Tcl_GetObjType("string");
+  CDMTcl_stringType  = Tcl_GetObjType("string");
+  CDMTcl_cmdNameType = Tcl_GetObjType("cmdName");
 %}
 
 %define TYPE_IN_CONST(cT, cppT, tclT, swigT)
