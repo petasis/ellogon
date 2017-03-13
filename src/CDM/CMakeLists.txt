@@ -78,6 +78,7 @@ INCLUDE_DIRECTORIES ( ${CMAKE_CURRENT_SOURCE_DIR} )
 
 SET ( CDM_LIBRARY_SOURCES
   CDM.cpp
+  CDMUtf.cpp
   Span.cpp
   Attribute.cpp
   Annotation.cpp

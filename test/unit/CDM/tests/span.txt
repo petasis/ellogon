@@ -91,3 +91,26 @@ set s [CDM::Span -args 1 2]; set r [$s save_JSON]; $s -delete; string map {\n {}
 set s [CDM::SpanSet -args 1 2]; set r [$s save_XML]; $s -delete; set r
 <?xml version="1.0" encoding="utf-8"?><Ellogon><SpanSet><min>1</min><max>2</max><set size="dynamic"><value0><start>1</start><end>2</end></value0></set></SpanSet></Ellogon>
 
+set o [CDM::Span -args 0 10]; set r [$o contains 2]; $o -delete; set r
+1
+
+set o [CDM::Span -args 0 10]; set r [$o contains 0]; $o -delete; set r
+1
+
+set o [CDM::Span -args 0 10]; set r [$o contains 10]; $o -delete; set r
+1
+
+set o [CDM::Span -args 0 10]; set r [$o contains 20]; $o -delete; set r
+0
+
+set o [CDM::SpanSet -args 0 10]; set r [$o contains 2]; $o -delete; set r
+1
+
+set o [CDM::SpanSet -args 0 10]; set r [$o contains 0]; $o -delete; set r
+1
+
+set o [CDM::SpanSet -args 0 10]; set r [$o contains 10]; $o -delete; set r
+1
+
+set o [CDM::SpanSet -args 0 10]; set r [$o contains 20]; $o -delete; set r
+0

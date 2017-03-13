@@ -71,6 +71,9 @@ namespace ELEP {
 
     namespace Utilities {
       std::string ensure_list_element(const std::string &str);
+
+      int CDM_StringMatch(const char *str, const char *pattern);
+      int CDM_StringCaseMatch( const char *str, const char *pattern, int nocase);
     }; /* namespace ELEP::CDM::Utilities */
 
     namespace Unicode {

@@ -108,3 +108,51 @@ set o [CDM::Annotation -args token]; set r [$o save_JSON]; $o -delete; string ma
 
 set o [CDM::AnnotationSet -args token]; set r [$o save_JSON]; $o -delete; string map {\n {}} $r
 {"AnnotationSet": {"nextId": 1,"set": [{"id": 0,"type": {"ptr_wrapper": {"id": 2147483649,"data": "token"}},"spans": {"min": 4294967295,"max": 0,"set": []},"attributes": {"set": []}}]}}
+
+set ann [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {NNN}}} {Attr2 CDM_STRING {NNP}}]]; tip_AnnotationContainsAttributeMatchingValue $ann Attr1 NN*
+1
+
+set ann [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {NNN}}} {Attr2 CDM_STRING {NNP}}]]; tip_AnnotationContainsAttributeMatchingValue $ann Attr1 *
+1
+
+set ann [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {NNN}}} {Attr2 CDM_STRING {NNP}}]]; tip_AnnotationContainsAttributeMatchingValue $ann Attr1 P*
+0
+
+set ann [tip_CreateAnnotation token [list {0 12}] [list {Attr1 {CDM_STRING {NNN}}} {Attr2 CDM_STRING {NNP}}]]; tip_AnnotationContainsAttributeMatchingValue $ann Attr1 NNN*
+1
+
+tip_AnnotationContainsPosition {{} token {{0 12}} {{attr1 {CDM_STRING NNN}}}} 0
+1
+
+tip_AnnotationContainsPosition {{} token {{0 12}} {{attr1 {CDM_STRING NNN}}}} 1
+1
+
+tip_AnnotationMatchesRange {{} token {{0 12}} {{attr1 {CDM_STRING NNN}}}} 0 20
+0
+
+tip_AnnotationMatchesRange {{} token {{0 12}} {{attr1 {CDM_STRING NNN}}}} 0 10
+0
+
+tip_AnnotationMatchesRange {{} token {{0 12}} {{attr1 {CDM_STRING NNN}}}} 0 12
+1
+
+tip_GetAttribute {{} token {{0 12}} {{attr1 {CDM_STRING NNN}}}} attr1
+attr1 {CDM_STRING {NNN}}
+
+tip_GetAttributes {{} token {{0 12}} {{attr1 {CDM_STRING NNN}}}}
+{attr1 {CDM_STRING {NNN}}}
+
+tip_GetSpans {{} token {{0 12}} {{attr1 {CDM_STRING NNN}}}}
+{0 12}
+
+tip_PutAttribute {{} token {{0 12}} {{attr1 {CDM_STRING NNN}}}} {attr2 CDM_STRING HELLO}
+{} token {{0 12}} {{attr1 {CDM_STRING {NNN}}} {attr2 {CDM_STRING {HELLO}}}}
+
+tip_RemoveAttribute {{} token {{0 12}} {{attr1 {CDM_STRING NNN}}}} attr1
+{} token {{0 12}} {}
+
+tip_GetType {{} token {{0 12}} {{attr1 {CDM_STRING NNN}}}}
+token
+
+tip_GetId {{} token {{0 12}} {{attr1 {CDM_STRING NNN}}}}
+

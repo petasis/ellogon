@@ -391,7 +391,8 @@ bool ELEP::CDM::AttributeSet::containsAttributeMatchingValue(const char *name,
   auto attr = find(name);
   if (attr == set.end()) return false;
   if (!pattern) return true;
-  return std::regex_match(attr->value(), std::regex(pattern));
+  return ELEP::CDM::Utilities::CDM_StringMatch(attr->value().c_str(), pattern);
+  //return std::regex_match(attr->value(), std::regex(pattern));
 };
 
 bool ELEP::CDM::AttributeSet::containsAttributeMatchingValue(
@@ -399,7 +400,8 @@ bool ELEP::CDM::AttributeSet::containsAttributeMatchingValue(
   auto attr = find(name);
   if (attr == set.end()) return false;
   if (!pattern.size()) return true;
-  return std::regex_match(attr->value(), std::regex(pattern));
+  return ELEP::CDM::Utilities::CDM_StringMatch(attr->value().c_str(), pattern.c_str());
+  //return std::regex_match(attr->value(), std::regex(pattern));
 };
 
 bool ELEP::CDM::AttributeSet::containsAttributeMatchingValue(const char *name,

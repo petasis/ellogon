@@ -197,7 +197,7 @@ ELEP::CDM::SpanSet::SpanSet(Tcl_Interp *interp, Tcl_Obj *obj) : set(), _min {ELE
     throw std::invalid_argument(msg);
   }
   for (int i = 0; i < count; ++i) {
-    set.push_back(Span(interp, items[i]));
+    push_back(Span(interp, items[i]));
   }
 };
 #endif /* TCL_VERSION */

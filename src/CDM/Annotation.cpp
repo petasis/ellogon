@@ -210,14 +210,19 @@ ELEP::CDM::Annotation::Annotation(Tcl_Interp *interp, Tcl_Obj *obj) :
   Tcl_WideInt id;
 
   /* A valid Annotation is a list with 4 items, or a list of two items... */
-  if (Tcl_ListObjGetElements(interp, obj, &count, &items) != TCL_OK ||
-      count != 4) {
-    throw Status::ERROR;
+  if (Tcl_ListObjGetElements(interp, obj, &count, &items) != TCL_OK) {
+    throw std::invalid_argument("invalid Annotation (4-item list expected)");
+  }
+  if (count != 4) {
+    std::ostringstream msg;
+    msg << "invalid Annotation (4-item list expected): ";
+    msg << "found items: " << count << " (\"" << Tcl_GetString(obj) << "\")";
+    throw std::invalid_argument(msg.str());
   }
   /* Get Id: either an integer, or an empty id */
   if (Tcl_GetWideIntFromObj(interp, items[0], &id) != TCL_OK) {
     Tcl_GetStringFromObj(items[0], &len);
-    if (len != 0) throw Status::ERROR;
+    if (len != 0) throw std::invalid_argument("id must be an integral value") ;
   } else {
     _id = id;
   }

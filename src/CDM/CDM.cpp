@@ -149,7 +149,9 @@ namespace ELEP {
       void spanset(SpanSet& first, SpanSet& second) {
         // enable ADL (not necessary in our case, but good practice)
         using std::swap;
-        swap(first.set, second.set);
+        swap(first.set,  second.set);
+        swap(first._min, second._min);
+        swap(first._max, second._max);
       };
       void attributevalue(AttributeValue& first, AttributeValue& second) {
         using std::swap;
@@ -166,7 +168,7 @@ namespace ELEP {
       void attributeset(AttributeSet& first, AttributeSet& second) {
         // enable ADL (not necessary in our case, but good practice)
         using std::swap;
-        swap(first.set, second.set);
+        swap(first.set,  second.set);
       };
       void annotation(Annotation& first, Annotation& second) {
         // enable ADL (not necessary in our case, but good practice)
