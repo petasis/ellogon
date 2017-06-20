@@ -38,6 +38,7 @@
 #include <string>      /* For std::string             */
 #include <memory>      /* For smart pointers          */
 #include <cstdint>     /* For C++11 type uint32_t     */
+#include <tuple>       /* For std::tuple              */
 #endif /* SWIG */
 
 namespace ELEP {
@@ -80,6 +81,66 @@ namespace ELEP {
       const std::string normalise_nfc(const std::string& data);
     }; /* namespace ELEP::CDM::Unicode */
 
+    class Annotation;
+    namespace Functor {
+      template<class Arg, class Result>
+      class UnaryFunction {
+        public:
+          virtual Result operator()(const Arg &) const = 0;
+        // base_type *CreateCopy() const =0
+      }; /* UnaryFunction */
+
+      template<class Arg, class Result, class State>
+      class UnaryFunctionWithState : public UnaryFunction<Arg, Result> {
+        public:
+          //UnaryFunctionWithState() = default;
+          UnaryFunctionWithState(State&& state) :
+            m_state(std::forward<State>(state)) {};
+        protected:
+          State m_state;
+      }; /* UnaryFunctionWithState */
+
+      template<class Arg, class Result, class... Ts>
+      class UnaryFunctionWithStates : public UnaryFunction<Arg, Result> {
+        public:
+          //UnaryFunctionWithStates() = default;
+          template <class... Args>
+          UnaryFunctionWithStates(Args&&... args) :
+            m_state(std::forward<Args>(args)...) {};
+        protected:
+#ifdef   SWIG /* SWIG does not seem to understand std::tuple<Ts...> */
+          std::tuple<Ts>    m_state;
+#else
+          std::tuple<Ts...> m_state;
+#endif /* SWIG */
+      }; /* UnaryFunctionWithStates */
+      template<class Arg>
+      class UnaryPredicate : public UnaryFunction<Arg, bool> {};
+      template<class Arg, class State>
+      class UnaryPredicateWithState :
+        public UnaryFunctionWithState<Arg, bool, State> {};
+      template<class Arg, class... States>
+      class UnaryPredicateWithStates :
+#ifdef    SWIG
+        public UnaryFunctionWithStates<Arg, bool, States> {};
+#else
+        public UnaryFunctionWithStates<Arg, bool, States ... > {};
+#endif /* SWIG */
+      class AnnotationUnaryPredicate :
+        public UnaryPredicate<ELEP::CDM::Annotation> {};
+      template<class State>
+      class AnnotationUnaryPredicateWithState :
+        public UnaryPredicateWithState<ELEP::CDM::Annotation, State> {};
+      template<class... States>
+      class AnnotationUnaryPredicateWithStates :
+#ifdef    SWIG
+        public UnaryPredicateWithStates<ELEP::CDM::Annotation, States> {};
+#else
+        public UnaryPredicateWithStates<ELEP::CDM::Annotation, States ... > {};
+#endif /* SWIG */
+      class AnnotationUnaryPredicateWithStringState :
+        public AnnotationUnaryPredicateWithState<std::string> {};
+    }; /* namespace ELEP::CDM::Functor */
   }; /* namespace ELEP::CDM */
 }; /* namespace ELEP */
 #else  /* __cplusplus */
@@ -122,5 +183,6 @@ typedef void *            CDM_Collection;
 #include "Attribute.h"
 #include "Annotation.h"
 #include "Document.h"
+#include "CDMFunctors.h"
 
 #endif /* ELLOGON_CDM */

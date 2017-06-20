@@ -20,7 +20,7 @@
   }%}
 
 %{
-const Tcl_ObjType *CDMTcl_stringType = NULL;
+const Tcl_ObjType *CDMTcl_stringType  = NULL;
 const Tcl_ObjType *CDMTcl_cmdNameType = NULL;
 #include "swig/CDM_Tcl.cpp"
 %}
@@ -249,6 +249,21 @@ TYPE_IN_ANY  (CDM_Document, ELEP::CDM::Document, CDM_Document_ObjType, CDMTYPE_p
 %template(serialisation_AnnotationSet)     ELEP::CDM::serialisation::Serialisation<ELEP::CDM::AnnotationSet>;
 %template(serialisation_Document)          ELEP::CDM::serialisation::Serialisation<ELEP::CDM::Document>;
 %template(serialisation_Collection)        ELEP::CDM::serialisation::Serialisation<ELEP::CDM::Collection>;
+
+%ignore ELEP::CDM::Functor::UnaryFunction;
+%ignore ELEP::CDM::Functor::UnaryFunctionWithState;
+%ignore ELEP::CDM::Functor::UnaryFunctionWithStates;
+%ignore ELEP::CDM::Functor::UnaryPredicate;
+%ignore ELEP::CDM::Functor::UnaryPredicateWithState;
+%ignore ELEP::CDM::Functor::UnaryPredicateWithStates;
+%ignore ELEP::CDM::Functor::AnnotationUnaryPredicate;
+%ignore ELEP::CDM::Functor::AnnotationUnaryPredicateWithState;
+%ignore ELEP::CDM::Functor::AnnotationUnaryPredicateWithState<ELEP::CDM::Position>;
+%ignore ELEP::CDM::Functor::AnnotationUnaryPredicateWithStates;
+%ignore ELEP::CDM::Functor::AnnotationUnaryPredicateWithStringState;
+
+%nodefaultctor;
+
 %include "CDM3.h"
 
 /*

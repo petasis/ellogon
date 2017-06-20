@@ -41,6 +41,7 @@
 #include <boost/multi_index/identity.hpp>
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/mem_fun.hpp>
+
 #endif /* SWIG */
 
 #ifdef __cplusplus
@@ -153,7 +154,8 @@ namespace ELEP {
         struct id_asc  {};
         struct ann_asc {};
         struct hash    {};
-      }
+        struct type    {};
+      };
 
       typedef boost::multi_index::multi_index_container<
         Annotation,                                                                  // the stored object
@@ -170,9 +172,15 @@ namespace ELEP {
             boost::multi_index::identity<Annotation>                                 // ordered on Annotation...
           >,
           // Quick lookup through a hash table on Annotation::id()
-          boost::multi_index::hashed_unique<                                         // third view: unordered (hashed)
+          boost::multi_index::hashed_unique<                                         // third view: unordered (hashed) on id
             boost::multi_index::tag<tags::hash>,                                     // tag used to access the view
             boost::multi_index::const_mem_fun<Annotation, const Id, &Annotation::id> // we hash on id()...
+            // std::hash<const Id>
+          >,
+          // Quick lookup through a hash table on Annotation::type()
+          boost::multi_index::hashed_non_unique<                                     // forth view: unordered (hashed) on type
+            boost::multi_index::tag<tags::type>,                                     // tag used to access the view
+            boost::multi_index::const_mem_fun<Annotation, const std::string&, &Annotation::type> // we hash on type()...
             // std::hash<const Id>
           >
         >
@@ -233,10 +241,9 @@ namespace ELEP {
 
         /* DocumentAnnotationSet, view tags::id_asc */
 #ifndef SWIG
-        reference              at(size_type n) {auto&& view = set.get<internal::tags::id_asc>(); auto it = std::next(view.begin(), n); *it;};
- ;
+        //reference              at(size_type n) {auto&& view = set.get<internal::tags::id_asc>(); auto it = std::next(view.begin(), n); if (it == view.end()) throw std::out_of_range("index out of range"); return *it;};
 #endif /* SWIG */
-        const_reference        at(size_type n) const {auto&& view = set.get<internal::tags::id_asc>(); auto it = std::next(view.cbegin(), n); *it;};
+        const_reference        at(size_type n) const {auto&& view = set.get<internal::tags::id_asc>(); auto it = std::next(view.cbegin(), n); if (it == view.end()) throw std::out_of_range("index out of range"); return *it;};
 #ifndef SWIG
         iterator               begin()   noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.begin();};
 #endif /* SWIG */
@@ -257,6 +264,8 @@ namespace ELEP {
         const_iterator         cend()    const noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.cend();};
         const_reverse_iterator crbegin() const noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.crbegin();};
         const_reverse_iterator crend()   const noexcept {auto&& view = set.get<internal::tags::id_asc>(); return view.crend();};
+
+        const_reference        get(const Id id) const {auto&& view = set.get<internal::tags::hash>(); auto it = view.find(id); if (it == view.end()) throw std::out_of_range("annotation with specified id not found"); return *it;};
 
 #ifndef SWIG
         iterator               iterator_to(const value_type& x) {auto&& view = set.get<internal::tags::id_asc>(); return view.iterator_to(x);};
@@ -320,6 +329,16 @@ namespace ELEP {
         template<typename CompatibleKey,typename CompatibleCompare>
         std::pair<iterator,iterator> equal_range(
           const CompatibleKey& x,const CompatibleCompare& comp)const;
+
+        // Selectors...
+        AnnotationSet select(const char* type)                 const {AnnotationSet s; select(s, type); return s;};
+        AnnotationSet select(const std::string& type)          const {AnnotationSet s; select(s, type); return s;};
+        void select(AnnotationSet& s, const char* type)        const {select(s, std::string(type));};
+        void select(AnnotationSet& s, const std::string& type) const;
+        void select(AnnotationSet& s, const char* type, const Functor::AnnotationUnaryPredicate &pred) const {select(s, std::string(type), pred);};
+        void select(AnnotationSet& s, const std::string& type, const Functor::AnnotationUnaryPredicate &pred) const;
+        void select(AnnotationSet& s, const char* type, const char* pred) const {select(s, std::string(type), pred);};
+        void select(AnnotationSet& s, const std::string& type, const std::string& pred) const;
 
 
 #if 0
@@ -460,15 +479,15 @@ CDM_AnnotationSet   CDM_AnnotationsMatchingRange(CDM_AnnotationSet Set, long Sta
 CDM_AnnotationSet   CDM_DisplaceAnnotations(CDM_AnnotationSet Set, long offset, long displacement);
 CDM_Annotation      CDM_FirstAnnotationContaining(CDM_AnnotationSet Set, const long Position);
 CDM_Annotation      CDM_FirstAnnotationContaining(CDM_AnnotationSet Set, const long Position1, const long Position2);
-CDM_Annotation      CDM_GetAnnotation(CDM_AnnotationSet Set, long Id);
 CDM_AnnotationSet   CDM_NextAnnotations(CDM_AnnotationSet Set, long Position);
 CDM_AnnotationSet   CDM_RemoveAnnotation(CDM_AnnotationSet Set, long Id);
-CDM_AnnotationSet   CDM_SelectAnnotations(CDM_AnnotationSet Set, char *Type);
-CDM_AnnotationSet   CDM_SelectAnnotations(CDM_AnnotationSet Set, char *Type, char *Constraints);
 CDM_AnnotationSet   CDM_SelectAnnotationsSorted(CDM_AnnotationSet Set, char *Type);
 CDM_AnnotationSet   CDM_SelectAnnotationsSorted(CDM_AnnotationSet Set, char *Type, char *Constraints);
 CDM_AnnotationSet   CDM_SortAnnotationSet(CDM_AnnotationSet Set);
 #endif
+const CDM_Annotation      CDM_GetAnnotation(const CDM_AnnotationSet Set, const CDM_Id Id);
+CDM_AnnotationSet         CDM_SelectAnnotations(const CDM_AnnotationSet Set, const char *Type);
+CDM_AnnotationSet         CDM_SelectAnnotations(const CDM_AnnotationSet Set, const char *Type, const char *Constraints);
 
 #endif /* ELLOGON_CDM_Annotation */
 

@@ -156,3 +156,25 @@ token
 
 tip_GetId {{} token {{0 12}} {{attr1 {CDM_STRING NNN}}}}
 
+
+tip_SelectAnnotations {{1 token {{100 200}} {}} {2 token {{0 10}} {}} {3 other {} {}}} token
+{1 token {{100 200}} {}} {2 token {{0 10}} {}}
+
+tip_GetAnnotation {{1 token {} {}} {2 token {} {}} {3 other {} {}}} 3
+3 other {} {}
+
+catch {tip_GetAnnotation {{1 token {} {}} {2 token {} {}} {3 other {} {}}} 4} e; set e
+annotation with specified id not found
+
+tip_SelectAnnotations {{1 token {{100 200}} {{type {CDM_STRING EFW}}}} {2 token {{0 10}} {}} {3 other {} {}} {4 token {{100 200}} {{type {CDM_STRING EFW}}}} } token {HasAttribute("type")}
+{1 token {{100 200}} {{type {CDM_STRING {EFW}}}}} {4 token {{100 200}} {{type {CDM_STRING {EFW}}}}}
+
+tip_SelectAnnotations {{1 token {{100 200}} {{type {CDM_STRING EFW}}}} {2 token {{0 10}} {}} {3 other {} {}} {4 token {{100 200}} {{type {CDM_STRING FW}}}} } token {HasAttributeMatchingValue("type", "E*")}
+{1 token {{100 200}} {{type {CDM_STRING {EFW}}}}}
+
+tip_SelectAnnotations {{1 token {{100 200}} {{type {CDM_STRING EFW}}}} {2 token {{0 10}} {}} {3 other {} {}} {4 token {{100 200}} {{type {CDM_STRING FW}}}} } token {ContainsPosition(120)}
+{1 token {{100 200}} {{type {CDM_STRING {EFW}}}}} {4 token {{100 200}} {{type {CDM_STRING {FW}}}}}
+
+tip_SelectAnnotations {{1 token {{100 200}} {{type {CDM_STRING EFW}}}} {2 token {{0 10}} {}} {3 other {} {}} {4 token {{100 200}} {{type {CDM_STRING FW}}}} } token {ContainsPosition(120) && HasAttributeMatchingValue("type", "F*")}
+{4 token {{100 200}} {{type {CDM_STRING {FW}}}}}
+

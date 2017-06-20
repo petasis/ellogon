@@ -83,6 +83,7 @@ SET ( CDM_LIBRARY_SOURCES
   Attribute.cpp
   Annotation.cpp
   Document.cpp
+  Expression.cpp
 )
 ADD_LIBRARY (CDM3 SHARED ${CDM_LIBRARY_SOURCES} )
 ADD_LIBRARY (CDM3S STATIC ${CDM_LIBRARY_SOURCES} )
@@ -98,7 +99,7 @@ ADD_CUSTOM_COMMAND ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/CDM_wrap_tcl.cxx"
       Serialisation.h Serialisation.cpp
       Span.h          Span.cpp
       Attribute.h     Attribute.cpp
-      Annotation.h    Annotation.cpp
+      Annotation.h    Annotation.cpp CDMFunctors.h
       Document.h      Document.cpp
       swig/CDM_Tcl.i  swig/CDM_Tcl.cpp
     COMMAND ${SWIG_EXECUTABLE} -Wall -c++ -tcl8 -O -module CDM -prefix CDM

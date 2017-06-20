@@ -30,6 +30,8 @@
 #include <climits>     /* For ULONG_MAX   */
 #include <regex>
 
+#include "Expression.h"
+
 using namespace ELEP::CDM;
 
 const Id ELEP::CDM::Annotation::no = UINT32_MAX;
@@ -421,6 +423,41 @@ ELEP::CDM::AnnotationSet::insert(ELEP::CDM::AnnotationSet::value_type&& x) {
   return std::make_pair(r.first, false);
 };
 
+void ELEP::CDM::AnnotationSet::select(AnnotationSet& s, const std::string& type) const {
+  auto&& view = set.get<ELEP::CDM::internal::tags::type>();
+  auto   p    = view.equal_range(type);
+  while (p.first != p.second) {s.insert(*p.first); ++p.first;};
+};
+
+void ELEP::CDM::AnnotationSet::select(AnnotationSet& s, const std::string& type,
+           const ELEP::CDM::Functor::AnnotationUnaryPredicate &pred) const {
+  auto&& view = set.get<ELEP::CDM::internal::tags::type>();
+  auto   p    = view.equal_range(type);
+  while (p.first != p.second) {
+    if (pred(*p.first)) s.insert(*p.first); ++p.first;
+  };
+};
+
+void ELEP::CDM::AnnotationSet::select(AnnotationSet& s, const std::string& type,
+                const std::string &pred) const {
+  auto&& view = set.get<ELEP::CDM::internal::tags::type>();
+  auto   p    = view.equal_range(type);
+
+  // std::cout << "PRED: " << pred << std::endl;
+  // Our AST
+  ELEP::CDM::Expression::AST ast;
+  // Our Interpreter
+  auto interp = ELEP::CDM::Expression::get_interpreter(pred, ast);
+  // ELEP::CDM::Expression::ast::print(std::cout, ast);
+
+  while (p.first != p.second) {
+    double result = interp.eval(&(*p.first), ast);
+    // std::cout << "result: " << result << " (" << p.first->toString()
+    //           << ")" << std::endl;
+    if (result) s.insert(*p.first); ++p.first;
+  };
+};
+
 /*
  * CDM_Annotation
  */
@@ -601,4 +638,32 @@ CDM_Status CDM_ConcatAnnotations(CDM_AnnotationSet Set1,
   if (!s2) return CDM_ERROR;
   s1->concatAnnotations(*s2);
   return CDM_OK;
+};
+
+const CDM_Annotation CDM_GetAnnotation(const CDM_AnnotationSet Set,
+                                       const CDM_Id Id) {
+  const ELEP::CDM::AnnotationSet *s =
+        static_cast<const ELEP::CDM::AnnotationSet*>(Set);
+  if (!s) return nullptr;
+  return (const CDM_Annotation) (&(s->get(Id)));
+};
+
+CDM_AnnotationSet CDM_SelectAnnotations(const CDM_AnnotationSet Set,
+                                        const char *Type) {
+  const ELEP::CDM::AnnotationSet *s =
+        static_cast<const ELEP::CDM::AnnotationSet*>(Set);
+  if (!s) return nullptr;
+  ELEP::CDM::AnnotationSet *set = new ELEP::CDM::AnnotationSet();
+  s->select(*set, Type);
+  return static_cast<CDM_AnnotationSet>(set);
+};
+
+CDM_AnnotationSet CDM_SelectAnnotations(const CDM_AnnotationSet Set,
+                      const char *Type, const char *Constraints) {
+  const ELEP::CDM::AnnotationSet *s =
+        static_cast<const ELEP::CDM::AnnotationSet*>(Set);
+  if (!s) return nullptr;
+  ELEP::CDM::AnnotationSet *set = new ELEP::CDM::AnnotationSet();
+  s->select(*set, Type, Constraints);
+  return static_cast<CDM_AnnotationSet>(set);
 };
