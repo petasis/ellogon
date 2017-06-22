@@ -68,6 +68,10 @@ namespace ELEP {
         void              end(const Position);
         Status            offsets(Position &start, Position &end) const;
         bool              contains(const Position p) const {return _start <= p && p <= _end;};
+        bool              contains(const std::vector<Position>& p) const;
+        bool              contains(const size_t items, const Position *positions) const;
+        bool              displace(const Int displacement);
+        bool              displace(const Position offset, const Int displacement);
         bool              matchesRange(const Position start, const Position end) const;
         bool              valid() const;
         const std::string toString() const;
@@ -122,6 +126,10 @@ namespace ELEP {
         const Position&   min()      const;
         const Position&   max()      const;
         bool              contains(const Position p) const {return _min <= p && p <= _max;};
+        bool              contains(const std::vector<Position>& p) const;
+        bool              contains(const size_t items, const Position *positions) const;
+        bool              displace(const Int displacement);
+        bool              displace(const Position offset, const Int displacement);
         bool              matchesRange(const Position start, const Position end) const;
         bool              valid()    const;
         const std::string toString() const;

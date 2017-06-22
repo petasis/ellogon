@@ -172,6 +172,46 @@ Status ELEP::CDM::Span::offsets(Position &s, Position &e) const {
   return Status::OK;
 };
 
+bool ELEP::CDM::Span::contains(const std::vector<Position> &p) const {
+  return std::all_of(p.cbegin(), p.cend(),
+         [this](const Position& p){return this->contains(p);});
+};
+
+bool ELEP::CDM::Span::contains(const size_t items, const Position *p) const {
+  for (size_t i = 0; i < items; ++i, ++p) {
+    if (!contains(*p)) return false;
+  }
+  return true;
+};
+
+bool ELEP::CDM::Span::displace(const Int displacement) {
+  if (displacement < 0 && -displacement > _start) {
+    std::ostringstream out;
+    out << "displacing span with start=" << _start << " with displacement="
+        << displacement << " will result in a negative offset";
+    throw std::runtime_error(out.str());
+  }
+  _start += displacement; _end += displacement;
+  return true;
+};
+
+bool ELEP::CDM::Span::displace(const Position offset, const Int displacement) {
+  if (displacement < 0 && -displacement > _start) {
+    std::ostringstream out;
+    out << "displacing span with start=" << _start << " with displacement="
+        << displacement << " will result in a negative offset";
+    throw std::runtime_error(out.str());
+  }
+  if (_start >= offset) {
+    _start += displacement; _end += displacement;
+    return true;
+  } else if (_end >= offset) {
+    _end += displacement;
+    return true;
+  }
+  return false;
+};
+
 bool ELEP::CDM::Span::matchesRange(const Position s, const Position e) const {
   return s == _start && e == _end;
 };
@@ -215,6 +255,38 @@ const Position& ELEP::CDM::SpanSet::firstSpanEnd() const {
 Status ELEP::CDM::SpanSet::firstSpanOffsets(Position &start, Position &end) const {
   if (set.empty()) return Status::ERROR;
   return set.cbegin()->offsets(start, end);
+};
+
+bool ELEP::CDM::SpanSet::contains(const std::vector<Position> &p) const {
+  return std::all_of(p.cbegin(), p.cend(),
+         [this](const Position& p){return this->contains(p);});
+};
+
+bool ELEP::CDM::SpanSet::contains(const size_t items, const Position *p) const {
+  for (size_t i = 0; i < items; ++i, ++p) {
+    if (!contains(*p)) return false;
+  }
+  return true;
+};
+
+bool ELEP::CDM::SpanSet::displace(const Int displacement) {
+  std::for_each(set.begin(), set.end(),
+    [displacement](Span& s){s.displace(displacement);});
+  _min += displacement; _max += displacement;
+  return true;
+};
+
+bool ELEP::CDM::SpanSet::displace(const Position offset,
+                                  const Int displacement) {
+  if (_max < offset) return true;
+  std::for_each(set.begin(), set.end(),
+    [offset, displacement](Span& s){s.displace(offset, displacement);});
+  if (_min >= offset) {
+    _min += displacement; _max += displacement;
+  } else if (_max >= offset) {
+    _max += displacement;
+  }
+  return true;
 };
 
 const Position& ELEP::CDM::SpanSet::min() const {

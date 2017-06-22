@@ -183,7 +183,7 @@ TYPE_IN_ANY  (CDM_Document, ELEP::CDM::Document, CDM_Document_ObjType, CDMTYPE_p
 
 %typemap(out) CDM_Status
 %{// Typemap(out) CDM_Status
-  if ($1 != CDM_OK) SWIG_fail;%}
+  if ($1 == CDM_ERROR) SWIG_fail;%}
 
 %typemap(out) CDM_Id
 %{// Typemap(out) CDM_Id

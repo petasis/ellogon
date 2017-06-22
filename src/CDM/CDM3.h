@@ -57,6 +57,7 @@ namespace ELEP {
     };
     typedef uint32_t          Position;
     typedef uint32_t          Id;
+    typedef  int32_t          Int;
     typedef size_t            Size;
 
     namespace Cache {
@@ -150,6 +151,7 @@ namespace ELEP {
 /* Status */
 #define CDM_OK                        0
 #define CDM_ERROR                     1
+#define CDM_FALSE                    10
 
 /* Attribute Types */
 #define CDM_NONE                      0
@@ -165,6 +167,7 @@ namespace ELEP {
 typedef int               CDM_Status;
 typedef uint32_t          CDM_Position;
 typedef uint32_t          CDM_Id;
+typedef  int32_t          CDM_Int;
 typedef size_t            CDM_Size;
 typedef void *            CDM_Span;
 typedef void *            CDM_SpanSet;

@@ -122,6 +122,10 @@ namespace ELEP {
         bool                   containsAttributeMatchingValue(const char *name, const std::regex& pattern) const;
         bool                   containsAttributeMatchingValue(const std::string& name, const std::regex& pattern) const;
         bool                   contains(const Position p) const {return _spans.contains(p);};
+        bool                   contains(const std::vector<Position>& p) const {return _spans.contains(p);};
+        bool                   contains(const size_t items, const Position *positions) const {return _spans.contains(items, positions);};
+        bool                   displace(const Int displacement) {return _spans.displace(displacement);};
+        bool                   displace(const Position offset, const Int displacement) {return _spans.displace(offset, displacement);};
         bool                   matchesRange(const Position start, const Position end) const {return _spans.matchesRange(start, end);};
         void                   putAttribute(const Attribute& attribute) {_attributes.putAttribute(attribute);};
         void                   removeAttribute(const char *name) {_attributes.removeAttribute(name);};
@@ -333,6 +337,10 @@ namespace ELEP {
         // Selectors...
         AnnotationSet select(const char* type)                 const {AnnotationSet s; select(s, type); return s;};
         AnnotationSet select(const std::string& type)          const {AnnotationSet s; select(s, type); return s;};
+
+        bool displace(const Int displacement);
+        bool displace(const Position offset, const Int displacement);
+
         void select(AnnotationSet& s, const char* type)        const {select(s, std::string(type));};
         void select(AnnotationSet& s, const std::string& type) const;
         void select(AnnotationSet& s, const char* type, const Functor::AnnotationUnaryPredicate &pred) const {select(s, std::string(type), pred);};
@@ -433,11 +441,15 @@ namespace ELEP {
 
 int                       CDM_AnnotationContainsAttributeMatchingValue(const CDM_Annotation Ann, const char *AttributeName, const char *ValuePattern);
 int                       CDM_AnnotationContainsPosition(const CDM_Annotation Ann, const CDM_Position Position);
+int                       CDM_AnnotationContainsPositions(const CDM_Annotation Ann, const size_t items, const CDM_Position *Positions);
 int                       CDM_AnnotationMatchesRange(const CDM_Annotation Ann, const CDM_Position start, const CDM_Position end);
 int                       CDM_CompareAnnotations(const CDM_Annotation Ann1, const CDM_Annotation Ann2);
 
 CDM_Annotation            CDM_CreateAnnotation(const char *type, const CDM_SpanSet spans, const CDM_AttributeSet attributes);
 CDM_Annotation            CDM_CreateAnnotation(const char *type, const CDM_Position start, const CDM_Position end, const CDM_AttributeSet attributes);
+
+CDM_Status                CDM_DisplaceAnnotation(CDM_Annotation Ann, long displacement);
+CDM_Status                CDM_DisplaceAnnotation(CDM_Annotation Ann, long offset, long displacement);
 
 const CDM_Attribute       CDM_GetAttribute(const CDM_Annotation Annotation, const char *Name);
 const CDM_AttributeSet    CDM_GetAttributes(const CDM_Annotation Annotation);
@@ -449,8 +461,6 @@ CDM_Id                    CDM_GetId(const CDM_Annotation Ann);
 
 #if 0
 int                 CDM_AnnotationContainsAttributeMatchingValues(CDM_Annotation Ann, char *AttributeName, Tcl_Obj *ValuePatternsObj = NULL);
-int                 CDM_AnnotationContainsPositions(const CDM_Annotation Ann, const unsigned int items, const long *Positions);
-CDM_Annotation      CDM_DisplaceAnnotation(CDM_Annotation Ann, long offset, long displacement);
 CDM_ByteSequenceSet CDM_GetAnnotatedTextRanges(CDM_ByteSequence Text, CDM_Annotation Annotation);
 CDM_AttributeValue  CDM_GetAttributeValue(CDM_Annotation Annotation, const char *Name, CDM_AttributeValue def = NULL);
 CDM_ByteSequenceSet CDM_GetFirstAnnotatedTextRange(CDM_ByteSequence Text, CDM_Annotation Annotation);

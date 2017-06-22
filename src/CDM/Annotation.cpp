@@ -423,6 +423,29 @@ ELEP::CDM::AnnotationSet::insert(ELEP::CDM::AnnotationSet::value_type&& x) {
   return std::make_pair(r.first, false);
 };
 
+bool ELEP::CDM::AnnotationSet::displace(const Int displacement) {
+  bool result = false;
+  for (auto it = cbegin(); it != cend(); ++it) {
+    Annotation ann(*it);
+    if (ann.displace(displacement)) {
+      insert(ann); if(!result) result= true;
+    }
+  }
+  return result;
+};
+
+bool ELEP::CDM::AnnotationSet::displace(const Position offset,
+                                        const Int displacement) {
+  bool result = false;
+  for (auto it = cbegin(); it != cend(); ++it) {
+    Annotation ann(*it);
+    if (ann.displace(offset, displacement)) {
+      insert(ann); if(!result) result= true;
+    }
+  }
+  return result;
+};
+
 void ELEP::CDM::AnnotationSet::select(AnnotationSet& s, const std::string& type) const {
   auto&& view = set.get<ELEP::CDM::internal::tags::type>();
   auto   p    = view.equal_range(type);
@@ -490,6 +513,23 @@ CDM_Annotation CDM_CreateAnnotation(const char *type,
   return p;
 };
 
+CDM_Status CDM_DisplaceAnnotation(CDM_Annotation Ann, long displacement) {
+  ELEP::CDM::Annotation *a =
+        static_cast<ELEP::CDM::Annotation*>(Ann);
+  if (!a) return CDM_ERROR;
+  if (a->displace(displacement)) return CDM_OK;
+  return CDM_FALSE;
+};
+
+CDM_Status CDM_DisplaceAnnotation(CDM_Annotation Ann,
+                                  long offset, long displacement) {
+  ELEP::CDM::Annotation *a =
+        static_cast<ELEP::CDM::Annotation*>(Ann);
+  if (!a) return CDM_ERROR;
+  if (a->displace(offset, displacement)) return CDM_OK;
+  return CDM_FALSE;
+};
+
 int CDM_AnnotationContainsAttributeMatchingValue(const CDM_Annotation Ann,
         const char *AttributeName, const char *ValuePattern) {
   const ELEP::CDM::Annotation *a =
@@ -503,6 +543,14 @@ int CDM_AnnotationContainsPosition(const CDM_Annotation Ann,
   const ELEP::CDM::Annotation *a =
         static_cast<const ELEP::CDM::Annotation*>(Ann);
   if (a) return a->contains(Position);
+  return false;
+};
+
+int CDM_AnnotationContainsPositions(const CDM_Annotation Ann,
+        const size_t items, const CDM_Position *Positions) {
+  const ELEP::CDM::Annotation *a =
+        static_cast<const ELEP::CDM::Annotation*>(Ann);
+  if (a) return a->contains(items, Positions);
   return false;
 };
 

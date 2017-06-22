@@ -178,3 +178,25 @@ tip_SelectAnnotations {{1 token {{100 200}} {{type {CDM_STRING EFW}}}} {2 token 
 tip_SelectAnnotations {{1 token {{100 200}} {{type {CDM_STRING EFW}}}} {2 token {{0 10}} {}} {3 other {} {}} {4 token {{100 200}} {{type {CDM_STRING FW}}}} } token {ContainsPosition(120) && HasAttributeMatchingValue("type", "F*")}
 {4 token {{100 200}} {{type {CDM_STRING {FW}}}}}
 
+tip_DisplaceAnnotation {1 token {{100 200}} {{type {CDM_STRING EFW}}}} 10
+1 token {{110 210}} {{type {CDM_STRING {EFW}}}}
+
+tip_DisplaceAnnotation {1 token {{100 200}} {{type {CDM_STRING EFW}}}} -10
+1 token {{90 190}} {{type {CDM_STRING {EFW}}}}
+
+catch {tip_DisplaceAnnotation {1 token {{100 200}} {{type {CDM_STRING EFW}}}} -500} e; set e
+displacing span with start=100 with displacement=-500 will result in a negative offset
+
+tip_DisplaceAnnotation {1 token {{100 200}} {{type {CDM_STRING EFW}}}} 120 5
+1 token {{100 205}} {{type {CDM_STRING {EFW}}}}
+
+tip_DisplaceAnnotation {1 token {{100 200}} {{type {CDM_STRING EFW}}}} 200 5
+1 token {{100 205}} {{type {CDM_STRING {EFW}}}}
+
+tip_AnnotationContainsPosition {1 token {{100 200}} {{type {CDM_STRING EFW}}}} 5
+0
+
+tip_AnnotationContainsPosition {1 token {{100 200}} {{type {CDM_STRING EFW}}}} 150
+1
+
+
