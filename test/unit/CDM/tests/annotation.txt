@@ -199,4 +199,20 @@ tip_AnnotationContainsPosition {1 token {{100 200}} {{type {CDM_STRING EFW}}}} 5
 tip_AnnotationContainsPosition {1 token {{100 200}} {{type {CDM_STRING EFW}}}} 150
 1
 
+tip_GetAttribute {1 token {{100 200}} {{type {CDM_STRING EFW}}}} type
+type {CDM_STRING {EFW}}
 
+tip_GetAttributeValue {1 token {{100 200}} {{type {CDM_STRING EFW}}}} type [tip_CreateAttributeValue CDM_STRING {}]
+CDM_STRING {EFW}
+
+tip_GetAttributeValue {1 token {{100 200}} {{type {CDM_STRING EFW}}}} type {CDM_STRING {fail}}
+CDM_STRING {EFW}
+
+tip_GetAttributeValue {1 token {{100 200}} {{type {CDM_STRING EFW}}}} missing {CDM_STRING {fail}}
+CDM_STRING {fail}
+
+tip_GetAnnotationFirstSpan {1 token {{100 200}} {{type {CDM_STRING EFW}}}}
+100 200
+
+tip_GetAnnotationFirstSpanOffsets {1 token {{100 200}} {{type {CDM_STRING EFW}}}} s e; list $s $e
+100 200

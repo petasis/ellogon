@@ -22,6 +22,8 @@
 %{
 const Tcl_ObjType *CDMTcl_stringType  = NULL;
 const Tcl_ObjType *CDMTcl_cmdNameType = NULL;
+#include <tcl.h>
+#include "CDM3.h"
 #include "swig/CDM_Tcl.cpp"
 %}
 
@@ -51,21 +53,20 @@ const Tcl_ObjType *CDMTcl_cmdNameType = NULL;
 %typemap(in) const cT
 %{// Typemap(in) const cT
   try {
-    $1 = CDM_EnsureConstObjectOrNULL<cppT,
-       swigT, &tclT>(interp, $input);
+    $1 = CDM_CastToOpaque(cT, (CDM_EnsureConstObjectOrNULL<cppT, swigT, &tclT>(interp, $input)));
   } catch (std::exception &e) {SWIG_fail;}%}
 
 %typemap(out) const cT
 %{// Typemap(out) const cT
   if (!$1) {
     // We got a NULL pointer. Generate an error message:
-    CDM_ReturnNewObject<cppT, &tclT>(interp, static_cast<cppT *>($1));
+    CDM_ReturnNewObject<cppT, &tclT>(interp, CDM_CastFromOpaque(cppT *, $1));
     SWIG_fail;
   }
   // This is a const reference, to a member of another object.
   // Which may be deleted (as it is bound to a caller variable).
   // So, return a copy.
-  CDM_ReturnNewObject<cppT, &tclT>(interp, new cppT(*static_cast<cppT *>($1)));
+  CDM_ReturnNewObject<cppT, &tclT>(interp, new cppT(*CDM_CastFromOpaque(cppT *, $1)));
   $1 = NULL;%}
 
 /*
@@ -73,7 +74,7 @@ const Tcl_ObjType *CDMTcl_cmdNameType = NULL;
  */
 %typemap(out) cT
 %{// Typemap(out) cT
-  CDM_ReturnNewObject<cppT, &tclT>(interp, static_cast<cppT *>($1));
+  CDM_ReturnNewObject<cppT, &tclT>(interp, CDM_CastFromOpaque(cppT *, $1));
   if (!$1) SWIG_fail;%}
 %enddef
 
@@ -84,20 +85,20 @@ const Tcl_ObjType *CDMTcl_cmdNameType = NULL;
 %typemap(in) const cT
 %{// Typemap(in) const cT
   try {
-    $1 = CDM_EnsureConstObjectOrNULL<cppT, swigT, &tclT>(interp, $input);
+    $1 = CDM_CastToOpaque(cT, (CDM_EnsureConstObjectOrNULL<cppT, swigT, &tclT>(interp, $input)));
   } catch (std::exception &e) {SWIG_fail;}%}
 
 %typemap(out) const cT
 %{// Typemap(out) const cT
   if (!$1) {
     // We got a NULL pointer. Generate an error message:
-    CDM_ReturnNewObject<cppT, &tclT>(interp, static_cast<cppT *>($1));
+    CDM_ReturnNewObject<cppT, &tclT>(interp, CDM_CastFromOpaque(cppT *, $1));
     SWIG_fail;
   }
   // This is a const reference, to a member of another object.
   // Which may be deleted (as it is bound to a caller variable).
   // So, return a copy.
-  CDM_ReturnNewObject<cppT, &tclT>(interp, new cppT(*static_cast<cppT *>($1)));
+  CDM_ReturnNewObject<cppT, &tclT>(interp, new cppT(*CDM_CastFromOpaque(cppT *, $1)));
   $1 = NULL;%}
 
 %typemap(argout) const cT
@@ -118,19 +119,19 @@ const Tcl_ObjType *CDMTcl_cmdNameType = NULL;
 
 %typemap(freearg) cT
 %{// Typemap(freearg) cT: $argnum
-  if ($1 && status$argnum == CDM_OBJ_ALLOCATED) delete (static_cast<cppT *>($1));
+  if ($1 && status$argnum == CDM_OBJ_ALLOCATED) delete (CDM_CastFromOpaque(cppT *, $1));
   $1 = NULL;%}
 
 %typemap(argout) cT
 %{// Typemap(argout) cT: result=$result, input=$input, sysname=$symname
   if (status$argnum == CDM_OBJ_ALLOCATED) {
-    CDM_ReturnNewObject<cppT, &tclT>(interp, static_cast<cppT *>($1));
+    CDM_ReturnNewObject<cppT, &tclT>(interp, CDM_CastFromOpaque(cppT *, $1));
   }
   if (!$1) SWIG_fail; $1 = NULL;%}
 
 %typemap(out) cT
 %{// Typemap(out) cT
-  CDM_ReturnNewObject<cppT, &tclT>(interp, static_cast<cppT *>($1));
+  CDM_ReturnNewObject<cppT, &tclT>(interp, CDM_CastFromOpaque(cppT *, $1));
   if (!$1) SWIG_fail; $1 = NULL;%}
 %enddef
 

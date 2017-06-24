@@ -90,7 +90,7 @@ Tcl_ObjType CDM_SWIG_Object_ObjType = {
 template<typename T>
 void Object_FreeInternalRep(Tcl_Obj *obj) {
   if (obj->internalRep.twoPtrValue.ptr1) {
-    T *p = static_cast<T*> (obj->internalRep.twoPtrValue.ptr1);
+    T *p = CDM_CastFromOpaque(T*, obj->internalRep.twoPtrValue.ptr1);
     if (p != NULL) delete p;
   }
   obj->internalRep.twoPtrValue.ptr1 = NULL;
@@ -104,7 +104,7 @@ void Object_DuplicateInternalRep(Tcl_Obj *src, Tcl_Obj *copy) {
   copy->internalRep.twoPtrValue.ptr2 = NULL;
   copy->typePtr = NULL;
   if (src->internalRep.twoPtrValue.ptr1) {
-    const T *p = static_cast<const T*> (src->internalRep.twoPtrValue.ptr1);
+    const T *p = CDM_CastFromOpaque(const T*, src->internalRep.twoPtrValue.ptr1);
     if (p == NULL) return;
     copy->internalRep.twoPtrValue.ptr1 = new T((const T) *p);
     copy->typePtr = type;
@@ -113,7 +113,7 @@ void Object_DuplicateInternalRep(Tcl_Obj *src, Tcl_Obj *copy) {
 
 template<typename T>
 void Object_UpdateString(Tcl_Obj *obj) {
-  T *p = static_cast<T*> (obj->internalRep.twoPtrValue.ptr1);
+  T *p = CDM_CastFromOpaque(T*, obj->internalRep.twoPtrValue.ptr1);
   obj->bytes = NULL; obj->length = 0;
   if (p == NULL) return;
   const std::string str = p->toString();
@@ -183,14 +183,15 @@ template<typename T, typename cT, const int cdmT, Tcl_ObjType *type>
 int CDM_EnsureObject(Tcl_Interp *interp, Tcl_Obj *obj, cT *v) {
   if (obj->typePtr == type) {
     // We need to modify the object, so create a copy...
-    *v = new T(*static_cast<T*>(obj->internalRep.twoPtrValue.ptr1));
+    *v = CDM_CastToOpaque(cT, new T(*CDM_CastFromOpaque(T*, obj->internalRep.twoPtrValue.ptr1)));
     return CDM_OBJ_ALLOCATED;
   }
 #if CDM_USE_PURE_STRING_POINTERS
   if (obj->typePtr == &CDM_SWIG_Object_ObjType &&
       obj->internalRep.twoPtrValue.ptr1 &&
       obj->internalRep.twoPtrValue.ptr2 == &cdm_swig_pointer_type[cdmT]) {
-    *v = static_cast<T*>(obj->internalRep.twoPtrValue.ptr1);
+    *v = CDM_CastToOpaque(cT, CDM_CastFromOpaque(T*,
+             obj->internalRep.twoPtrValue.ptr1));
     return CDM_OBJ_SWIG_OBJECT_REUSED;
   }
 #endif /* CDM_USE_PURE_STRING_POINTERS */
@@ -207,7 +208,7 @@ int CDM_EnsureObject(Tcl_Interp *interp, Tcl_Obj *obj, cT *v) {
         obj->internalRep.twoPtrValue.ptr2 = &cdm_swig_pointer_type[cdmT];
       }
 #endif /* CDM_USE_PURE_STRING_POINTERS */
-      *v = static_cast<cT *>(p);
+      *v = CDM_CastToOpaque(cT, p);
       return CDM_OBJ_SWIG_OBJECT_REUSED;
     }
     const char *str = Tcl_GetString(obj), *tstr;
@@ -235,7 +236,7 @@ int CDM_EnsureObject(Tcl_Interp *interp, Tcl_Obj *obj, cT *v) {
   }
   if (status == TCL_ERROR) return TCL_ERROR;
   // We need to modify the object, so create a copy...
-  *v = new T(*static_cast<T*>(obj->internalRep.twoPtrValue.ptr1));
+  *v = CDM_CastToOpaque(cT, new T(*CDM_CastFromOpaque(T*, obj->internalRep.twoPtrValue.ptr1)));
   return CDM_OBJ_ALLOCATED;
 }
 

@@ -242,18 +242,20 @@ bool ELEP::CDM::Collection::operator< (const Collection& Collection) const {
 CDM_Document CDM_CreateDocument(const char *name, const CDM_ByteSequence data,
     const CDM_AttributeSet attributes, const CDM_AnnotationSet annotations) {
   const ELEP::CDM::AttributeSet *attrs =
-        static_cast<const ELEP::CDM::AttributeSet*>(attributes);
+        CDM_CastFromOpaque(const ELEP::CDM::AttributeSet*, attributes);
   if (!name || *name == '\0') return nullptr;
   if (!attrs) return nullptr;
   const ELEP::CDM::AnnotationSet *anns =
-        static_cast<const ELEP::CDM::AnnotationSet*>(annotations);
+        CDM_CastFromOpaque(const ELEP::CDM::AnnotationSet*, annotations);
   if (!anns) return nullptr;
-  return new Document(name, data, *attrs, *anns);
+  return CDM_CastToOpaque(CDM_Document,
+                          new Document(name, data, *attrs, *anns));
 };
 
 CDM_Id CDM_AddAnnotation(CDM_Document Document, const CDM_Annotation Ann) {
   if (!Document || !Ann) return ELEP::CDM::Annotation::no;
-  ELEP::CDM::Document *d = static_cast<ELEP::CDM::Document*>(Document);
-  const ELEP::CDM::Annotation *a = static_cast<ELEP::CDM::Annotation*>(Ann);
+  ELEP::CDM::Document *d = CDM_CastFromOpaque(ELEP::CDM::Document*, Document);
+  const ELEP::CDM::Annotation *a =
+    CDM_CastFromOpaque(ELEP::CDM::Annotation*, Ann);
   return d->addAnnotation(*a);
 };

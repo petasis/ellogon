@@ -164,22 +164,26 @@ namespace ELEP {
 #define CDM_IMAGE                    10
 #define CDM_BASE64_IMAGE             11
 
-typedef int               CDM_Status;
-typedef uint32_t          CDM_Position;
-typedef uint32_t          CDM_Id;
-typedef  int32_t          CDM_Int;
-typedef size_t            CDM_Size;
-typedef void *            CDM_Span;
-typedef void *            CDM_SpanSet;
-typedef void *            CDM_AttributeValue;
-typedef uint8_t           CDM_AttributeType;
-typedef void *            CDM_Attribute;
-typedef void *            CDM_AttributeSet;
-typedef void *            CDM_Annotation;
-typedef void *            CDM_AnnotationSet;
-typedef char *            CDM_ByteSequence;
-typedef void *            CDM_Document;
-typedef void *            CDM_Collection;
+typedef int                                CDM_Status;
+typedef uint32_t                           CDM_Position;
+typedef uint32_t                           CDM_Id;
+typedef  int32_t                           CDM_Int;
+typedef size_t                             CDM_Size;
+typedef struct CDM_Span_t *                CDM_Span;
+typedef struct CDM_SpanSet_t *             CDM_SpanSet;
+typedef struct CDM_AttributeValue_t *      CDM_AttributeValue;
+typedef uint8_t                            CDM_AttributeType;
+typedef struct CDM_Attribute_t *           CDM_Attribute;
+typedef struct CDM_AttributeSet_t *        CDM_AttributeSet;
+typedef struct CDM_Annotation_t *          CDM_Annotation;
+typedef struct CDM_AnnotationSet_t *       CDM_AnnotationSet;
+typedef char *                             CDM_ByteSequence;
+typedef struct CDM_ByteSequenceSet_t *     CDM_ByteSequenceSet;
+typedef struct CDM_Document_t *            CDM_Document;
+typedef struct CDM_Collection_t *          CDM_Collection;
+
+#define CDM_CastFromOpaque(T, p) reinterpret_cast< T > ( p )
+#define CDM_CastToOpaque(T, p)   reinterpret_cast< T > ( p )
 
 #include "Serialisation.h"
 #include "Span.h"

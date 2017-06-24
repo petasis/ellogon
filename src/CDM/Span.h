@@ -236,6 +236,8 @@ CEREAL_CLASS_VERSION(ELEP::CDM::SpanSet, 1);
 
 #endif /* __cplusplus */
 
+//extern "C" {
+
 CDM_Span     CDM_CreateSpan(const CDM_Position start, const CDM_Position end);
 CDM_Position CDM_GetStart(const CDM_Span span);
 CDM_Position CDM_GetEnd(const CDM_Span span);
@@ -248,6 +250,8 @@ CDM_Status   CDM_AddSpan(CDM_SpanSet spans, const CDM_Span span);
 CDM_Status   CDM_AddSpan(CDM_SpanSet spans, const CDM_Position start, const CDM_Position end);
 CDM_Position CDM_SpanSetOffsetMin(const CDM_SpanSet spans);
 CDM_Position CDM_SpanSetOffsetMax(const CDM_SpanSet spans);
+
+//}; /* extern "C" */
 
 #endif /* ELLOGON_CDM_SPAN */
 

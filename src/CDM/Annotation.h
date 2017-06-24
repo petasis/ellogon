@@ -453,6 +453,9 @@ CDM_Status                CDM_DisplaceAnnotation(CDM_Annotation Ann, long offset
 
 const CDM_Attribute       CDM_GetAttribute(const CDM_Annotation Annotation, const char *Name);
 const CDM_AttributeSet    CDM_GetAttributes(const CDM_Annotation Annotation);
+CDM_AttributeValue        CDM_GetAttributeValue(const CDM_Annotation Annotation, const char *Name, const CDM_AttributeValue def = nullptr);
+const CDM_Span            CDM_GetAnnotationFirstSpan(const CDM_Annotation Ann);
+CDM_Status                CDM_GetAnnotationFirstSpanOffsets(const CDM_Annotation Annotation, CDM_Position *start, CDM_Position *end);
 const CDM_SpanSet         CDM_GetSpans(const CDM_Annotation Ann);
 CDM_Status                CDM_PutAttribute(CDM_Annotation Ann, const CDM_Attribute Attr);
 CDM_Status                CDM_RemoveAttribute(CDM_Annotation Ann, const char *Name);
@@ -462,10 +465,7 @@ CDM_Id                    CDM_GetId(const CDM_Annotation Ann);
 #if 0
 int                 CDM_AnnotationContainsAttributeMatchingValues(CDM_Annotation Ann, char *AttributeName, Tcl_Obj *ValuePatternsObj = NULL);
 CDM_ByteSequenceSet CDM_GetAnnotatedTextRanges(CDM_ByteSequence Text, CDM_Annotation Annotation);
-CDM_AttributeValue  CDM_GetAttributeValue(CDM_Annotation Annotation, const char *Name, CDM_AttributeValue def = NULL);
 CDM_ByteSequenceSet CDM_GetFirstAnnotatedTextRange(CDM_ByteSequence Text, CDM_Annotation Annotation);
-CDM_Span            CDM_GetFirstSpan(CDM_Annotation Ann);
-CDM_Status          CDM_GetFirstSpanOffsets(CDM_Annotation Annotation, long *start, long *end);
 CDM_ByteSequence    CDM_GetTypeObj(CDM_Annotation Ann);
 CDM_Annotation      CDM_ReconstructAnnotation(CDM_Annotation Annotation);
 CDM_Annotation      CDM_AddAnnotationSpan(CDM_Annotation Annotation, CDM_Span span);

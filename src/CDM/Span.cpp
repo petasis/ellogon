@@ -352,24 +352,24 @@ bool ELEP::CDM::SpanSet::operator< (const SpanSet& span) const {
 };
 
 CDM_Span CDM_CreateSpan(const CDM_Position start, const CDM_Position end) {
-  return new ELEP::CDM::Span(start, end);
+  return CDM_CastToOpaque(CDM_Span, new ELEP::CDM::Span(start, end));
 };
 
 CDM_Position CDM_GetStart(const CDM_Span span) {
-  const ELEP::CDM::Span *p = static_cast<const ELEP::CDM::Span*>(span);
+  const ELEP::CDM::Span *p = CDM_CastFromOpaque(const ELEP::CDM::Span*, span);
   if (p) return p->start();
   return ELEP::CDM::Span::no;
 };
 
 CDM_Position CDM_GetEnd(const CDM_Span span) {
-  const ELEP::CDM::Span *p = static_cast<const ELEP::CDM::Span*>(span);
+  const ELEP::CDM::Span *p = CDM_CastFromOpaque(const ELEP::CDM::Span*, span);
   if (p) return p->end();
   return ELEP::CDM::Span::no;
 };
 
 CDM_Status CDM_GetSpanOffsets(const CDM_Span span, CDM_Position *start,
                                                    CDM_Position *end) {
-  const ELEP::CDM::Span *p = static_cast<const ELEP::CDM::Span*>(span);
+  const ELEP::CDM::Span *p = CDM_CastFromOpaque(const ELEP::CDM::Span*, span);
   if (!p) return CDM_ERROR;
   if (start) *start= p->start();
   if (end)   *end  = p->end();
@@ -377,18 +377,18 @@ CDM_Status CDM_GetSpanOffsets(const CDM_Span span, CDM_Position *start,
 };
 
 CDM_SpanSet CDM_CreateSpanSet() {
-  return new ELEP::CDM::SpanSet();
+  return CDM_CastToOpaque(CDM_SpanSet, new ELEP::CDM::SpanSet());
 };
 
 CDM_SpanSet CDM_CreateSpanSet(const CDM_Position start,
                               const CDM_Position end) {
-  return new ELEP::CDM::SpanSet(start, end);
+  return CDM_CastToOpaque(CDM_SpanSet, new ELEP::CDM::SpanSet(start, end));
 };
 
 CDM_Status CDM_GetFirstSpanOffsets(const CDM_SpanSet spans, CDM_Position *start,
                                                             CDM_Position *end) {
   const ELEP::CDM::SpanSet *p =
-        static_cast<const ELEP::CDM::SpanSet*>(spans);
+        CDM_CastFromOpaque(const ELEP::CDM::SpanSet*, spans);
   if (!p || p->empty()) return CDM_ERROR;
   auto it = p->begin();
   if (start) *start= it->start();
@@ -397,9 +397,9 @@ CDM_Status CDM_GetFirstSpanOffsets(const CDM_SpanSet spans, CDM_Position *start,
 };
 
 CDM_Status CDM_AddSpan(CDM_SpanSet spans, const CDM_Span span) {
-  ELEP::CDM::SpanSet *p = static_cast<ELEP::CDM::SpanSet*>(spans);
+  ELEP::CDM::SpanSet *p = CDM_CastFromOpaque(ELEP::CDM::SpanSet*, spans);
   if (!p) return CDM_ERROR;
-  const ELEP::CDM::Span *s = static_cast<const ELEP::CDM::Span*>(span);
+  const ELEP::CDM::Span *s = CDM_CastFromOpaque(const ELEP::CDM::Span*, span);
   if (!s) return CDM_ERROR;
   p->push_back(*s);
   return CDM_OK;
@@ -407,20 +407,20 @@ CDM_Status CDM_AddSpan(CDM_SpanSet spans, const CDM_Span span) {
 
 CDM_Status CDM_AddSpan(CDM_SpanSet spans, const CDM_Position start,
                                           const CDM_Position end) {
-  ELEP::CDM::SpanSet *p = static_cast<ELEP::CDM::SpanSet*>(spans);
+  ELEP::CDM::SpanSet *p = CDM_CastFromOpaque(ELEP::CDM::SpanSet*, spans);
   if (!p) return CDM_ERROR;
   p->push_back(Span(start, end));
   return CDM_OK;
 };
 
 CDM_Position CDM_SpanSetOffsetMin(const CDM_SpanSet spans) {
-  const ELEP::CDM::SpanSet *p = static_cast<const ELEP::CDM::SpanSet*>(spans);
+  const ELEP::CDM::SpanSet *p = CDM_CastFromOpaque(const ELEP::CDM::SpanSet*, spans);
   if (p) return p->min();
   return ELEP::CDM::Span::no;
 };
 
 CDM_Position CDM_SpanSetOffsetMax(const CDM_SpanSet spans) {
-  const ELEP::CDM::SpanSet *p = static_cast<const ELEP::CDM::SpanSet*>(spans);
+  const ELEP::CDM::SpanSet *p = CDM_CastFromOpaque(const ELEP::CDM::SpanSet*, spans);
   if (p) return p->max();
   return 0;
 };
