@@ -130,6 +130,10 @@ namespace ELEP {
         void                   putAttribute(const Attribute& attribute) {_attributes.putAttribute(attribute);};
         void                   removeAttribute(const char *name) {_attributes.removeAttribute(name);};
         void                   addSpan(const Span& span) {_spans.addSpan(span);};
+        void                   addSpan(const Position start, const Position end) {_spans.addSpan(start, end);};
+        std::string            textRange(const std::string& text) const {return _spans.textRange(text);};
+        std::vector<std::string>
+                               textRanges(const std::string& text) const {return _spans.textRanges(text);};
 
         bool                   valid()      const;
         const std::string      toString()   const;
@@ -461,11 +465,11 @@ CDM_Status                CDM_PutAttribute(CDM_Annotation Ann, const CDM_Attribu
 CDM_Status                CDM_RemoveAttribute(CDM_Annotation Ann, const char *Name);
 const CDM_ByteSequence    CDM_GetType(const CDM_Annotation Ann);
 CDM_Id                    CDM_GetId(const CDM_Annotation Ann);
+const CDM_ByteSequence    CDM_GetFirstAnnotatedTextRange(const CDM_ByteSequence Text, const CDM_Annotation Annotation);
 
 #if 0
 int                 CDM_AnnotationContainsAttributeMatchingValues(CDM_Annotation Ann, char *AttributeName, Tcl_Obj *ValuePatternsObj = NULL);
 CDM_ByteSequenceSet CDM_GetAnnotatedTextRanges(CDM_ByteSequence Text, CDM_Annotation Annotation);
-CDM_ByteSequenceSet CDM_GetFirstAnnotatedTextRange(CDM_ByteSequence Text, CDM_Annotation Annotation);
 CDM_ByteSequence    CDM_GetTypeObj(CDM_Annotation Ann);
 CDM_Annotation      CDM_ReconstructAnnotation(CDM_Annotation Annotation);
 CDM_Annotation      CDM_AddAnnotationSpan(CDM_Annotation Annotation, CDM_Span span);

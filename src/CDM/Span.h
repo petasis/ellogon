@@ -73,6 +73,7 @@ namespace ELEP {
         bool              displace(const Int displacement);
         bool              displace(const Position offset, const Int displacement);
         bool              matchesRange(const Position start, const Position end) const;
+        std::string       textRange(const std::string& text) const;
         bool              valid() const;
         const std::string toString() const;
         bool operator< (const Span& span) const;
@@ -120,6 +121,7 @@ namespace ELEP {
         SpanSet(Tcl_Interp *interp, Tcl_Obj *obj);
 #endif /* TCL_VERSION */
         void              addSpan(const Span& span) {push_back(span);};
+        void              addSpan(const Position start, const Position end) {push_back(Span(start, end));}
         const Position&   firstSpanStart() const;
         const Position&   firstSpanEnd()   const;
         Status            firstSpanOffsets(Position &start, Position &end) const;
@@ -131,6 +133,9 @@ namespace ELEP {
         bool              displace(const Int displacement);
         bool              displace(const Position offset, const Int displacement);
         bool              matchesRange(const Position start, const Position end) const;
+        std::string       textRange(const std::string& text) const;
+        std::vector<std::string>
+                          textRanges(const std::string& text) const;
         bool              valid()    const;
         const std::string toString() const;
 #ifndef SWIG

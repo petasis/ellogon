@@ -1,10 +1,12 @@
 /* Language independent exception handler */
-%include stdint.i
-%include typemaps.i
-%include exception.i
-%include stl.i
-%include tclinterp.i
-%include attribute.i
+%include <stdint.i>
+%include <typemaps.i>
+%include <exception.i>
+%include <stl.i>
+%include <std_string.i>
+%include <std_vector.i>
+%include <tclinterp.i>
+%include <attribute.i>
 %rename("%(regex:/^CDM_(.*)/tip_\\1/)s", %$isfunction) "";
 %rename(__lt__) operator<;
 %rename(__index__) operator[];
@@ -250,6 +252,10 @@ TYPE_IN_ANY  (CDM_Document, ELEP::CDM::Document, CDM_Document_ObjType, CDMTYPE_p
 %template(serialisation_AnnotationSet)     ELEP::CDM::serialisation::Serialisation<ELEP::CDM::AnnotationSet>;
 %template(serialisation_Document)          ELEP::CDM::serialisation::Serialisation<ELEP::CDM::Document>;
 %template(serialisation_Collection)        ELEP::CDM::serialisation::Serialisation<ELEP::CDM::Collection>;
+
+namespace std {
+  %template(StringVector) vector<string>;
+}
 
 %ignore ELEP::CDM::Functor::UnaryFunction;
 %ignore ELEP::CDM::Functor::UnaryFunctionWithState;

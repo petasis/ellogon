@@ -216,3 +216,9 @@ tip_GetAnnotationFirstSpan {1 token {{100 200}} {{type {CDM_STRING EFW}}}}
 
 tip_GetAnnotationFirstSpanOffsets {1 token {{100 200}} {{type {CDM_STRING EFW}}}} s e; list $s $e
 100 200
+
+tip_GetFirstAnnotatedTextRange 0123456789 {1 token {{0 1}} {}}
+0
+
+tip_GetFirstAnnotatedTextRange 0123456789 {1 token {{1 5}} {}}
+1234

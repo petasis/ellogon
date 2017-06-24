@@ -111,8 +111,15 @@ void ELEP::CDM::Span::end(const Position end) {
   _end = end;
 };
 
+std::string ELEP::CDM::Span::textRange(const std::string& text) const {
+  if (!valid()) return "";
+  return Unicode::utf8_substr(text, _start, _end);
+};
+
+
 bool ELEP::CDM::Span::valid() const {
-  return _start != ELEP::CDM::Span::no && _end != ELEP::CDM::Span::no;
+  return _end   != ELEP::CDM::Span::no &&
+         _start <= _end;
 };
 
 const std::string ELEP::CDM::Span::toString() const {
@@ -303,9 +310,24 @@ bool ELEP::CDM::SpanSet::matchesRange(const Position s, const Position e) const 
   });
 };
 
+std::string ELEP::CDM::SpanSet::textRange(const std::string& text) const {
+  if (set.empty()) return "";
+  return set.cbegin()->textRange(text);
+};
+
+std::vector<std::string>
+ELEP::CDM::SpanSet::textRanges(const std::string& text) const {
+  std::vector<std::string> ranges;
+  for (auto s : set) {
+    ranges.push_back(s.textRange(text));
+  }
+  return ranges;
+};
+
 bool ELEP::CDM::SpanSet::valid() const {
   if (set.empty()) return false;
-  return set.cbegin()->valid();
+  return std::all_of(set.cbegin(), set.cend(),
+    [](const Span& s){return s.valid();});
 };
 
 const std::string ELEP::CDM::SpanSet::toString() const {

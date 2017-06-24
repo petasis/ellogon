@@ -204,8 +204,11 @@ namespace ELEP {
     }; /* namespace ELEP::CDM::swap */
 
     namespace Unicode {
-      const std::string normalise_nfc(const std::string& data) {
-        std::locale loc = boost::locale::generator().generate("");
+      std::string normalise_nfc(const std::string& data,
+                                      const char *locale) {
+        if (locale == nullptr) locale = "";
+        std::locale loc =
+           boost::locale::generator().generate(locale);
         return boost::locale::normalize(data, boost::locale::norm_nfc, loc);
       };
     }; /* namespace ELEP::CDM::Unicode */

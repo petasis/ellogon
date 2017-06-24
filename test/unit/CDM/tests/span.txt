@@ -114,3 +114,40 @@ set o [CDM::SpanSet -args 0 10]; set r [$o contains 10]; $o -delete; set r
 
 set o [CDM::SpanSet -args 0 10]; set r [$o contains 20]; $o -delete; set r
 0
+
+set o [CDM::Span -args 0 0]; set r [$o textRange 0123456789]; $o -delete; set r
+
+
+set o [CDM::Span -args 0 1]; set r [$o textRange 0123456789]; $o -delete; set r
+0
+
+set o [CDM::Span -args 0 2]; set r [$o textRange 0123456789]; $o -delete; set r
+01
+
+set o [CDM::Span -args 0 20]; set r [$o textRange 0123456789]; $o -delete; set r
+0123456789
+
+set o [CDM::Span -args 0 9]; set r [$o textRange 0123456789]; $o -delete; set r
+012345678
+
+set o [CDM::Span -args 0 10]; set r [$o textRange 0123456789]; $o -delete; set r
+0123456789
+
+set o [CDM::Span -args 2 5]; set r [$o textRange 0123456789]; $o -delete; set r
+234
+
+set o [CDM::Span -args 0 10]; set r [$o textRange αβγδεξηθικλμνξοπρστυφχψω]; $o -delete; set r
+αβγδεξηθικ
+
+set o [CDM::Span -args 3 10]; set r [$o textRange αβγδεξηθικλμνξοπρστυφχψω]; $o -delete; set r
+δεξηθικ
+
+set o [CDM::SpanSet -args 3 10]; set r [$o textRange αβγδεξηθικλμνξοπρστυφχψω]; $o -delete; set r
+δεξηθικ
+
+set o [CDM::SpanSet -args 3 10]; set r [$o textRanges αβγδεξηθικλμνξοπρστυφχψω]; $o -delete; set r
+δεξηθικ
+
+set o [CDM::SpanSet -args 1 3]; $o addSpan 2 5; $o addSpan 8 9; $o addSpan 2 5;set r [$o textRanges 0123456789]; $o -delete; set r
+12 234 8 234
+

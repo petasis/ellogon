@@ -41,6 +41,8 @@
 #include <tuple>       /* For std::tuple              */
 #endif /* SWIG */
 
+#define CDM_DEFAULT_LOCALE "en_US.utf8"
+
 namespace ELEP {
   namespace CDM {
     enum class                Status {OK = 0, ERROR = 1};
@@ -75,11 +77,18 @@ namespace ELEP {
       std::string ensure_list_element(const std::string &str);
 
       int CDM_StringMatch(const char *str, const char *pattern);
-      int CDM_StringCaseMatch( const char *str, const char *pattern, int nocase);
+      int CDM_StringCaseMatch( const char *str, const char *pattern,
+          int nocase = 1, const char *locale = CDM_DEFAULT_LOCALE);
     }; /* namespace ELEP::CDM::Utilities */
 
     namespace Unicode {
-      const std::string normalise_nfc(const std::string& data);
+      std::string normalise_nfc(const std::string& data,
+                                const char *locale = CDM_DEFAULT_LOCALE);
+      std::string utf8_substr(const std::string& str,
+                              size_t start, size_t end);
+      bool utf8_byteOffsets(const std::string& str,
+                            const size_t start, const size_t end,
+                            size_t *byte_start, size_t *byte_end);
     }; /* namespace ELEP::CDM::Unicode */
 
     class Annotation;
@@ -177,7 +186,7 @@ typedef struct CDM_Attribute_t *           CDM_Attribute;
 typedef struct CDM_AttributeSet_t *        CDM_AttributeSet;
 typedef struct CDM_Annotation_t *          CDM_Annotation;
 typedef struct CDM_AnnotationSet_t *       CDM_AnnotationSet;
-typedef char *                             CDM_ByteSequence;
+typedef char const *                       CDM_ByteSequence;
 typedef struct CDM_ByteSequenceSet_t *     CDM_ByteSequenceSet;
 typedef struct CDM_Document_t *            CDM_Document;
 typedef struct CDM_Collection_t *          CDM_Collection;
