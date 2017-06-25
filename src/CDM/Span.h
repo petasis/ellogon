@@ -74,6 +74,7 @@ namespace ELEP {
         bool              displace(const Position offset, const Int displacement);
         bool              matchesRange(const Position start, const Position end) const;
         std::string       textRange(const std::string& text) const;
+        bool              textRange(const std::string& text, size_t *byte_start, size_t *byte_end) const;
         bool              valid() const;
         const std::string toString() const;
         bool operator< (const Span& span) const;
@@ -134,8 +135,11 @@ namespace ELEP {
         bool              displace(const Position offset, const Int displacement);
         bool              matchesRange(const Position start, const Position end) const;
         std::string       textRange(const std::string& text) const;
+        bool              textRange(const std::string& text, size_t *byte_start, size_t *byte_end) const;
         std::vector<std::string>
                           textRanges(const std::string& text) const;
+        std::vector<std::pair<size_t, size_t>>
+                          textRangesOffsets(const std::string& text) const;
         bool              valid()    const;
         const std::string toString() const;
 #ifndef SWIG

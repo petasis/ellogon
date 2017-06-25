@@ -520,7 +520,7 @@ CDM_Attribute CDM_CreateAttribute(const char *name, const char *value, const CDM
     new ELEP::CDM::Attribute(name, value, convert::AttributeType(type)));
 };
 
-const char *CDM_GetName(const CDM_Attribute Attribute) {
+const CDM_ByteSequence CDM_GetName(const CDM_Attribute Attribute) {
   const ELEP::CDM::Attribute *p =
         CDM_CastFromOpaque(const ELEP::CDM::Attribute*, Attribute);
   if (p) return p->name().c_str();
@@ -542,13 +542,13 @@ CDM_AttributeType CDM_GetValueType(const CDM_Attribute Attribute) {
   return CDM_NONE;
 };
 
-const char *CDM_GetValueValue(const CDM_Attribute Attribute) {
+const CDM_ByteSequence CDM_GetValueValue(const CDM_Attribute Attribute) {
   const ELEP::CDM::Attribute *p =
         CDM_CastFromOpaque(const ELEP::CDM::Attribute*, Attribute);
   if (p) return p->value().c_str();
   return NULL;
 };
-const char *CDM_GetValueString(const CDM_Attribute Attribute) {
+const CDM_ByteSequence CDM_GetValueString(const CDM_Attribute Attribute) {
   return CDM_GetValueValue(Attribute);
 };
 

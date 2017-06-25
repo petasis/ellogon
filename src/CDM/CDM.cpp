@@ -105,6 +105,19 @@ namespace ELEP {
         //    [](char c) { return (c == '}' ); }, "\\{");
       };
 
+      CDM_ByteSequence CDM_StringToCString(const std::string & str) {
+        char *result = (char *) malloc((str.size()+1)*sizeof(char));
+        if (result) {
+          std::copy(str.begin(), str.end(), result);
+          result[str.size()] = '\0';
+        }
+        return (CDM_ByteSequence) result;
+      };
+
+      void CDM_FreeCString(CDM_ByteSequence str) {
+        if (str) free((void *) str);
+      };
+
     }; /* namespace ELEP::CDM::Utilities */
 
     namespace convert {

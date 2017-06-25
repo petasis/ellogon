@@ -32,20 +32,65 @@
 #ifndef ELLOGON_CDM
 #define ELLOGON_CDM
 
+#define CDM_DEFAULT_LOCALE "en_US.utf8"
+#ifdef __cplusplus
+#include <cstdint>     /* For C++11 type uint32_t     */
+#else
+#include <stdint.h>
+#endif
+
+/* Status */
+#define CDM_OK                        0
+#define CDM_ERROR                     1
+#define CDM_FALSE                    10
+
+/* Attribute Types */
+#define CDM_NONE                      0
+#define CDM_STRING                    1
+#define CDM_STRING_SET                2
+#define CDM_SPAN                      3
+#define CDM_SPAN_SET                  4
+#define CDM_ANNOTATION_ID             5
+#define CDM_ANNOTATION_ID_SET         6
+#define CDM_IMAGE                    10
+#define CDM_BASE64_IMAGE             11
+
+/*
+ * C types. These types are used by the C API (CDM_* functions).
+ */
+typedef int                                CDM_Status;
+typedef uint32_t                           CDM_Position;
+typedef uint32_t                           CDM_Id;
+typedef  int32_t                           CDM_Int;
+typedef size_t                             CDM_Size;
+typedef struct CDM_Span_t *                CDM_Span;
+typedef struct CDM_SpanSet_t *             CDM_SpanSet;
+typedef struct CDM_AttributeValue_t *      CDM_AttributeValue;
+typedef uint8_t                            CDM_AttributeType;
+typedef struct CDM_Attribute_t *           CDM_Attribute;
+typedef struct CDM_AttributeSet_t *        CDM_AttributeSet;
+typedef struct CDM_Annotation_t *          CDM_Annotation;
+typedef struct CDM_AnnotationSet_t *       CDM_AnnotationSet;
+typedef char const *                       CDM_ByteSequence;
+typedef struct CDM_ByteSequenceSet_t *     CDM_ByteSequenceSet;
+typedef struct CDM_Document_t *            CDM_Document;
+typedef struct CDM_Collection_t *          CDM_Collection;
+
 #ifdef __cplusplus
 
 #ifndef SWIG
 #include <string>      /* For std::string             */
+#include <utility>     /* For std::pair               */
 #include <memory>      /* For smart pointers          */
-#include <cstdint>     /* For C++11 type uint32_t     */
 #include <tuple>       /* For std::tuple              */
 #endif /* SWIG */
 
-#define CDM_DEFAULT_LOCALE "en_US.utf8"
+#define CDM_CastFromOpaque(T, p) reinterpret_cast< T > ( p )
+#define CDM_CastToOpaque(T, p)   reinterpret_cast< T > ( p )
 
 namespace ELEP {
   namespace CDM {
-    enum class                Status {OK = 0, ERROR = 1};
+    enum class                Status {OK = 0, ERROR = 1, FALSE = 10};
     enum class                AttributeType {
                                   NONE               =  0,
                                   STRING             =  1,
@@ -79,6 +124,9 @@ namespace ELEP {
       int CDM_StringMatch(const char *str, const char *pattern);
       int CDM_StringCaseMatch( const char *str, const char *pattern,
           int nocase = 1, const char *locale = CDM_DEFAULT_LOCALE);
+
+      CDM_ByteSequence CDM_StringToCString(const std::string & str);
+      void  CDM_FreeCString(CDM_ByteSequence str);
     }; /* namespace ELEP::CDM::Utilities */
 
     namespace Unicode {
@@ -153,46 +201,7 @@ namespace ELEP {
     }; /* namespace ELEP::CDM::Functor */
   }; /* namespace ELEP::CDM */
 }; /* namespace ELEP */
-#else  /* __cplusplus */
-#include <stdint.h>
 #endif /* __cplusplus */
-
-/* Status */
-#define CDM_OK                        0
-#define CDM_ERROR                     1
-#define CDM_FALSE                    10
-
-/* Attribute Types */
-#define CDM_NONE                      0
-#define CDM_STRING                    1
-#define CDM_STRING_SET                2
-#define CDM_SPAN                      3
-#define CDM_SPAN_SET                  4
-#define CDM_ANNOTATION_ID             5
-#define CDM_ANNOTATION_ID_SET         6
-#define CDM_IMAGE                    10
-#define CDM_BASE64_IMAGE             11
-
-typedef int                                CDM_Status;
-typedef uint32_t                           CDM_Position;
-typedef uint32_t                           CDM_Id;
-typedef  int32_t                           CDM_Int;
-typedef size_t                             CDM_Size;
-typedef struct CDM_Span_t *                CDM_Span;
-typedef struct CDM_SpanSet_t *             CDM_SpanSet;
-typedef struct CDM_AttributeValue_t *      CDM_AttributeValue;
-typedef uint8_t                            CDM_AttributeType;
-typedef struct CDM_Attribute_t *           CDM_Attribute;
-typedef struct CDM_AttributeSet_t *        CDM_AttributeSet;
-typedef struct CDM_Annotation_t *          CDM_Annotation;
-typedef struct CDM_AnnotationSet_t *       CDM_AnnotationSet;
-typedef char const *                       CDM_ByteSequence;
-typedef struct CDM_ByteSequenceSet_t *     CDM_ByteSequenceSet;
-typedef struct CDM_Document_t *            CDM_Document;
-typedef struct CDM_Collection_t *          CDM_Collection;
-
-#define CDM_CastFromOpaque(T, p) reinterpret_cast< T > ( p )
-#define CDM_CastToOpaque(T, p)   reinterpret_cast< T > ( p )
 
 #include "Serialisation.h"
 #include "Span.h"

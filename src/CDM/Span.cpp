@@ -116,6 +116,11 @@ std::string ELEP::CDM::Span::textRange(const std::string& text) const {
   return Unicode::utf8_substr(text, _start, _end);
 };
 
+bool ELEP::CDM::Span::textRange(const std::string& text,
+                  size_t *byte_start, size_t *byte_end) const {
+  if (!valid()) return false;
+  return Unicode::utf8_byteOffsets(text, _start, _end, byte_start, byte_end);
+};
 
 bool ELEP::CDM::Span::valid() const {
   return _end   != ELEP::CDM::Span::no &&
@@ -315,11 +320,29 @@ std::string ELEP::CDM::SpanSet::textRange(const std::string& text) const {
   return set.cbegin()->textRange(text);
 };
 
+bool ELEP::CDM::SpanSet::textRange(const std::string& text,
+           size_t *byte_start, size_t *byte_end) const {
+  if (set.empty()) return false;
+  return set.cbegin()->textRange(text, byte_start, byte_end);
+};
+
 std::vector<std::string>
 ELEP::CDM::SpanSet::textRanges(const std::string& text) const {
   std::vector<std::string> ranges;
   for (auto s : set) {
     ranges.push_back(s.textRange(text));
+  }
+  return ranges;
+};
+
+std::vector<std::pair<size_t, size_t>>
+ELEP::CDM::SpanSet::textRangesOffsets(const std::string& text) const {
+  std::vector<std::pair<size_t, size_t>> ranges;
+  size_t start, end;
+  for (auto s : set) {
+    if (s.textRange(text, &start, &end)) {
+      ranges.push_back(std::make_pair(start, end));
+    }
   }
   return ranges;
 };

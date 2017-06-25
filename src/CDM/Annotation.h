@@ -465,7 +465,7 @@ CDM_Status                CDM_PutAttribute(CDM_Annotation Ann, const CDM_Attribu
 CDM_Status                CDM_RemoveAttribute(CDM_Annotation Ann, const char *Name);
 const CDM_ByteSequence    CDM_GetType(const CDM_Annotation Ann);
 CDM_Id                    CDM_GetId(const CDM_Annotation Ann);
-const CDM_ByteSequence    CDM_GetFirstAnnotatedTextRange(const CDM_ByteSequence Text, const CDM_Annotation Annotation);
+CDM_ByteSequence          CDM_GetFirstAnnotatedTextRange(const CDM_ByteSequence Text, const CDM_Annotation Annotation);
 
 #if 0
 int                 CDM_AnnotationContainsAttributeMatchingValues(CDM_Annotation Ann, char *AttributeName, Tcl_Obj *ValuePatternsObj = NULL);

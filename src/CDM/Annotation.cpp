@@ -674,13 +674,13 @@ CDM_Id CDM_GetId(const CDM_Annotation Ann) {
   return a->id();
 };
 
-const CDM_ByteSequence CDM_GetFirstAnnotatedTextRange(
+CDM_ByteSequence CDM_GetFirstAnnotatedTextRange(
   const CDM_ByteSequence text, const CDM_Annotation Ann) {
   ELEP::CDM::Annotation *a =
         CDM_CastFromOpaque(ELEP::CDM::Annotation*, Ann);
-  if (!a || !text) return "";
+  if (!a || !text) return Utilities::CDM_StringToCString("");
   // std::cout << a->toString() << std::endl;
-  return a->textRange(text).c_str();
+  return Utilities::CDM_StringToCString(a->textRange(text));
 };
 
 /*

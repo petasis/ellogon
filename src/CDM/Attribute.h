@@ -290,11 +290,11 @@ CDM_Attribute      CDM_CreateAttribute(const char *name, const char *value, cons
                                                                                   = CDM_STRING
 #endif /* SWIG */
                                                                                   );
-const char        *CDM_GetName(const CDM_Attribute Attribute);
-CDM_AttributeValue CDM_GetValue(const CDM_Attribute Attribute);
-CDM_AttributeType  CDM_GetValueType(const CDM_Attribute Attribute);
-const char        *CDM_GetValueValue(const CDM_Attribute Attribute);
-const char        *CDM_GetValueString(const CDM_Attribute Attribute);
+const CDM_ByteSequence CDM_GetName(const CDM_Attribute Attribute);
+CDM_AttributeValue     CDM_GetValue(const CDM_Attribute Attribute);
+CDM_AttributeType      CDM_GetValueType(const CDM_Attribute Attribute);
+const CDM_ByteSequence CDM_GetValueValue(const CDM_Attribute Attribute);
+const CDM_ByteSequence CDM_GetValueString(const CDM_Attribute Attribute);
 
 CDM_AttributeSet   CDM_CreateAttributeSet();
 CDM_AttributeSet   CDM_CreateAttributeSet(const CDM_Attribute Attribute);

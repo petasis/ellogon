@@ -242,6 +242,12 @@ TYPE_IN_ANY  (CDM_Document, ELEP::CDM::Document, CDM_Document_ObjType, CDMTYPE_p
   }
   Tcl_SetResult(interp, (char *) cdms, TCL_STATIC);}%}
 
+%typemap(ret) const CDM_ByteSequence
+%{// Typemap(ret) const CDM_ByteSequence%}
+%typemap(ret) CDM_ByteSequence
+%{// Typemap(ret) CDM_ByteSequence
+  ELEP::CDM::Utilities::CDM_FreeCString($1);%}
+
 %include "Serialisation.h"
 %template(serialisation_Span)              ELEP::CDM::serialisation::Serialisation<ELEP::CDM::Span>;
 %template(serialisation_SpanSet)           ELEP::CDM::serialisation::Serialisation<ELEP::CDM::SpanSet>;
