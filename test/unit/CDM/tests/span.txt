@@ -151,3 +151,14 @@ set o [CDM::SpanSet -args 3 10]; set r [$o textRanges αβγδεξηθικλμν
 set o [CDM::SpanSet -args 1 3]; $o addSpan 2 5; $o addSpan 8 9; $o addSpan 2 5;set r [$o textRanges 0123456789]; $o -delete; set r
 12 234 8 234
 
+tip_RemoveSpan {} 1 2
+
+
+tip_RemoveSpan {{1 2} {1 2}} 1 2
+{1 2}
+
+tip_RemoveSpan {{1 2} {3 4}} 1 2
+{3 4}
+
+tip_RemoveSpan {{1 2} {3 4}} 10 20
+{1 2} {3 4}

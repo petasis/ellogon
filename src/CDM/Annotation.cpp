@@ -701,6 +701,26 @@ CDM_Status CDM_RemoveAttribute(CDM_Annotation Ann, const char *Name) {
   return CDM_OK;
 };
 
+CDM_Status CDM_RemoveSpan(CDM_Annotation Ann, const CDM_Span span) {
+  ELEP::CDM::Annotation *a =
+        CDM_CastFromOpaque(ELEP::CDM::Annotation*, Ann);
+  if (!a) return CDM_ERROR;
+  const ELEP::CDM::Span *s =
+        CDM_CastFromOpaque(const ELEP::CDM::Span*, span);
+  if (!s) return CDM_ERROR;
+  a->removeSpan(*s);
+  return CDM_OK;
+};
+
+CDM_Status CDM_RemoveSpan(CDM_Annotation Ann,
+                          const CDM_Position start, const CDM_Position end) {
+  ELEP::CDM::Annotation *a =
+        CDM_CastFromOpaque(ELEP::CDM::Annotation*, Ann);
+  if (!a) return CDM_ERROR;
+  a->removeSpan(start, end);
+  return CDM_OK;
+};
+
 const CDM_ByteSequence CDM_GetType(const CDM_Annotation Ann) {
   ELEP::CDM::Annotation *a =
         CDM_CastFromOpaque(ELEP::CDM::Annotation*, Ann);

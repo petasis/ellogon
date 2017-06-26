@@ -77,7 +77,8 @@ namespace ELEP {
         bool              textRange(const std::string& text, size_t *byte_start, size_t *byte_end) const;
         bool              valid() const;
         const std::string toString() const;
-        bool operator< (const Span& span) const;
+        bool operator<  (const Span& other) const;
+        bool operator== (const Span& other) const;
         Span& operator=(Span other) {swap::span(*this, other); return *this;}
       private:
 #ifdef ELLOGON_CDM_SPAN_USE_PAIR
@@ -134,6 +135,8 @@ namespace ELEP {
         bool              displace(const Int displacement);
         bool              displace(const Position offset, const Int displacement);
         bool              matchesRange(const Position start, const Position end) const;
+        void              removeSpan(const Span& span);
+        void              removeSpan(const Position start, const Position end) {return removeSpan(Span(start, end));};
         std::string       textRange(const std::string& text) const;
         bool              textRange(const std::string& text, size_t *byte_start, size_t *byte_end) const;
         std::vector<std::string>
@@ -182,6 +185,13 @@ namespace ELEP {
 #endif /* SWIG */
         iterator          erase(const_iterator position) {return set.erase(position); update_boundaries();};
         iterator          erase(const_iterator first, const_iterator last) {return set.erase(first, last); update_boundaries();};
+        iterator          find(const Span& span) {return std::find(set.begin(), set.end(), span);};
+        iterator          find(const Position start, const Position end) {return find(Span(start, end));}
+#ifndef SWIG
+        const_iterator    find(const Span& span) const {return std::find(set.begin(), set.end(), span);}
+        const_iterator    find(const Position start, const Position end) const {return find(Span(start, end));}
+#endif /* SWIG */
+
         reference         front() {return set.front();};
 #ifndef SWIG
         const_reference   front() const {return set.front();};
@@ -218,7 +228,8 @@ namespace ELEP {
         void              shrink_to_fit() {set.shrink_to_fit();};
         size_type         size() const noexcept {return set.size();};
 
-        bool operator< (const SpanSet& other) const;
+        bool operator<  (const SpanSet& other) const;
+        bool operator== (const SpanSet& other) const;
         SpanSet& operator=(SpanSet other) {swap::spanset(*this, other); return *this;}
       private:
         Position _min, _max;
@@ -257,6 +268,8 @@ CDM_SpanSet  CDM_CreateSpanSet(const CDM_Position start, const CDM_Position end)
 CDM_Status   CDM_GetFirstSpanOffsets(const CDM_SpanSet spans, CDM_Position *start, CDM_Position *end);
 CDM_Status   CDM_AddSpan(CDM_SpanSet spans, const CDM_Span span);
 CDM_Status   CDM_AddSpan(CDM_SpanSet spans, const CDM_Position start, const CDM_Position end);
+CDM_Status   CDM_RemoveSpan(CDM_SpanSet spans, const CDM_Span span);
+CDM_Status   CDM_RemoveSpan(CDM_SpanSet spans, const CDM_Position start, const CDM_Position end);
 CDM_Position CDM_SpanSetOffsetMin(const CDM_SpanSet spans);
 CDM_Position CDM_SpanSetOffsetMax(const CDM_SpanSet spans);
 

@@ -228,3 +228,15 @@ tip_AddSpan {1 token {} {}} {0 1}
 
 tip_AddSpan {1 token {} {}} 10 20
 1 token {{10 20}} {}
+
+tip_RemoveSpan {1 token {} {}} 10 20
+1 token {} {}
+
+tip_RemoveSpan {1 token {{1 2} {1 2}} {}} 1 2
+1 token {{1 2}} {}
+
+tip_RemoveSpan {1 token {{1 2} {3 4}} {}} 1 2
+1 token {{3 4}} {}
+
+tip_RemoveSpan {1 token {{1 2} {3 4}} {}} 10 20
+1 token {{1 2} {3 4}} {}

@@ -75,6 +75,11 @@ bool ELEP::CDM::Span::operator< (const Span& span) const {
   return false;
 };
 
+bool ELEP::CDM::Span::operator== (const Span& span) const {
+  return segment.first == span.segment.first
+      && segment.second == span.segment.second;
+};
+
 #else  /* ELLOGON_CDM_SPAN_USE_PAIR */
 ELEP::CDM::Span::Span() :
   _start {ELEP::CDM::Span::no}, _end {ELEP::CDM::Span::no} {
@@ -140,6 +145,11 @@ bool ELEP::CDM::Span::operator< (const Span& span) const {
   }
   return false;
 };
+
+bool ELEP::CDM::Span::operator== (const Span& span) const {
+  return _start == span._start && _end == span._end;
+};
+
 #endif /* ELLOGON_CDM_SPAN_USE_PAIR */
 
 #ifdef TCL_VERSION
@@ -315,6 +325,11 @@ bool ELEP::CDM::SpanSet::matchesRange(const Position s, const Position e) const 
   });
 };
 
+void ELEP::CDM::SpanSet::removeSpan(const Span& span) {
+  auto it = find(span);
+  if (it != set.end()) erase(it);
+};
+
 std::string ELEP::CDM::SpanSet::textRange(const std::string& text) const {
   if (set.empty()) return "";
   return set.cbegin()->textRange(text);
@@ -387,13 +402,18 @@ void ELEP::CDM::SpanSet::update_boundaries(const_iterator it) {
   update_boundaries(*it);
 };
 
-bool ELEP::CDM::SpanSet::operator< (const SpanSet& span) const {
-  if (_min < span._min ||
-       (_min == span._min && _max < span._max)) {
+bool ELEP::CDM::SpanSet::operator< (const SpanSet& other) const {
+  if (_min < other._min ||
+       (_min == other._min && _max < other._max)) {
     return true;
   }
-  if (_min == span._min && _max == span._max) return size() < span.size();
+  if (_min == other._min && _max == other._max) return size() < other.size();
   return false;
+};
+
+bool ELEP::CDM::SpanSet::operator== (const SpanSet& other) const {
+  if (_min != other._min || _max != other._max) return false;
+  return *this == other;
 };
 
 CDM_Span CDM_CreateSpan(const CDM_Position start, const CDM_Position end) {
@@ -455,6 +475,23 @@ CDM_Status CDM_AddSpan(CDM_SpanSet spans, const CDM_Position start,
   ELEP::CDM::SpanSet *p = CDM_CastFromOpaque(ELEP::CDM::SpanSet*, spans);
   if (!p) return CDM_ERROR;
   p->push_back(Span(start, end));
+  return CDM_OK;
+};
+
+CDM_Status CDM_RemoveSpan(CDM_SpanSet spans, const CDM_Span span) {
+  ELEP::CDM::SpanSet *p = CDM_CastFromOpaque(ELEP::CDM::SpanSet*, spans);
+  if (!p) return CDM_ERROR;
+  const ELEP::CDM::Span *s = CDM_CastFromOpaque(const ELEP::CDM::Span*, span);
+  if (!s) return CDM_ERROR;
+  p->removeSpan(*s);
+  return CDM_OK;
+};
+
+CDM_Status CDM_RemoveSpan(CDM_SpanSet spans, const CDM_Position start,
+                                          const CDM_Position end) {
+  ELEP::CDM::SpanSet *p = CDM_CastFromOpaque(ELEP::CDM::SpanSet*, spans);
+  if (!p) return CDM_ERROR;
+  p->removeSpan(Span(start, end));
   return CDM_OK;
 };
 
