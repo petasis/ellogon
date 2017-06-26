@@ -484,6 +484,47 @@ void ELEP::CDM::AnnotationSet::select(AnnotationSet& s, const std::string& type,
 /*
  * CDM_Annotation
  */
+
+CDM_Status CDM_AddSpan(CDM_Annotation Ann, const CDM_Span span) {
+  ELEP::CDM::Annotation *a =
+        CDM_CastFromOpaque(ELEP::CDM::Annotation*, Ann);
+  if (!a) return CDM_ERROR;
+  const ELEP::CDM::Span *s =
+        CDM_CastFromOpaque(const ELEP::CDM::Span*, span);
+  if (!s) return CDM_ERROR;
+  a->addSpan(*s);
+  return CDM_OK;
+};
+
+CDM_Status CDM_AddSpan(CDM_Annotation Ann,
+               const CDM_Position start, const CDM_Position end) {
+  ELEP::CDM::Annotation *a =
+        CDM_CastFromOpaque(ELEP::CDM::Annotation*, Ann);
+  if (!a) return CDM_ERROR;
+  a->addSpan(start, end);
+  return CDM_OK;
+};
+
+CDM_Status CDM_AddAnnotationSpan(CDM_Annotation Ann, const CDM_Span span) {
+  ELEP::CDM::Annotation *a =
+        CDM_CastFromOpaque(ELEP::CDM::Annotation*, Ann);
+  if (!a) return CDM_ERROR;
+  const ELEP::CDM::Span *s =
+        CDM_CastFromOpaque(const ELEP::CDM::Span*, span);
+  if (!s) return CDM_ERROR;
+  a->addSpan(*s);
+  return CDM_OK;
+};
+
+CDM_Status CDM_AddAnnotationSpan(CDM_Annotation Ann,
+               const CDM_Position start, const CDM_Position end) {
+  ELEP::CDM::Annotation *a =
+        CDM_CastFromOpaque(ELEP::CDM::Annotation*, Ann);
+  if (!a) return CDM_ERROR;
+  a->addSpan(start, end);
+  return CDM_OK;
+};
+
 CDM_Annotation CDM_CreateAnnotation(const char *type, const CDM_SpanSet spans,
                                     const CDM_AttributeSet attributes) {
   ELEP::CDM::Annotation *p = nullptr;

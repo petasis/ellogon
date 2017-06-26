@@ -33,11 +33,13 @@
 #define ELLOGON_CDM
 
 #define CDM_DEFAULT_LOCALE "en_US.utf8"
+#ifndef SWIG
 #ifdef __cplusplus
 #include <cstdint>     /* For C++11 type uint32_t     */
 #else
 #include <stdint.h>
 #endif
+#endif /* SWIG */
 
 /* Status */
 #define CDM_OK                        0

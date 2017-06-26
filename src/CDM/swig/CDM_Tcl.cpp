@@ -183,15 +183,15 @@ template<typename T, typename cT, const int cdmT, Tcl_ObjType *type>
 int CDM_EnsureObject(Tcl_Interp *interp, Tcl_Obj *obj, cT *v) {
   if (obj->typePtr == type) {
     // We need to modify the object, so create a copy...
-    *v = CDM_CastToOpaque(cT, new T(*CDM_CastFromOpaque(T*, obj->internalRep.twoPtrValue.ptr1)));
+    if (v) *v = CDM_CastToOpaque(cT, new T(*CDM_CastFromOpaque(T*, obj->internalRep.twoPtrValue.ptr1)));
     return CDM_OBJ_ALLOCATED;
   }
 #if CDM_USE_PURE_STRING_POINTERS
   if (obj->typePtr == &CDM_SWIG_Object_ObjType &&
       obj->internalRep.twoPtrValue.ptr1 &&
       obj->internalRep.twoPtrValue.ptr2 == &cdm_swig_pointer_type[cdmT]) {
-    *v = CDM_CastToOpaque(cT, CDM_CastFromOpaque(T*,
-             obj->internalRep.twoPtrValue.ptr1));
+    if (v) *v = CDM_CastToOpaque(cT, CDM_CastFromOpaque(T*,
+                obj->internalRep.twoPtrValue.ptr1));
     return CDM_OBJ_SWIG_OBJECT_REUSED;
   }
 #endif /* CDM_USE_PURE_STRING_POINTERS */
@@ -208,21 +208,23 @@ int CDM_EnsureObject(Tcl_Interp *interp, Tcl_Obj *obj, cT *v) {
         obj->internalRep.twoPtrValue.ptr2 = &cdm_swig_pointer_type[cdmT];
       }
 #endif /* CDM_USE_PURE_STRING_POINTERS */
-      *v = CDM_CastToOpaque(cT, p);
+      if (v) *v = CDM_CastToOpaque(cT, p);
       return CDM_OBJ_SWIG_OBJECT_REUSED;
     }
     const char *str = Tcl_GetString(obj), *tstr;
     if (str && *str == '_') {
       // This cannot be one of our types.
       if (tstr = strstr(str, "_p_ELEP__CDM__")) {
-        std::string swigtype(tstr+3);
-        std::replace(swigtype.begin(), swigtype.end(), '_', ':');
-        std::string msg("wrong input type: expected \"");
-        msg += (*cdm_swig_pointer_type[cdmT].swigT)->str;
-        msg += "\" instead of \"";
-        msg += swigtype;
-        msg += " *\"";
-        Tcl_SetResult(interp, (char *) msg.c_str(), TCL_VOLATILE);
+        if (v) {
+          std::string swigtype(tstr+3);
+          std::replace(swigtype.begin(), swigtype.end(), '_', ':');
+          std::string msg("wrong input type: expected \"");
+          msg += (*cdm_swig_pointer_type[cdmT].swigT)->str;
+          msg += "\" instead of \"";
+          msg += swigtype;
+          msg += " *\"";
+          Tcl_SetResult(interp, (char *) msg.c_str(), TCL_VOLATILE);
+        }
         return TCL_ERROR;
       }
     }
@@ -231,12 +233,12 @@ int CDM_EnsureObject(Tcl_Interp *interp, Tcl_Obj *obj, cT *v) {
   try {
     status = Object_SetFromAny<T, type>(interp, obj);
   } catch (std::exception &e) {
-    Tcl_SetResult(interp, (char *) e.what(), TCL_VOLATILE);
+    if (v) Tcl_SetResult(interp, (char *) e.what(), TCL_VOLATILE);
     return TCL_ERROR;
   }
   if (status == TCL_ERROR) return TCL_ERROR;
   // We need to modify the object, so create a copy...
-  *v = CDM_CastToOpaque(cT, new T(*CDM_CastFromOpaque(T*, obj->internalRep.twoPtrValue.ptr1)));
+  if (v) *v = CDM_CastToOpaque(cT, new T(*CDM_CastFromOpaque(T*, obj->internalRep.twoPtrValue.ptr1)));
   return CDM_OBJ_ALLOCATED;
 }
 

@@ -443,6 +443,10 @@ namespace ELEP {
 }; /* namespace ELEP */
 #endif /* __cplusplus */
 
+CDM_Status                CDM_AddAnnotationSpan(CDM_Annotation Annotation, const CDM_Span span);
+CDM_Status                CDM_AddAnnotationSpan(CDM_Annotation Annotation, const CDM_Position start, const CDM_Position end);
+CDM_Status                CDM_AddSpan(CDM_Annotation Annotation, const CDM_Span span);
+CDM_Status                CDM_AddSpan(CDM_Annotation Annotation, const CDM_Position start, const CDM_Position end);
 int                       CDM_AnnotationContainsAttributeMatchingValue(const CDM_Annotation Ann, const char *AttributeName, const char *ValuePattern);
 int                       CDM_AnnotationContainsPosition(const CDM_Annotation Ann, const CDM_Position Position);
 int                       CDM_AnnotationContainsPositions(const CDM_Annotation Ann, const size_t items, const CDM_Position *Positions);
@@ -472,7 +476,6 @@ int                 CDM_AnnotationContainsAttributeMatchingValues(CDM_Annotation
 CDM_ByteSequenceSet CDM_GetAnnotatedTextRanges(CDM_ByteSequence Text, CDM_Annotation Annotation);
 CDM_ByteSequence    CDM_GetTypeObj(CDM_Annotation Ann);
 CDM_Annotation      CDM_ReconstructAnnotation(CDM_Annotation Annotation);
-CDM_Annotation      CDM_AddAnnotationSpan(CDM_Annotation Annotation, CDM_Span span);
 CDM_Annotation      CDM_RemoveSpan(CDM_Annotation Annotation, long start, long end);
 #endif
 

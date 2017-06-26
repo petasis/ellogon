@@ -222,3 +222,9 @@ tip_GetFirstAnnotatedTextRange 0123456789 {1 token {{0 1}} {}}
 
 tip_GetFirstAnnotatedTextRange 0123456789 {1 token {{1 5}} {}}
 1234
+
+tip_AddSpan {1 token {} {}} {0 1}
+1 token {{0 1}} {}
+
+tip_AddSpan {1 token {} {}} 10 20
+1 token {{10 20}} {}

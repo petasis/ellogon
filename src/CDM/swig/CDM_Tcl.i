@@ -52,6 +52,12 @@ const Tcl_ObjType *CDMTcl_cmdNameType = NULL;
 /*
  * const cT
  */
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) const cT
+%{// Typemap(typecheck) const cT
+  try {
+    if (CDM_EnsureObject<cppT, cT, swigT, &tclT>(interp, $input, nullptr) != TCL_ERROR) {$1 = 1;}
+  } catch (std::exception &e) {}%}
+
 %typemap(in) const cT
 %{// Typemap(in) const cT
   try {
@@ -84,6 +90,12 @@ const Tcl_ObjType *CDMTcl_cmdNameType = NULL;
 /*
  * const cT
  */
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) const cT
+%{// Typemap(typecheck) const cT
+  try {
+    if (CDM_EnsureObject<cppT, cT, swigT, &tclT>(interp, $input, nullptr) != TCL_ERROR) {$1 = 1;}
+  } catch (std::exception &e) {}%}
+
 %typemap(in) const cT
 %{// Typemap(in) const cT
   try {
@@ -112,6 +124,12 @@ const Tcl_ObjType *CDMTcl_cmdNameType = NULL;
 /*
  * cT
  */
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) cT
+%{// Typemap(typecheck) cT
+  try {
+    if (CDM_EnsureObject<cppT, cT, swigT, &tclT>(interp, $input, nullptr) != TCL_ERROR) {$1 = 1;}
+  } catch (std::exception &e) {}%}
+
 %typemap(in) cT (int status)
 %{// Typemap(in) cT: input=$input, symname=$symname $argnum
   try {
