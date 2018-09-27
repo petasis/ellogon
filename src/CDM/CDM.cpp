@@ -32,6 +32,10 @@
 #include <algorithm>
 #include <boost/locale.hpp>     /* For normalising unicode strings */
 
+extern "C" {
+#include "HTML/entities.h"
+}
+
 namespace ELEP {
   namespace CDM {
     namespace Cache {
@@ -225,6 +229,25 @@ namespace ELEP {
         return boost::locale::normalize(data, boost::locale::norm_nfc, loc);
       };
     }; /* namespace ELEP::CDM::Unicode */
+
+    namespace HTML {
+      std::string decode_html_entities(const char* data) {
+        char buffer[strlen(data)+2];
+        size_t len = decode_html_entities_utf8(buffer, data);
+        return std::string(buffer);
+      };
+      std::string decode_html_entities(const std::string& data) {
+        char buffer[data.size()+2];
+        size_t len = decode_html_entities_utf8(buffer, data.c_str());
+        return std::string(buffer);
+      };
+      size_t      decode_html_entities(char *data) {
+        return decode_html_entities_utf8(data, nullptr);
+      };
+      size_t      decode_html_entities(char *dest, const char *src) {
+        return decode_html_entities_utf8(dest, src);
+      };
+    }; /* namespace ELEP::CDM::HTML */
 
   }; /* namespace ELEP::CDM */
 }; /* namespace ELEP */

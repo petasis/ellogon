@@ -240,3 +240,5 @@ tip_RemoveSpan {1 token {{1 2} {3 4}} {}} 1 2
 
 tip_RemoveSpan {1 token {{1 2} {3 4}} {}} 10 20
 1 token {{1 2} {3 4}} {}
+
+tip_AnnotationContainsAttributeMatchingValues {1 token {} {{type {CDM_STRING test}}}} {1 2 3}

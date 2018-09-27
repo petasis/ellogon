@@ -31,10 +31,11 @@ PROJECT ( CDM3 )
 ## ===========================================================================
 ##  Locate Boost C++ libraries
 ## ===========================================================================
-MESSAGE ( STATUS "Searching for Boost..." )
+MESSAGE ( STATUS "Searching for Boost... (CDM 3.0)" )
+# SET ( Boost_DETAILED_FAILURE_MSG   ON )
 SET ( Boost_USE_STATIC_LIBS OFF ) # enable dynamic linking
 SET ( Boost_USE_MULTITHREAD ON  ) # enable multithreading
-FIND_PACKAGE ( Boost COMPONENTS REQUIRED filesystem locale )
+FIND_PACKAGE ( Boost COMPONENTS REQUIRED filesystem locale serialization )
 IF ( Boost_FOUND )
   INCLUDE_DIRECTORIES ( ${Boost_INCLUDE_DIR} )
 ENDIF ( Boost_FOUND )
@@ -84,6 +85,7 @@ SET ( CDM_LIBRARY_SOURCES
   Annotation.cpp
   Document.cpp
   Expression.cpp
+  HTML/entities.c
 )
 ADD_LIBRARY (CDM3 SHARED ${CDM_LIBRARY_SOURCES} )
 ADD_LIBRARY (CDM3S STATIC ${CDM_LIBRARY_SOURCES} )

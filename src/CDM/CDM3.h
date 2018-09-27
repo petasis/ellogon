@@ -141,6 +141,16 @@ namespace ELEP {
                             size_t *byte_start, size_t *byte_end);
     }; /* namespace ELEP::CDM::Unicode */
 
+    namespace HTML {
+      std::string decode_html_entities(const char *data);
+#ifndef SWIG
+      std::string decode_html_entities(const std::string& data);
+      size_t      decode_html_entities(char *data);
+      size_t      decode_html_entities(char *dest, const char *src);
+#endif /* SWIG */
+
+    }; /* namespace ELEP::CDM::HTML */
+
     class Annotation;
     namespace Functor {
       template<class Arg, class Result>

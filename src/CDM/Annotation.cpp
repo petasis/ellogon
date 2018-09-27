@@ -579,6 +579,18 @@ int CDM_AnnotationContainsAttributeMatchingValue(const CDM_Annotation Ann,
   return false;
 };
 
+int CDM_AnnotationContainsAttributeMatchingValues(const CDM_Annotation Ann,
+        const char *AttributeName,
+        const char **ValuePatterns, const size_t ValuePatternsSize) {
+  const ELEP::CDM::Annotation *a =
+        CDM_CastFromOpaque(const ELEP::CDM::Annotation*, Ann);
+  if (!a) return false;
+  for (size_t i=0; i<ValuePatternsSize; ++i) {
+    if (!a->containsAttributeMatchingValue(AttributeName, ValuePatterns[i])) return false;
+  }
+  return true;
+};
+
 int CDM_AnnotationContainsPosition(const CDM_Annotation Ann,
         const CDM_Position Position) {
   const ELEP::CDM::Annotation *a =

@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- Added support for decoding HTML entities (decode_html_entities()) (2018-09-28).
 - Added serialisation through the [cereal](http://uscilab.github.io/cereal/index.html) C++ library. Library headers have been copied to src/CDM/cereal (2017-02-26).
 - Added UNICODE normalisation (NFC) through boost::locale.
 - Changed unsigned long to uint32\_t.
